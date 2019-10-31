@@ -1,12 +1,17 @@
 {
-    "id": "{040A890B-82B2-EFCF-BE08-FF67735D40A9}",
+    "id": "{C9508720-B23D-B37A-B5C2-97B607221CE1}",
     "name": "E3DC",
     "type": 3,
     "vendor": "E3DC",
-    "aliases": [],
+    "aliases":
+	[
+		"S10 mini",
+		"S10 E",
+		"S10 E Pro"
+	],
+    "url": "https://github.com/Brovning/e3dc",
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
-    "prefix": "E3DC",
-    "url": ""
+    "prefix": "E3DC"
 }
