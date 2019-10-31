@@ -1,0 +1,9 @@
+{
+    "elements": [
+        {
+            "type": "ValidationTextBox",
+            "caption": "IP",
+            "name": "ip"
+        }
+    ]
+}

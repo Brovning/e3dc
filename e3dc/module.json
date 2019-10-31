@@ -1,0 +1,12 @@
+{
+    "id": "{040A890B-82B2-EFCF-BE08-FF67735D40A9}",
+    "name": "E3DC",
+    "type": 3,
+    "vendor": "E3DC",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "E3DC",
+    "url": ""
+}
