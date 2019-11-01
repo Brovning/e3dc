@@ -13,27 +13,35 @@ Beschreibung des Moduls.
 
 ### 1. Funktionsumfang
 
-*
+Dieses Modul erstellt anhand der Konfiguration der E3DC Instanz den nötigen Client Socket und das dazugehörige ModBus Gateway. Sofern diese bereits vorhanden sind, werden keine weiteren Client Sockets oder ModBus Gateways erstellt.
+Unterhalb der E3DC Instanz werden die Modbus Adressen erstellt.
+
+Einschränkung: Aktuell kann nur eine Instanz des Fronius-Moduls erstellt werden!
+
 
 ### 2. Vorraussetzungen
 
 - IP-Symcon ab Version 5.0
 
+
 ### 3. Software-Installation
 
 * Über den Module Store das 'E3DC'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen
+* Alternativ über das Module Control folgende URL hinzufügen: https://github.com/Brovning/e3dc
+
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
- Unter 'Instanz hinzufügen' ist das 'E3DC'-Modul unter dem Hersteller 'Grünbeck' aufgeführt.
+ Unter 'Instanz hinzufügen' ist das 'S10 mini'-, 'S10 E'- und 'S10 E Pro'-Modul unter dem Hersteller 'E3DC' aufgeführt.
 
 __Konfigurationsseite__:
 
 Name     | Beschreibung
 -------- | ------------------
-         |
-         |
+IP | IP-Adresse des E3DC-Stromspeichers im lokalen Netzwerk
+Port | Port, welcher im E3DC unter dem Menüpunkt Modbus angegeben wurde. Default: 502
+... | ...
+
 
 ### 5. Statusvariablen und Profile
 
@@ -55,12 +63,9 @@ Name   | Typ
 
 ### 6. WebFront
 
-Die Funktionalität, die das Modul im WebFront bietet.
+Aktuell kein WebFront umgesetzt.
+
 
 ### 7. PHP-Befehlsreferenze
 
-`boolean GSD_BeispielFunktion(integer $InstanzID);`
-Erklärung der Funktion.
-
-Beispiel:
-`E3DC_BeispielFunktion(12345);`
+Aktuell keine PHP-Funktionen verfügbar.

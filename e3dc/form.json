@@ -1,9 +1,100 @@
 {
     "elements": [
         {
+            "type": "Label",
+            "label": "Der E3DC muss Modbus TCP unterstützen!"
+        },
+        {
+            "type": "Label",
+            "label": "???Im Konfigurationsmenü des E3DC Stromspeichers muss unter dem Menüpunkt 'Modbus' die Datenausgabe über Modbus per 'TCP' und der Sunspec Model Type 'float' aktiviert werden.??????"
+        },
+        {
+            "type": "Label",
+            "label": ""
+        },
+        {
             "type": "ValidationTextBox",
             "caption": "IP",
-            "name": "IP"
+            "name": "hostIp"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Port",
+            "name": "hostPort"
+        },
+        {
+            "type": "Label",
+            "label": ""
+        },
+        {
+            "type": "Label",
+            "label": "Wie viele bzw. welche Wallbox IDs sind am E3DC in Verwendung?"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 0",
+            "name": "readWallbox0"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 1",
+            "name": "readWallbox1"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 2",
+            "name": "readWallbox2"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 3",
+            "name": "readWallbox3"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 4",
+            "name": "readWallbox4"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 5",
+            "name": "readWallbox5"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 6",
+            "name": "readWallbox6"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Wallbox 7",
+            "name": "readWallbox7"
+        },
+        {
+            "type": "Label",
+            "label": ""
+        },
+        {
+            "type": "Label",
+            "label": "Sollen V, A und W der DC-Strings ausgelesen werden? (erst ab Release S10_2017_02 verfügbar)"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "DC String Informationen",
+            "name": "readDcString"
+        },
+        {
+            "type": "Label",
+            "label": ""
+        },
+		{
+            "type": "ValidationTextBox",
+            "caption": "Abfrage-Intervall (in ms)",
+            "name": "pollCycle"
+        },
+        {
+            "type": "Label",
+            "label": "Achtung: Abfrage-Intervall nicht zu klein wählen, um die Systemlast und auch die Archiv-Größe bei Logging nicht unnötig zu erhöhen!"
         }
     ]
 }
