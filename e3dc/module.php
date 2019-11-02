@@ -308,7 +308,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 					array(40086, 1, 3, "EMS Remote Control", "int16", "", "EMS Remote Control"),
 					array(40087, 1, 3, "EMS CTRL", "Uint16", "", "EMS CTRL"),
 				);
-				$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 				// Autarkie und Eigenverbrauch aus "Autarkie-Eigenverbrauch" erstellen
 				$instanceId = IPS_GetInstanceIDByName("Autarkie-Eigenverbrauch", $categoryId);
@@ -381,7 +381,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 				if($readExtLeistung)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				}
 				else
 				{
@@ -411,7 +411,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 				if($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
@@ -475,7 +475,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox0)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -522,7 +522,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox1)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -569,7 +569,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox2)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -616,7 +616,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox3)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -663,7 +663,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox4)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -710,7 +710,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox5)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -757,7 +757,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox6)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -804,7 +804,7 @@ Bit 13  Nicht belegt";
 				);
 				if($readWallbox7)
 				{
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					foreach($inverterModelRegister_array AS $register)
 					{
@@ -873,7 +873,7 @@ Bit 13  Nicht belegt";
 					}
 					IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!");
 
-					$this->createMODBUS_INSTANCES($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				}
 				else
 				{
@@ -935,7 +935,7 @@ Bit 13  Nicht belegt";
 			}
 		}
 
-		private function createMODBUS_INSTANCES($inverterModelRegister_array, $parentId, $gatewayId, $pollCycle)
+		private function createModbusInstances($inverterModelRegister_array, $parentId, $gatewayId, $pollCycle)
 		{
 			// Erstelle Modbus Instancen
 			foreach($inverterModelRegister_array AS $inverterModelRegister)
@@ -1048,7 +1048,7 @@ Bit 13  Nicht belegt";
 				{
 					$profile = MODUL_PREFIX.".Electricity.Int";
 				}
-*/				elseif("° c" == strtolower($inverterModelRegister[IMR_UNITS]))
+*/				elseif("° C" == $inverterModelRegister[IMR_UNITS])
 				{
 					$profile = "~Temperature";
 				}
