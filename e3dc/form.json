@@ -2,15 +2,20 @@
     "elements": [
         {
             "type": "Label",
-            "label": "Der E3DC muss Modbus TCP unterstützen!"
+            "label": "Der E3DC Stromspeicher muss Modbus TCP unterstützen!"
         },
         {
             "type": "Label",
-            "label": "???Im Konfigurationsmenü des E3DC Stromspeichers muss unter dem Menüpunkt 'Modbus' die Datenausgabe über Modbus per 'TCP' und der Sunspec Model Type 'float' aktiviert werden.??????"
+            "label": "Im Konfigurationsmenü des E3DC Stromspeichers muss unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' aktiviert werden."
         },
         {
             "type": "Label",
             "label": ""
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Open",
+            "name": "active"
         },
         {
             "type": "ValidationTextBox",
@@ -18,9 +23,22 @@
             "name": "hostIp"
         },
         {
-            "type": "ValidationTextBox",
+            "type": "NumberSpinner",
             "caption": "Port",
             "name": "hostPort"
+        },
+        {
+            "type": "Label",
+            "label": ""
+        },
+        {
+            "type": "Label",
+            "label": "Ist ein zusätzlicher Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) angeschlossen?"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "externer Einspeiser",
+            "name": "readExtLeistung"
         },
         {
             "type": "Label",
@@ -95,6 +113,23 @@
         {
             "type": "Label",
             "label": "Achtung: Abfrage-Intervall nicht zu klein wählen, um die Systemlast und auch die Archiv-Größe bei Logging nicht unnötig zu erhöhen!"
+        }
+    ],
+    "status": [
+        {
+            "code": 102,
+            "icon": "active",
+            "caption": "Instance ist aktiviert"
+        },
+        {
+            "code": 104,
+            "icon": "inactive",
+            "caption": "Instance ist deaktiviert"
+        },
+        {
+            "code": 200,
+            "icon": "error",
+            "caption": "IP oder Port sind nicht erreichtbar"
         }
     ]
 }
