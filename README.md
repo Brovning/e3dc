@@ -1,5 +1,6 @@
 # E3DC
-Beschreibung des Moduls.
+IP-Symcon (IPS) Modul für E3DC Stromspeicher mit TCP Modbus Unterstützung (bspw. S10 mini, S10 E und S10 E Pro).
+
 
 ### Inhaltsverzeichnis
 
@@ -13,10 +14,10 @@ Beschreibung des Moduls.
 
 ### 1. Funktionsumfang
 
-Dieses Modul erstellt anhand der Konfiguration der E3DC Instanz den nötigen Client Socket und das dazugehörige ModBus Gateway. Sofern diese bereits vorhanden sind, werden keine weiteren Client Sockets oder ModBus Gateways erstellt.
+Dieses Modul erstellt anhand der Konfiguration der E3DC Instanz den nötigen Client Socket und das dazugehörige Modbus Gateway. Sofern diese bereits vorhanden sind, werden keine weiteren Client Sockets oder Modbus Gateways erstellt.
 Unterhalb der E3DC Instanz werden die Modbus Adressen erstellt.
 
-Einschränkung: Aktuell kann nur eine Instanz des Fronius-Moduls erstellt werden!
+Einschränkung: Aktuell kann nur eine Instanz des E3DC-Moduls erstellt werden!
 
 
 ### 2. Vorraussetzungen
