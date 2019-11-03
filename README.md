@@ -53,6 +53,7 @@ Abfrage-Intervall	| Intervall (in ms) in welchem die Modbus-Adressen abgefragt w
 Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
 
 #### Statusvariablen
+Der E3/DC-Simple Mode ermöglicht den einfachen und schnellen Zugriff auf die wichtigsten und am häufigsten benötigten Daten.
 
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
@@ -68,13 +69,13 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40087 | 1 | 3 | EMS CTRL | Uint16 |  | EMS CTRL
 
 
-##### Schalter externer Einspeiser:
+##### optional: externer Einspeiser
 
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
 40076 | 2 | 3 | Ext-Leistung | Int32 | W | Leistung aller zusätzlichen Einspeiser in Watt
 
-##### Schalter Wallbox 0 - 7:
+##### optional: Wallbox 0 - 7
 
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
@@ -89,7 +90,8 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40089 | 1 | 3 | WallBox_6_CTRL | Uint16 | Bitfield | Bits der WallBox 6 (werden einzeln ausgewertet)
 40089 | 1 | 3 | WallBox_7_CTRL | Uint16 | Bitfield | Bits der WallBox 7 (werden einzeln ausgewertet)
 
-##### Schalter DC-String Informationen:
+##### optional: DC-String Informationen
+Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!
 
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
