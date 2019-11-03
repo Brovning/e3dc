@@ -54,17 +54,65 @@ Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzeln
 
 #### Statusvariablen
 
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-       |         |
-       |         |
+StartRegister | Size | FunctionCode | Name | Type | Units | Description
+------------- | ---- | ------------ | ---- | ---- | ----- | -----------
+40068 | 2 | 3 | PV-Leistung | Int32 | W | Photovoltaik-Leistung in Watt
+40070 | 2 | 3 | Batterie-Leistung | Int32 | W | Batterie-Leistung in Watt (negative Werte = Entladung)
+40072 | 2 | 3 | Verbrauchs-Leistung | Int32 | W | Hausverbrauchs-Leistung in Watt
+40074 | 2 | 3 | Netz-Leistung | Int32 | W | Leistung am Netzübergabepunkt in Watt (negative Werte = Einspeisung)
+40082 | 1 | 3 | Autarkie-Eigenverbrauch | Uint8+Uint8 |  | Autarkie und Eigenverbrauch in Prozent
+40083 | 1 | 3 | Batterie-SOC | Uint16 | % | Batterie-SOC in Prozent
+40084 | 1 | 3 | Emergency-Power | Uint16 |  | Emergency-Power Status (seaparates Profil vorhanden)
+40085 | 1 | 3 | EMS-Status | Uint16 | Bitfield | EMS-Status Bits (werden einzeln ausgewertet)
+40086 | 1 | 3 | EMS Remote Control | int16 |  | EMS Remote Control
+40087 | 1 | 3 | EMS CTRL | Uint16 |  | EMS CTRL
+
+
+##### Schalter externer Einspeiser:
+
+StartRegister | Size | FunctionCode | Name | Type | Units | Description
+------------- | ---- | ------------ | ---- | ---- | ----- | -----------
+40076 | 2 | 3 | Ext-Leistung | Int32 | W | Leistung aller zusätzlichen Einspeiser in Watt
+
+##### Schalter Wallbox 0 - 7:
+
+StartRegister | Size | FunctionCode | Name | Type | Units | Description
+------------- | ---- | ------------ | ---- | ---- | ----- | -----------
+40078 | 2 | 3 | Wallbox-Leistung | Int32 | W | Leistung der Wallbox in Watt
+40080 | 2 | 3 | Wallbox-Solarleistung | Int32 | W | Solarleistung, die von der Wallbox genutzt wird in Watt
+40088 | 1 | 3 | WallBox_0_CTRL | Uint16 | Bitfield | Bits der WallBox 0 (werden einzeln ausgewertet)
+40089 | 1 | 3 | WallBox_1_CTRL | Uint16 | Bitfield | Bits der WallBox 1 (werden einzeln ausgewertet)
+40089 | 1 | 3 | WallBox_2_CTRL | Uint16 | Bitfield | Bits der WallBox 2 (werden einzeln ausgewertet)
+40089 | 1 | 3 | WallBox_3_CTRL | Uint16 | Bitfield | Bits der WallBox 3 (werden einzeln ausgewertet)
+40089 | 1 | 3 | WallBox_4_CTRL | Uint16 | Bitfield | Bits der WallBox 4 (werden einzeln ausgewertet)
+40089 | 1 | 3 | WallBox_5_CTRL | Uint16 | Bitfield | Bits der WallBox 5 (werden einzeln ausgewertet)
+40089 | 1 | 3 | WallBox_6_CTRL | Uint16 | Bitfield | Bits der WallBox 6 (werden einzeln ausgewertet)
+40089 | 1 | 3 | WallBox_7_CTRL | Uint16 | Bitfield | Bits der WallBox 7 (werden einzeln ausgewertet)
+
+##### Schalter DC-String Informationen:
+
+StartRegister | Size | FunctionCode | Name | Type | Units | Description
+------------- | ---- | ------------ | ---- | ---- | ----- | -----------
+40096 | 1 | 3 | DC_STRING_1_Voltage | UInt16 | V | DC_STRING_1_Voltage
+40097 | 1 | 3 | DC_STRING_2_Voltage | UInt16 | V | DC_STRING_2_Voltage
+40098 | 1 | 3 | DC_STRING_3_Voltage | UInt16 | V | DC_STRING_3_Voltage
+40099 | 1 | 3 | DC_STRING_1_Current | UInt16 | A | DC_STRING_1_Current
+40100 | 1 | 3 | DC_STRING_2_Current | UInt16 | A | DC_STRING_2_Current
+40101 | 1 | 3 | DC_STRING_3_Current | UInt16 | A | DC_STRING_3_Current
+40102 | 1 | 3 | DC_STRING_1_Power | UInt16 | W | DC_STRING_1_Power
+40103 | 1 | 3 | DC_STRING_2_Power | UInt16 | W | DC_STRING_2_Power
+40104 | 1 | 3 | DC_STRING_3_Power | UInt16 | W | DC_STRING_3_Power
+
 
 #### Profile
 
 Name   | Typ
 ------ | -------
-       |
-       |
+E3DC.Emergency-Power | Integer
+E3DC.Watt.Int | Integer
+E3DC.Ampere.Int | Integer
+E3DC.Volt.Int | Integer
+
 
 ### 6. WebFront
 
