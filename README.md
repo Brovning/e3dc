@@ -15,7 +15,7 @@ IP-Symcon (IPS) Modul für E3DC Stromspeicher mit TCP Modbus Unterstützung (bsp
 ### 1. Funktionsumfang
 
 Dieses Modul erstellt anhand der Konfiguration der E3DC Instanz den nötigen Client Socket und das dazugehörige Modbus Gateway. Sofern diese bereits vorhanden sind, werden keine weiteren Client Sockets oder Modbus Gateways erstellt.
-Unterhalb der E3DC Instanz werden die Modbus Adressen erstellt.
+Unterhalb der E3DC Instanz werden die Modbus Adressen für den E3/DC-Simple Mode erstellt.
 
 
 ### 2. Vorraussetzungen
