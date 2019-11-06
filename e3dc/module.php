@@ -116,7 +116,11 @@ if (!defined('PAO_COLOR'))
 			// *** Erstelle deaktivierte Timer ***
 			// Autarkie und Eigenverbrauch
 			$this->RegisterTimer("Update-Autarkie-Eigenverbrauch", 0, "\$instanceId = IPS_GetInstanceIDByName(\"Autarkie-Eigenverbrauch\", ".$this->InstanceID.");
-\$varId = IPS_GetObjectIDByIdent(\"Statusvariable\", \$instanceId);
+\$varId = @IPS_GetVariableIDByName(\"Value\", \$instanceId);
+if(false === \$varId)
+{
+	\$varId = IPS_GetVariableIDByName(\"Wert\", \$instanceId);
+}
 \$varValue = GetValue(\$varId);
 \$Autarkie = (\$varValue >> 8 ) & 0xFF;
 \$Eigenverbrauch = (\$varValue & 0xFF);
@@ -136,7 +140,11 @@ if(GetValue(\$EigenverbrauchId) != \$Eigenverbrauch)
 
 			// EMS-Status Bits
 			$this->RegisterTimer("Update-EMS-Status", 0, "\$instanceId = IPS_GetInstanceIDByName(\"EMS-Status\", ".$this->InstanceID.");
-\$varId = IPS_GetObjectIDByIdent(\"Statusvariable\", \$instanceId);
+\$varId = @IPS_GetVariableIDByName(\"Value\", \$instanceId);
+if(false === \$varId)
+{
+	\$varId = IPS_GetVariableIDByName(\"Wert\", \$instanceId);
+}
 \$varValue = GetValue(\$varId);
 
 \$bitArray = array(\"Batterie laden\", \"Batterie entladen\", \"Notstrommodus\", \"Wetterbasiertes Laden\", \"Abregelungs-Status\", \"Ladesperrzeit\", \"Entladesperrzeit\");
@@ -159,7 +167,11 @@ for(\$i = 0; \$i < count(\$bitArray); \$i++)
 	
 	if(false !== \$instanceId)
 	{
-		\$varId = IPS_GetObjectIDByIdent(\"Statusvariable\", \$instanceId);
+		\$varId = @IPS_GetVariableIDByName(\"Value\", \$instanceId);
+		if(false === \$varId)
+		{
+			\$varId = IPS_GetVariableIDByName(\"Wert\", \$instanceId);
+		}
 		\$varValue = GetValue(\$varId);
 
 		\$bitArray = array(\"Wallbox\", \"Solarbetrieb\", \"Laden sperren\", \"Ladevorgang\", \"Typ-2-Stecker verriegelt\", \"Typ-2-Stecker gesteckt\", \"Schukosteckdose\", \"Schukostecker gesteckt\", \"Schukostecker verriegelt\", \"16A 1 Phase\", \"16A 3 Phasen\", \"32A 3 Phasen\", \"1 Phase\");
@@ -333,7 +345,11 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 				// Autarkie und Eigenverbrauch aus "Autarkie-Eigenverbrauch" erstellen
 				$instanceId = IPS_GetInstanceIDByName("Autarkie-Eigenverbrauch", $categoryId);
-				$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+				$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+				if(false === $varId)
+				{
+					$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+				}
 				IPS_SetHidden($varId, true);
 				
 				$varName = "Autarkie";
@@ -364,7 +380,11 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 				// Bit 0 - 6 für "EMS-Status" erstellen
 				$instanceId = IPS_GetInstanceIDByName("EMS-Status", $categoryId);
-				$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+				$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+				if(false === $varId)
+				{
+					$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+				}
 				IPS_SetHidden($varId, true);
 				
 				$bitArray = array(
@@ -502,7 +522,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -549,7 +573,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -596,7 +624,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -643,7 +675,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -690,7 +726,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -737,7 +777,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -784,7 +828,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -831,7 +879,11 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Statusvariable", $instanceId);
+						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+						if(false === $varId)
+						{
+							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+						}
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
@@ -1135,10 +1187,6 @@ Bit 13  Nicht belegt";
 
 
 				$variableId = IPS_GetChildrenIDs($instanceId)[0];
-
-				// Ident der Statusvariable setzen
-				IPS_SetIdent($variableId, "Statusvariable");
-
 				// Profil der Statusvariable zuweisen
 				if(false != $profile)
 				{
