@@ -6,7 +6,7 @@
         },
         {
             "type": "Label",
-            "label": "Im Konfigurationsmenü des E3DC Stromspeichers muss unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' aktiviert werden."
+            "label": "Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version \nunter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder \nunter Hauptmenü > Smart-Funktionen > Smart Home > Modbus aktiviert werden."
         },
         {
             "type": "Label",
