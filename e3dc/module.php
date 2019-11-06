@@ -259,7 +259,7 @@ for(\$i = 0; \$i < count(\$bitArray); \$i++)
 				IPS_SetName($gatewayId, MODUL_PREFIX."ModbusGateway");
 				IPS_SetProperty($gatewayId, "GatewayMode", 0);
 				IPS_SetProperty($gatewayId, "DeviceID", 1);
-				IPS_SetProperty($gatewayId, "SwapWords", 0);
+				IPS_SetProperty($gatewayId, "SwapWords", 1);
 
 				@IPS_ApplyChanges($gatewayId);
 
