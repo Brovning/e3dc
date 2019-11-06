@@ -22,7 +22,7 @@ Unterhalb der E3DC Instanz werden die Modbus Adressen für den E3/DC-Simple Mode
 
 - IP-Symcon ab Version 5.0
 - Der E3DC Stromspeicher muss Modbus TCP unterstützen!
-- Im Konfigurationsmenü des E3DC Stromspeichers muss unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' aktiviert werden.
+- Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder \nunter Hauptmenü > Smart-Funktionen > Smart Home > Modbus aktiviert werden.
 
 
 ### 3. Software-Installation
