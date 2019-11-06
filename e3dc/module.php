@@ -1098,6 +1098,10 @@ Bit 13  Nicht belegt";
 				}
 				IPS_SetInfo($instanceId, $inverterModelRegister[IMR_DESCRIPTION]);
 
+				// Ident der Modbus-Instanz setzen
+				IPS_SetIdent($instanceId, $inverterModelRegister[IMR_START_REGISTER]);
+
+				// Modbus-Instanz konfigurieren
 				IPS_SetProperty($instanceId, "DataType",  $datenTyp);
 				IPS_SetProperty($instanceId, "EmulateStatus", false);
 				IPS_SetProperty($instanceId, "Poller", $pollCycle);
