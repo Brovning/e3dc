@@ -1206,19 +1206,19 @@ Bit 13  Nicht belegt";
 				)
 			);
 	/*						
-			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Int", VARIABLETYPE_INTEGER, ' VA', 0, 0, 0, 0, '');
-			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Float", VARIABLETYPE_FLOAT, ' VA', 0, 0, 0, 0, '');
-			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Int", VARIABLETYPE_INTEGER, ' Var', 0, 0, 0, 0, '');
-			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Float", VARIABLETYPE_FLOAT, ' Var', 0, 0, 0, 0, '');
-			$this->createVarProfile(MODUL_PREFIX.".Angle.Int", VARIABLETYPE_INTEGER, ' °', 0, 0, 0, 0, '');
+			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Int", VARIABLETYPE_INTEGER, ' VA');
+			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Float", VARIABLETYPE_FLOAT, ' VA');
+			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Int", VARIABLETYPE_INTEGER, ' Var');
+			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Float", VARIABLETYPE_FLOAT, ' Var');
+			$this->createVarProfile(MODUL_PREFIX.".Angle.Int", VARIABLETYPE_INTEGER, ' °');
 	*/
-			$this->createVarProfile(MODUL_PREFIX.".Watt.Int", VARIABLETYPE_INTEGER, ' W', 0, 0, 0, 0, '');
-			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A', 0, 0, 0, 0, '');
+			$this->createVarProfile(MODUL_PREFIX.".Watt.Int", VARIABLETYPE_INTEGER, ' W');
+			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
 	/*
-			$this->createVarProfile(MODUL_PREFIX.".Electricity.Int", VARIABLETYPE_INTEGER, ' Wh', 0, 0, 0, 0, '');
-			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Int", VARIABLETYPE_INTEGER, ' Ah', 0, 0, 0, 0, '');
+			$this->createVarProfile(MODUL_PREFIX.".Electricity.Int", VARIABLETYPE_INTEGER, ' Wh');
+			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Int", VARIABLETYPE_INTEGER, ' Ah');
 	*/
-			$this->createVarProfile(MODUL_PREFIX.".Volt.Int", VARIABLETYPE_INTEGER, ' V', 0, 0, 0, 0, '');
+			$this->createVarProfile(MODUL_PREFIX.".Volt.Int", VARIABLETYPE_INTEGER, ' V');
 		}
 
 		private function readOldModbusGateway()
@@ -1392,7 +1392,7 @@ Bit 13  Nicht belegt";
 			return array($gatewayId, $interfaceId);
 		}
 		
-		private function createVarProfile($ProfilName, $ProfileType, $Suffix, $MinValue, $MaxValue, $StepSize, $Digits, $Icon, $Associations = '')
+		private function createVarProfile($ProfilName, $ProfileType, $Suffix = '', $MinValue = 0, $MaxValue = 0, $StepSize = 0, $Digits = 0, $Icon = 0, $Associations = '')
 		{
 			if(!IPS_VariableProfileExists($ProfilName))
 			{
@@ -1421,5 +1421,23 @@ Bit 13  Nicht belegt";
 
 				if(DEBUG) echo "Profil ".$ProfilName." erstellt\n";
 			}
+		}
+
+		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
+		{
+			$instanceId = IPS_GetInstanceIDByIdent($instanceIdent, $this->InstanceID);
+			$varId = IPS_GetVariableIDByIdent($variableIdent, $instanceId);
+
+			return GetValue($varId);
+		}
+
+		public function GetAutarkie()
+		{
+			return GetVariableValue("Autarkie-Eigenverbrauch", "Autarkie");
+		}
+
+		public function GetEigenverbrauch()
+		{
+			return GetVariableValue("Autarkie-Eigenverbrauch", "Eigenverbrauch");
 		}
 	}
