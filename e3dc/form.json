@@ -122,14 +122,29 @@
     ],
     "status": [
         {
+            "code": 101,
+            "icon": "inactive",
+            "caption": "Instanz wird erstellt"
+        },
+        {
             "code": 102,
             "icon": "active",
-            "caption": "Instance ist aktiviert"
+            "caption": "Instanz ist aktiv"
+        },
+        {
+            "code": 103,
+            "icon": "inactive",
+            "caption": "Instanz wird gelöscht"
         },
         {
             "code": 104,
             "icon": "inactive",
-            "caption": "Instance ist deaktiviert"
+            "caption": "Instanz ist inaktiv"
+        },
+        {
+            "code": 105,
+            "icon": "error",
+            "caption": "Instanz wurde nicht erstellt"
         },
         {
             "code": 200,
