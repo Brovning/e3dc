@@ -1425,8 +1425,8 @@ Bit 13  Nicht belegt";
 
 		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
 		{
-			$instanceId = IPS_GetInstanceIDByIdent($instanceIdent, $this->InstanceID);
-			$varId = IPS_GetVariableIDByIdent($variableIdent, $instanceId);
+			$instanceId = IPS_GetInstanceIDByName($instanceIdent, $this->InstanceID);
+			$varId = IPS_GetVariableIDByName($variableIdent, $instanceId);
 
 			return GetValue($varId);
 		}
