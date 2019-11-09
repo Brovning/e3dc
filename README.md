@@ -133,9 +133,54 @@ Aktuell kein WebFront umgesetzt.
 
 `int E3DC_GetAutarkie(int $InstanzID)`
 
-Gib den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer zurück
+Gibt den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück
 
 
 `int E3DC_GetEigenverbrauch(int $InstanzID)`
 
-Gib den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer zurück
+Gibt den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück
+
+
+`int E3DC_GetBatterieLeistungW(int $InstanzID)`
+
+Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetBatterieLeistungKW(int $InstanzID)`
+
+Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetBatterieSOC(int $InstanzID)`
+
+Gibt den aktuelle Batterie-State-Of-Charge (SOC) der E3DC-Instanz $InstanzID als Integer in Prozent (%) zurück
+
+
+`int E3DC_GetNetzLeistungW(int $InstanzID)`
+
+Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetNetzLeistungKW(int $InstanzID)`
+
+Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetPvLeistungW(int $InstanzID)`
+
+Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetPvLeistungKW(int $InstanzID)`
+
+Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetVerbrauchsLeistungW(int $InstanzID)`
+
+Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetVerbrauchsLeistungKW(int $InstanzID)`
+
+Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
