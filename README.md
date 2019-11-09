@@ -129,6 +129,13 @@ E3DC.Volt.Int | Integer
 Aktuell kein WebFront umgesetzt.
 
 
-### 7. PHP-Befehlsreferenze
+### 7. PHP-Befehlsreferenz
 
-Aktuell keine PHP-Funktionen verfügbar.
+`int E3DC_GetAutarkie(int $InstanzID)`
+
+Gib den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer zurück
+
+
+`int E3DC_GetEigenverbrauch(int $InstanzID)`
+
+Gib den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer zurück
