@@ -259,6 +259,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 					$varId = IPS_CreateVariable(1);
 					IPS_SetName($varId, $varName);
 					IPS_SetParent($varId, $instanceId);
+					IPS_SetIdent($varId, $varName);
 				}
 				IPS_SetVariableCustomProfile($varId, "~Valve");
 				IPS_SetInfo($varId, "Autarkie in Prozent");
@@ -270,6 +271,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 					$varId = IPS_CreateVariable(1);
 					IPS_SetName($varId, $varName);
 					IPS_SetParent($varId, $instanceId);
+					IPS_SetIdent($varId, $varName);
 				}
 				IPS_SetVariableCustomProfile($varId, "~Valve");
 				IPS_SetInfo($varId, "Eigenverbrauch in Prozent");
@@ -306,6 +308,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 						$varId = IPS_CreateVariable(0);
 						IPS_SetName($varId, $varName);
 						IPS_SetParent($varId, $instanceId);
+						IPS_SetIdent($varId, $varName);
 					}
 					IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 					IPS_SetInfo($varId, $bit['varInfo']);
@@ -438,6 +441,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
@@ -489,6 +493,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
@@ -540,6 +545,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
@@ -591,6 +597,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
@@ -642,6 +649,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
@@ -693,6 +701,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
@@ -744,6 +753,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
@@ -795,6 +805,7 @@ Bit 13  Nicht belegt";
 								$varId = IPS_CreateVariable(0);
 								IPS_SetName($varId, $varName);
 								IPS_SetParent($varId, $instanceId);
+								IPS_SetIdent($varId, $varName);
 							}
 							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
 							IPS_SetInfo($varId, $bit['varInfo']);
