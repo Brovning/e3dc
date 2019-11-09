@@ -100,6 +100,7 @@ if (!defined('PAO_COLOR'))
 			$this->RegisterPropertyBoolean('active', 'true');
 			$this->RegisterPropertyString('hostIp', '');
 			$this->RegisterPropertyInteger('hostPort', '502');
+			$this->RegisterPropertyInteger('hostmodbusDevice', '1');
 			$this->RegisterPropertyBoolean('readExtLeistung', 'false');
 			$this->RegisterPropertyBoolean('readWallbox0', 'false');
 			$this->RegisterPropertyBoolean('readWallbox1', 'false');
@@ -209,6 +210,7 @@ for(\$i = 0; \$i < count(\$bitArray); \$i++)
 			$active = $this->ReadPropertyBoolean('active');
 			$hostIp = $this->ReadPropertyString('hostIp');
 			$hostPort = $this->ReadPropertyInteger('hostPort');
+			$hostmodbusDevice = $this->ReadPropertyInteger('hostmodbusDevice');
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -258,7 +260,7 @@ for(\$i = 0; \$i < count(\$bitArray); \$i++)
 				// Modbus-Gateway Einstellungen setzen
 				IPS_SetName($gatewayId, MODUL_PREFIX."ModbusGateway");
 				IPS_SetProperty($gatewayId, "GatewayMode", 0);
-				IPS_SetProperty($gatewayId, "DeviceID", 1);
+				IPS_SetProperty($gatewayId, "DeviceID", $hostmodbusDevice);
 				IPS_SetProperty($gatewayId, "SwapWords", 1);
 
 				@IPS_ApplyChanges($gatewayId);

@@ -28,6 +28,11 @@
             "name": "hostPort"
         },
         {
+            "type": "NumberSpinner",
+            "caption": "Geräte ID",
+            "name": "hostmodbusDevice"
+        },
+        {
             "type": "Label",
             "label": ""
         },

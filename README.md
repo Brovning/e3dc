@@ -42,6 +42,7 @@ Name     | Beschreibung
 Open | Schalter zum aktivieren und deaktivieren der Instanz
 IP | IP-Adresse des E3DC-Stromspeichers im lokalen Netzwerk
 Port | Port, welcher im E3DC unter dem Menüpunkt Modbus angegeben wurde. Default: 502
+Geräte Id | Modbus Geräte ID, welche im E3DC Menü gesetzt werden kann. Default: 1
 externer Einspeiser | Schalter, um die Variable für einen zusätzlichen Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) einzulesen
 Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen
 DC String Informationen | Schalter, um die Variablen für V, A und W der DC-Strings einzulesen (erst ab Release S10_2017_02 verfügbar).
