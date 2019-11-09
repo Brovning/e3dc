@@ -118,7 +118,7 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 
 Name   | Typ
 ------ | -------
-E3DC.Emergency-Power | Integer
+E3DC.Emergency-Power.Int | Integer
 E3DC.Watt.Int | Integer
 E3DC.Ampere.Int | Integer
 E3DC.Volt.Int | Integer
