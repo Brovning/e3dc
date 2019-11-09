@@ -35,37 +35,13 @@ if (!defined('REGISTER_TO_ADDRESS_OFFSET'))
 if (!defined('IMR_START_REGISTER'))
 {
 	define("IMR_START_REGISTER", 0);
-}
-/*if (!defined('IMR_END_REGISTER'))
-{
-	define("IMR_END_REGISTER", 3);
-}*/
-if (!defined('IMR_SIZE'))
-{
+//	define("IMR_END_REGISTER", 3);
 	define("IMR_SIZE", 1);
-}
-/*if (!defined('IMR_RW'))
-{
-	define("IMR_RW", 3);
-}*/
-if (!defined('IMR_FUNCTION_CODE'))
-{
+//	define("IMR_RW", 3);
 	define("IMR_FUNCTION_CODE", 2);
-}
-if (!defined('IMR_NAME'))
-{
 	define("IMR_NAME", 3);
-}
-if (!defined('IMR_TYPE'))
-{
 	define("IMR_TYPE", 4);
-}
-if (!defined('IMR_UNITS'))
-{
 	define("IMR_UNITS", 5);
-}
-if (!defined('IMR_DESCRIPTION'))
-{
 	define("IMR_DESCRIPTION", 6);
 }
 
@@ -912,7 +888,7 @@ Bit 13  Nicht belegt";
 						// Client Soket aktivieren
 						IPS_SetProperty($interfaceId, "Open", true);
 						IPS_ApplyChanges($interfaceId);
-						IPS_Sleep(100);
+						//IPS_Sleep(100);
 
 						// aktiv
 						$this->SetStatus(102);
@@ -928,7 +904,7 @@ Bit 13  Nicht belegt";
 					// Client Soket deaktivieren
 					IPS_SetProperty($interfaceId, "Open", false);
 					IPS_ApplyChanges($interfaceId);
-					IPS_Sleep(100);
+					//IPS_Sleep(100);
 
 					// inaktiv
 					$this->SetStatus(104);
@@ -1102,41 +1078,97 @@ Bit 13  Nicht belegt";
 
 
 				$instanceId = @IPS_GetInstanceIDByName(/*"REG_".$inverterModelRegister[IMR_START_REGISTER]. " - ".*/$inverterModelRegister[IMR_NAME], $parentId);
+				$applyChanges = false;
+				// Instanz erstellen
 				if(false === $instanceId)
 				{
 					$instanceId = IPS_CreateInstance(MODBUS_ADDRESSES);
 					IPS_SetParent($instanceId, $parentId);
 					IPS_SetName($instanceId, /*"REG_".$inverterModelRegister[IMR_START_REGISTER]. " - ".*/$inverterModelRegister[IMR_NAME]);
-
-					// Gateway setzen
-					IPS_DisconnectInstance($instanceId);
-					IPS_ConnectInstance($instanceId, $gatewayId);
+					$applyChanges = true;
 				}
-				IPS_SetInfo($instanceId, $inverterModelRegister[IMR_DESCRIPTION]);
 
+				// Gateway setzen
+				if(IPS_GetInstance($instanceId)['ConnectionID'] != $gatewayId)
+				{
+					if(0 != IPS_GetInstance($instanceId)['ConnectionID'])
+					{
+						IPS_DisconnectInstance($instanceId);
+					}
+					IPS_ConnectInstance($instanceId, $gatewayId);
+					$applyChanges = true;
+				}
+
+				if($inverterModelRegister[IMR_DESCRIPTION] != IPS_GetObject($instanceId)['ObjectInfo'])
+				{
+					IPS_SetInfo($instanceId, $inverterModelRegister[IMR_DESCRIPTION]);
+				}
+				
 				// Ident der Modbus-Instanz setzen
 				IPS_SetIdent($instanceId, $inverterModelRegister[IMR_START_REGISTER]);
 
 				// Modbus-Instanz konfigurieren
-				IPS_SetProperty($instanceId, "DataType",  $datenTyp);
-				IPS_SetProperty($instanceId, "EmulateStatus", false);
-				IPS_SetProperty($instanceId, "Poller", $pollCycle);
-			//    IPS_SetProperty($instanceId, "Factor", 0);
-				IPS_SetProperty($instanceId, "ReadAddress", $inverterModelRegister[IMR_START_REGISTER] + REGISTER_TO_ADDRESS_OFFSET);
-				IPS_SetProperty($instanceId, "ReadFunctionCode", $inverterModelRegister[IMR_FUNCTION_CODE]);
-			//    IPS_SetProperty($instanceId, "WriteAddress", );
-				IPS_SetProperty($instanceId, "WriteFunctionCode", 0);
-
-				IPS_ApplyChanges($instanceId);
-
-				IPS_Sleep(100);
-
-
-				$variableId = IPS_GetChildrenIDs($instanceId)[0];
-				// Profil der Statusvariable zuweisen
-				if(false != $profile)
+				if($datenTyp != IPS_GetProperty($instanceId, "DataType"))
 				{
-					IPS_SetVariableCustomProfile($variableId, $profile);
+					IPS_SetProperty($instanceId, "DataType",  $datenTyp);
+					$applyChanges = true;
+				}
+				if(false != IPS_GetProperty($instanceId, "EmulateStatus"))
+				{
+					IPS_SetProperty($instanceId, "EmulateStatus", false);
+					$applyChanges = true;
+				}
+				if($pollCycle != IPS_GetProperty($instanceId, "Poller"))
+				{
+					IPS_SetProperty($instanceId, "Poller", $pollCycle);
+					$applyChanges = true;
+				}
+	/*
+				if(0 != IPS_GetProperty($instanceId, "Factor"))
+				{
+					IPS_SetProperty($instanceId, "Factor", 0);
+					$applyChanges = true;
+				}
+	*/
+				if($inverterModelRegister[IMR_START_REGISTER] + REGISTER_TO_ADDRESS_OFFSET != IPS_GetProperty($instanceId, "ReadAddress"))
+				{
+					IPS_SetProperty($instanceId, "ReadAddress", $inverterModelRegister[IMR_START_REGISTER] + REGISTER_TO_ADDRESS_OFFSET);
+					$applyChanges = true;
+				}
+				if($inverterModelRegister[IMR_FUNCTION_CODE] != IPS_GetProperty($instanceId, "ReadFunctionCode"))
+				{
+					IPS_SetProperty($instanceId, "ReadFunctionCode", $inverterModelRegister[IMR_FUNCTION_CODE]);
+					$applyChanges = true;
+				}
+	/*
+				if( != IPS_GetProperty($instanceId, "WriteAddress"))
+				{
+					IPS_SetProperty($instanceId, "WriteAddress", );
+					$applyChanges = true;
+				}
+	*/
+				if(0 != IPS_GetProperty($instanceId, "WriteFunctionCode"))
+				{
+					IPS_SetProperty($instanceId, "WriteFunctionCode", 0);
+					$applyChanges = true;
+				}
+
+				if($applyChanges)
+				{
+					IPS_ApplyChanges($instanceId);
+					//IPS_Sleep(100);
+				}
+
+				$varId = @IPS_GetVariableIDByName("Value", $instanceId);
+				if(false === $varId)
+				{
+					$varId = IPS_GetVariableIDByName("Wert", $instanceId);
+				}
+
+				// Profil der Statusvariable zuweisen
+				if(false != $profile && $profile != IPS_GetVariable($varId)['VariableCustomProfile'])
+				{
+					IPS_SetVariableCustomProfile($varId, $profile);
 				}
 			}
 		}
