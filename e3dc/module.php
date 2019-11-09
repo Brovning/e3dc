@@ -854,6 +854,7 @@ Bit 13  Nicht belegt";
 						$categoryId = IPS_CreateCategory();
 						IPS_SetParent($categoryId, $parentId);
 						IPS_SetName($categoryId, $categoryName);
+						IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
 					}
 					IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!");
 
