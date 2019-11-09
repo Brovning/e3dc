@@ -20,9 +20,16 @@ Unterhalb der E3DC Instanz werden die Modbus Adressen für den E3/DC-Simple Mode
 
 ### 2. Vorraussetzungen
 
-- IP-Symcon ab Version 5.0
-- Der E3DC Stromspeicher muss Modbus TCP unterstützen!
-- Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus aktiviert werden.
+* IP-Symcon ab Version 5.0
+* Der E3DC Stromspeicher muss Modbus TCP unterstützen!
+* Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version folgendes aktiviert werden:
+
+entweder unter Hauptmenü > Funktionen > Funktion Modbus > Modbus und Modbus TCP mit Protokoll 'E3/DC Simple-Mode' aktivieren
+![alt text](https://github.com/Brovning/e3dc/blob/master/docs/E3DC%20-%20Hauptmen%C3%BC%20-%20Funktionen%20-%20Funktion%20Modbus.png "E3DC > Hauptmenü > Funktionen > Funktion Modbus")
+
+oder unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus > erst Modbus aktivieren, dann auf den Pfeil nach Rechts klicken und Modbus TCP mit Protokoll 'E3/DC' aktivieren
+![alt text](https://github.com/Brovning/e3dc/blob/master/docs/E3DC%20-%20Hauptmen%C3%BC%20-%20%20Smart-Funktionen%20%20-%20Smart%20Home%20%20-%20Modbus%20-%20Modbus.jpg "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Modbus > Modbus")
+![alt text](https://github.com/Brovning/e3dc/blob/master/docs/E3DC%20-%20Hauptmen%C3%BC%20-%20%20Smart-Funktionen%20%20-%20Smart%20Home%20%20-%20Modbus%20-%20Modbus%20TCP.jpg "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Modbus > Modbus TCP")
 
 
 ### 3. Software-Installation
@@ -42,6 +49,7 @@ Name     | Beschreibung
 Open | Schalter zum aktivieren und deaktivieren der Instanz
 IP | IP-Adresse des E3DC-Stromspeichers im lokalen Netzwerk
 Port | Port, welcher im E3DC unter dem Menüpunkt Modbus angegeben wurde. Default: 502
+Geräte Id | Modbus Geräte ID, welche im E3DC Menü gesetzt werden kann. Default: 1
 externer Einspeiser | Schalter, um die Variable für einen zusätzlichen Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) einzulesen
 Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen
 DC String Informationen | Schalter, um die Variablen für V, A und W der DC-Strings einzulesen (erst ab Release S10_2017_02 verfügbar).
