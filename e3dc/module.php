@@ -1433,11 +1433,11 @@ Bit 13  Nicht belegt";
 
 		public function GetAutarkie()
 		{
-			return GetVariableValue("Autarkie-Eigenverbrauch", "Autarkie");
+			return $this->GetVariableValue("Autarkie-Eigenverbrauch", "Autarkie");
 		}
 
 		public function GetEigenverbrauch()
 		{
-			return GetVariableValue("Autarkie-Eigenverbrauch", "Eigenverbrauch");
+			return $this->GetVariableValue("Autarkie-Eigenverbrauch", "Eigenverbrauch");
 		}
 	}
