@@ -1441,19 +1441,66 @@ Bit 13  Nicht belegt";
 
 		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
 		{
-			$instanceId = IPS_GetInstanceIDByName($instanceIdent, $this->InstanceID);
-			$varId = IPS_GetVariableIDByName($variableIdent, $instanceId);
+//			$instanceId = IPS_GetInstanceIDByName($instanceIdent, $this->InstanceID);
+//			$varId = IPS_GetVariableIDByName($variableIdent, $instanceId);
+			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
+			$varId = IPS_GetObjectIDByIdent($this->removeInvalidChars($variableIdent), $instanceId);
 
 			return GetValue($varId);
 		}
 
 		public function GetAutarkie()
 		{
-			return $this->GetVariableValue("Autarkie-Eigenverbrauch", "Autarkie");
+			return $this->GetVariableValue(40082, "Autarkie");
 		}
 
 		public function GetEigenverbrauch()
 		{
-			return $this->GetVariableValue("Autarkie-Eigenverbrauch", "Eigenverbrauch");
+			return $this->GetVariableValue(40082, "Eigenverbrauch");
+		}
+
+		public function GetBatterieLeistungW()
+		{
+			return $this->GetVariableValue(40070, "Value");
+		}
+
+		public function GetBatterieLeistungKW()
+		{
+			return ($this->GetBatterieLeistungW() / 1000);
+		}
+
+		public function GetBatterieSOC()
+		{
+			return $this->GetVariableValue(40083, "Value");
+		}
+
+		public function GetNetzLeistungW()
+		{
+			return $this->GetVariableValue(40074, "Value");
+		}
+
+		public function GetNetzLeistungKW()
+		{
+			return ($this->GetNetzLeistungW() / 1000);
+		}
+
+		public function GetPvLeistungW()
+		{
+			return $this->GetVariableValue(40068, "Value");
+		}
+
+		public function GetPvLeistungKW()
+		{
+			return ($this->GetPvLeistungW() / 1000);
+		}
+
+		public function GetVerbrauchsLeistungW()
+		{
+			return $this->GetVariableValue(40072, "Value");
+		}
+
+		public function GetVerbrauchsLeistungKW()
+		{
+			return ($this->GetVerbrauchsLeistungW() / 1000);
 		}
 	}
