@@ -1244,7 +1244,7 @@ Bit 13  Nicht belegt";
 			{
 				$modbusAddressInstanceId = @IPS_GetInstance($childId);
 
-				if("{CB197E50-273D-4535-8C91-BB35273E3CA5}" == $modbusAddressInstanceId['ModuleInfo']['ModuleID'])
+				if(MODBUS_ADDRESSES == $modbusAddressInstanceId['ModuleInfo']['ModuleID'])
 				{
 					$modbusGatewayId_Old = $modbusAddressInstanceId['ConnectionID'];
 					$clientSocketId_Old = @IPS_GetInstance($modbusGatewayId_Old)['ConnectionID'];
