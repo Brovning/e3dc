@@ -131,6 +131,13 @@ Aktuell kein WebFront umgesetzt.
 
 ### 7. PHP-Befehlsreferenz
 
+#### Empfehlung
+Sofern nur eine Instanz des E3DC-Moduls im Einsatz ist, sollte die $InstanzID wie folgt dynamisch ermittelt werden und nicht statisch gesetzt werden, da somit ein Löschen und Neuinstallieren der E3DC-Instanz keine Auswirkung auf andere Skripte hat:
+
+`$InstanzID = IPS_GetInstanceListByModuleID("{C9508720-B23D-B37A-B5C2-97B607221CE1}")[0];`
+
+
+#### Funktionen
 `int E3DC_GetAutarkie(int $InstanzID)`
 
 Gibt den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück
