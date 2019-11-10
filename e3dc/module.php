@@ -1018,7 +1018,7 @@ Bit 13  Nicht belegt";
 				// Voltampere für elektrische Scheinleistung
 				elseif("va" == strtolower($inverterModelRegister[IMR_UNITS]))
 				{
-					$profile = MODUL_PREFIX.".Scheinleistung";
+					$profile = MODUL_PREFIX.".Scheinleistung.Int";
 				}
 				// Var für elektrische Blindleistung
 				elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
@@ -1028,7 +1028,7 @@ Bit 13  Nicht belegt";
 				// Var für elektrische Blindleistung
 				elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) || "var" == $inverterModelRegister[IMR_UNITS])
 				{
-					$profile = MODUL_PREFIX.".Blindleistung";
+					$profile = MODUL_PREFIX.".Blindleistung.Int";
 				}
 */				elseif("%" == $inverterModelRegister[IMR_UNITS] && 7 == $datenTyp)
 				{
@@ -1040,7 +1040,7 @@ Bit 13  Nicht belegt";
 				}
 				elseif("wh" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
 				{
-					$profile = "~Electricity.HM";
+					$profile = MODUL_PREFIX.".Electricity.Float";
 				}
 /*				elseif("wh" == strtolower($inverterModelRegister[IMR_UNITS]))
 				{
@@ -1052,19 +1052,19 @@ Bit 13  Nicht belegt";
 				}
 /*				elseif("cos()" == strtolower($inverterModelRegister[IMR_UNITS]))
 				{
-					$profile = MODUL_PREFIX.".Angle";
+					$profile = MODUL_PREFIX.".Angle.Int";
 				}
-				elseif("enumerated" == strtolower($inverterModelRegister[IMR_UNITS]) && "st" == strtolower($inverterModelRegister[IMR_NAME]))
+				elseif("enumerated_st" == strtolower($inverterModelRegister[IMR_UNITS]))
 				{
-					$profile = "SunSpec.StateCodes";
+					$profile = "SunSpec.StateCodes.Int";
 				}
-				elseif("enumerated" == strtolower($inverterModelRegister[IMR_UNITS]) && "stvnd" == strtolower($inverterModelRegister[IMR_NAME]))
+				elseif("enumerated_stvnd" == strtolower($inverterModelRegister[IMR_UNITS]))
 				{
-					$profile = MODUL_PREFIX.".StateCodes";
+					$profile = MODUL_PREFIX.".StateCodes.Int";
 				}
 */				elseif("" == $inverterModelRegister[IMR_UNITS] && "emergency-power" == strtolower($inverterModelRegister[IMR_NAME]))
 				{
-					$profile = MODUL_PREFIX.".Emergency-Power";
+					$profile = MODUL_PREFIX.".Emergency-Power.Int";
 				}
 				elseif("bitfield" == strtolower($inverterModelRegister[IMR_UNITS]))
 				{
@@ -1227,6 +1227,7 @@ Bit 13  Nicht belegt";
 			$this->createVarProfile(MODUL_PREFIX.".Watt.Int", VARIABLETYPE_INTEGER, ' W');
 			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
 	/*
+			$this->createVarProfile(MODUL_PREFIX.".Electricity.Float", VARIABLETYPE_FLOAT, ' Wh');
 			$this->createVarProfile(MODUL_PREFIX.".Electricity.Int", VARIABLETYPE_INTEGER, ' Wh');
 			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Int", VARIABLETYPE_INTEGER, ' Ah');
 	*/
