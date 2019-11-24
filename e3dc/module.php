@@ -199,6 +199,28 @@ foreach(\$modbusAddress_Array AS \$modbusAddress)
 		}
 	}
 }
+
+
+\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionLeistung\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$varValueCalc = abs(GetValue(IPS_GetObjectIDByIdent(\"Value\", IPS_GetObjectIDByIdent(\"40068\", ".$this->InstanceID.")))) + abs(GetValue(IPS_GetObjectIDByIdent(\"Value\", IPS_GetObjectIDByIdent(\"40076\", ".$this->InstanceID."))));
+
+	if(GetValue(\$varId) != \$varValueCalc)
+	{
+		SetValue(\$varId, \$varValueCalc);
+
+		\$kwId = @IPS_GetObjectIDByIdent(\"GesamtproduktionLeistung_kW\", ".$this->InstanceID.");
+		if(false !== \$kwId)
+		{
+			\$kwValue = \$varValueCalc / 1000;
+			SetValue(\$kwId, \$kwValue);
+		}
+	}
+}
+");
+
+
 			// *** Erstelle Variablen-Profile ***
 			$this->checkProfiles();
 		}
@@ -422,7 +444,21 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 				{
 					$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
 				}
+				
+				$this->MaintainVariable("GesamtproduktionLeistung", "Gesamtproduktion-Leistung",VARIABLETYPE_INTEGER, MODUL_PREFIX.".Watt.Int", 0, $readExtLeistung);
+				if($readExtLeistung)
+				{
+					$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung", $categoryId);
+					AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);						
+				}
 
+				$this->MaintainVariable("GesamtproduktionLeistung_kW", "Gesamtproduktion-Leistung_kW", VARIABLETYPE_FLOAT, "~Power", 0, $readExtLeistung && $loggingPowerKw);
+				if($readExtLeistung && $loggingPowerKw)
+				{
+					$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung_kW", $categoryId);
+					AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);						
+				}
+				
 
 				/* ********** Spezifische Abfragen zur Steuerung der Wallbox **************************************
 					Hinweis: Es können nicht alle Bits geschaltet werden. Bereiche, bei denen die aktive Steuerung sinnvoll ist, sind mit RW (= „Read“ und „Write“) gekennzeichnet.
