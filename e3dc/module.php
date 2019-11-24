@@ -87,6 +87,10 @@ if (!defined('KL_DEBUG'))
 			$this->RegisterPropertyBoolean('readWallbox6', 'false');
 			$this->RegisterPropertyBoolean('readWallbox7', 'false');
 			$this->RegisterPropertyBoolean('readDcString', 'false');
+			$this->RegisterPropertyBoolean("loggingPowerW", 'true');
+			$this->RegisterPropertyBoolean("loggingBatterySoc", 'true');
+			$this->RegisterPropertyBoolean("loggingAutarky", 'true');
+			$this->RegisterPropertyBoolean("loggingSelfconsumption", 'true');
 			$this->RegisterPropertyInteger('pollCycle', '60000');
 
 
@@ -127,6 +131,11 @@ for(\$i = 0; \$i < count(\$bitArray); \$i++)
 	{
 		SetValue(\$bitId, \$bitValue);
 	}
+}
+
+function removeInvalidChars(\$input)
+{
+	return preg_replace( '/[^a-z0-9]/i', '', \$input);
 }");
 
 			// WallBox_X_CTRL Bits
@@ -166,6 +175,12 @@ function removeInvalidChars(\$input)
 
 		public function Destroy()
 		{
+			// Deaktiviere alle Timer
+/*			$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
+			$this->SetTimerInterval("Update-EMS-Status", 0);
+			$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
+			$this->SetTimerInterval("Update-ValuesKw", 0);
+*/
 			//Never delete this line!
 			parent::Destroy();
 		}
@@ -190,8 +205,14 @@ function removeInvalidChars(\$input)
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 			$readDcString = $this->ReadPropertyBoolean('readDcString');
+			$loggingPowerW = $this->ReadPropertyBoolean("loggingPowerW");
+			$loggingBatterySoc = $this->ReadPropertyBoolean("loggingBatterySoc");
+			$loggingAutarky = $this->ReadPropertyBoolean("loggingAutarky");
+			$loggingSelfconsumption = $this->ReadPropertyBoolean("loggingSelfconsumption");
 			$pollCycle = $this->ReadPropertyInteger('pollCycle');
 
+			$archivId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}")[0];
+			
 
 			if("" != $hostIp)
 			{
@@ -223,8 +244,35 @@ function removeInvalidChars(\$input)
 					array(40070, 2, 3, "Batterie-Leistung", "Int32", "W", "Batterie-Leistung in Watt (negative Werte = Entladung)"),
 					array(40072, 2, 3, "Verbrauchs-Leistung", "Int32", "W", "Hausverbrauchs-Leistung in Watt"),
 					array(40074, 2, 3, "Netz-Leistung", "Int32", "W", "Leistung am Netzübergabepunkt in Watt (negative Werte = Einspeisung)"),
+				);
+				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+				// Logging setzen
+				foreach($inverterModelRegister_array AS $inverterModelRegister)
+				{
+					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+					AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);	
+				}
+
+
+				$inverterModelRegister_array = array(
 					array(40082, 1, 3, "Autarkie-Eigenverbrauch", "Uint8+Uint8", "", "Autarkie und Eigenverbrauch in Prozent"),
+				);
+				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+				$inverterModelRegister_array = array(
 					array(40083, 1, 3, "Batterie-SOC", "Uint16", "%", "Batterie-SOC in Prozent"),
+				);
+				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+				// Logging setzen
+				foreach($inverterModelRegister_array AS $inverterModelRegister)
+				{
+					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+					AC_SetLoggingStatus($archivId, $varId, $loggingBatterySoc);	
+				}
+
+				$inverterModelRegister_array = array(
 					array(40084, 1, 3, "Emergency-Power", "Uint16", "", "Emergency-Power Status:
 0 = Notstrom wird nicht von Ihrem Gerät unterstützt (bei Geräten der älteren Gerätegeneration, z. B. S10-SP40, S10-P5002).
 1 = Notstrom aktiv (Ausfall des Stromnetzes)
@@ -253,9 +301,11 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 				
 				$varName = "Autarkie";
 				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Autarkie in Prozent");
+				AC_SetLoggingStatus($archivId, $varId, $loggingAutarky);
 
 				$varName = "Eigenverbrauch";
  				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Eigenverbrauch in Prozent");
+				AC_SetLoggingStatus($archivId, $varId, $loggingSelfconsumption);
 
 				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
@@ -293,6 +343,13 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 				if($readExtLeistung)
 				{
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					// Logging setzen
+					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					{
+						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);	
+					}
 				}
 				else
 				{
@@ -312,6 +369,14 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 				if($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
 				{
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+					// Logging setzen
+					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					{
+						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);	
+					}
 
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
@@ -343,420 +408,113 @@ Bit 12  Eine Phase aktiv (1) drei Phasen aktiv (0)  RW
 Bit 13  Nicht belegt";
 
 				$bitArray = array(
-					array('varName' => "Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0   Wallbox vorhanden und verfügbar (1) R"),
-					array('varName' => "Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1   Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
-					array('varName' => "Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2   Laden abgebrochen (1) Laden freigegeben (0) RW"),
-					array('varName' => "Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3   Auto lädt (1) Auto lädt nicht (0)  R"),
-					array('varName' => "Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4   Typ-2-Stecker verriegelt (1)    R"),
-					array('varName' => "Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5   Typ-2-Stecker gesteckt (1)  R"),
-					array('varName' => "Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6   Schukosteckdose an (1)  RW"),
-					array('varName' => "Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7   Schukostecker gesteckt (1)  R"),
-					array('varName' => "Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8   Schukostecker verriegelt (1)    R"),
-					array('varName' => "16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9   Relais an, 16A 1 Phase, Schukosteckdose R"),
-					array('varName' => "16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10  Relais an, 16A 3 Phasen, Typ 2  R"),
-					array('varName' => "32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11  Relais an, 32A 3 Phasen, Typ 2  R"),
-					array('varName' => "1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12  Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
-//						array('varName' => "", 'varProfile' => "", 'varInfo' => "Bit 13  Nicht belegt"),
+					array('varName' => "Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0: Wallbox vorhanden und verfügbar (1) R"),
+					array('varName' => "Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1: Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
+					array('varName' => "Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2: Laden abgebrochen (1) Laden freigegeben (0) RW"),
+					array('varName' => "Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3: Auto lädt (1) Auto lädt nicht (0)  R"),
+					array('varName' => "Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4: Typ-2-Stecker verriegelt (1)    R"),
+					array('varName' => "Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: Typ-2-Stecker gesteckt (1)  R"),
+					array('varName' => "Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: Schukosteckdose an (1)  RW"),
+					array('varName' => "Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7: Schukostecker gesteckt (1)  R"),
+					array('varName' => "Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8: ukostecker verriegelt (1)    R"),
+					array('varName' => "16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9: Relais an, 16A 1 Phase, Schukosteckdose R"),
+					array('varName' => "16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10: Relais an, 16A 3 Phasen, Typ 2  R"),
+					array('varName' => "32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11: Relais an, 32A 3 Phasen, Typ 2  R"),
+					array('varName' => "1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12: Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
+//					array('varName' => "", 'varProfile' => "", 'varInfo' => "Bit 13: Nicht belegt"),
 				);
 
-				$inverterModelRegister_array = array(
-					array(40088, 1, 3, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription),
-				);
+				$inverterModelRegister_array = array();
+				$inverterModelRegisterDel_array = array();
+
 				if($readWallbox0)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
-					}
+					$inverterModelRegister_array[] = array(40088, 1, 3, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$inverterModelRegisterDel_array[] = array(40088, 1, 3, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-
-
-				$inverterModelRegister_array = array(
-					array(40089, 1, 3, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription),
-				);
 				if($readWallbox1)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
-					}
+					$inverterModelRegister_array[] = array(40089, 1, 3, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$inverterModelRegisterDel_array[] = array(40089, 1, 3, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-
-
-				$inverterModelRegister_array = array(
-					array(40090, 1, 3, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription),
-				);
 				if($readWallbox2)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
-					}
+					$inverterModelRegister_array[] = array(40090, 1, 3, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$inverterModelRegisterDel_array[] = array(40090, 1, 3, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-
-
-				$inverterModelRegister_array = array(
-					array(40091, 1, 3, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription),
-				);
 				if($readWallbox3)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
-					}
+					$inverterModelRegister_array[] = array(40091, 1, 3, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$inverterModelRegisterDel_array[] = array(40091, 1, 3, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-
-
-				$inverterModelRegister_array = array(
-					array(40092, 1, 3, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription),
-				);
 				if($readWallbox4)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
-					}
+					$inverterModelRegister_array[] = array(40092, 1, 3, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$inverterModelRegisterDel_array[] = array(40092, 1, 3, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-
-
-				$inverterModelRegister_array = array(
-					array(40093, 1, 3, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription),
-				);
 				if($readWallbox5)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
-					}
+					$inverterModelRegister_array[] = array(40093, 1, 3, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$inverterModelRegisterDel_array[] = array(40093, 1, 3, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-
-
-				$inverterModelRegister_array = array(
-					array(40094, 1, 3, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription),
-				);
 				if($readWallbox6)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
-					}
+					$inverterModelRegister_array[] = array(40094, 1, 3, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$inverterModelRegisterDel_array[] = array(40094, 1, 3, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-
-
-				$inverterModelRegister_array = array(
-					array(40095, 1, 3, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription),
-				);
 				if($readWallbox7)
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$inverterModelRegister_array[] = array(40095, 1, 3, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40095, 1, 3, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
+				}
 
-					foreach($inverterModelRegister_array AS $register)
-					{
-						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
+				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+				foreach($inverterModelRegister_array AS $register)
+				{
+					// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
+					$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-						IPS_SetHidden($varId, true);
-						
-						foreach($bitArray AS $bit)
+					IPS_SetHidden($varId, true);
+					
+					foreach($bitArray AS $bit)
 					{
 						$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
 					}
 				}
-				else
-				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
-				}
+
+				$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
 
 
 

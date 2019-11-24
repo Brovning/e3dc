@@ -110,7 +110,35 @@
             "type": "Label",
             "label": ""
         },
-	{
+       {
+            "type": "Label",
+            "label": "Für welche Variablen soll das Logging aktiviert werden?"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsvariablen in W",
+            "name": "loggingPowerW"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Batterie SOC (Ladezustand) in %",
+            "name": "loggingBatterySoc"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Autarkie in %",
+            "name": "loggingAutarky"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Eigenverbrauch in %",
+            "name": "loggingSelfconsumption"
+        },
+        {
+            "type": "Label",
+            "label": ""
+        },
+		{
             "type": "ValidationTextBox",
             "caption": "Abfrage-Intervall (in ms)",
             "name": "pollCycle"
