@@ -138,56 +138,115 @@ Sofern nur eine Instanz des E3DC-Moduls im Einsatz ist, sollte die $InstanzID wi
 
 
 #### Funktionen
-`int E3DC_GetAutarkie(int $InstanzID)`
+`int E3DC_GetAutarky(int $InstanzID)`
 
 Gibt den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück
 
 
-`int E3DC_GetEigenverbrauch(int $InstanzID)`
+`int E3DC_GetSelfConsumption(int $InstanzID)`
 
 Gibt den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück
 
 
-`int E3DC_GetBatterieLeistungW(int $InstanzID)`
+`int E3DC_GetBatteryPowerW(int $InstanzID)`
 
 Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
 
 
-`float E3DC_GetBatterieLeistungKW(int $InstanzID)`
+`float E3DC_GetBatteryPowerKw(int $InstanzID)`
 
 Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
 
 
-`int E3DC_GetBatterieSOC(int $InstanzID)`
+`int E3DC_GetBatterySOC(int $InstanzID)`
 
 Gibt den aktuelle Batterie-State-Of-Charge (SOC) der E3DC-Instanz $InstanzID als Integer in Prozent (%) zurück
 
 
-`int E3DC_GetNetzLeistungW(int $InstanzID)`
+`int E3DC_GetExtPowerW(int $InstanzID)`
+
+Gibt die aktuelle Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetExtPowerKw(int $InstanzID)`
+
+Gibt die aktuelle Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetGridPowerW(int $InstanzID)`
 
 Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
 
 
-`float E3DC_GetNetzLeistungKW(int $InstanzID)`
+`float E3DC_GetGridPowerKw(int $InstanzID)`
 
 Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
 
 
-`int E3DC_GetPvLeistungW(int $InstanzID)`
-
-Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
-
-
-`float E3DC_GetPvLeistungKW(int $InstanzID)`
-
-Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
-
-
-`int E3DC_GetVerbrauchsLeistungW(int $InstanzID)`
+`int E3DC_GetHomePowerW(int $InstanzID)`
 
 Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
 
 
-`float E3DC_GetVerbrauchsLeistungKW(int $InstanzID)`
+`float E3DC_GetHomePowerKw(int $InstanzID)`
 
 Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetProductionPowerW(int $InstanzID)`
+
+Gibt die aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetProductionPowerKw(int $InstanzID)`
+
+Gibt die aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetPvPowerW(int $InstanzID)`
+
+Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetPvPowerKw(int $InstanzID)`
+
+Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetWallboxPowerW(int $InstanzID)`
+
+Gibt die aktuelle Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetWallboxPowerKw(int $InstanzID)`
+
+Gibt die aktuelle Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+`int E3DC_GetWallboxPowerSolarW(int $InstanzID)`
+
+Gibt die aktuelle Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) zurück
+
+
+`float E3DC_GetWallboxPowerSolarKw(int $InstanzID)`
+
+Gibt die aktuelle Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
+
+
+
+#### veraltete Funktionen
+
+Folgende Funktionen werden mit dem nächsten Stable-Release entfernt.
+Bitte auf die neuen Funktionsnamen umstellen.
+
+- E3DC_GetAutarkie()
+- E3DC_GetEigenverbrauch()
+- E3DC_GetBatterieLeistungW()
+- E3DC_GetBatterieLeistungKW()
+- E3DC_GetBatterieSOC()
+- E3DC_GetNetzLeistungW()
+- E3DC_GetNetzLeistungKW()
+- E3DC_GetPvLeistungW()
+- E3DC_GetPvLeistungKW()
+- E3DC_GetVerbrauchsLeistungW()
+- E3DC_GetVerbrauchsLeistungKW()
