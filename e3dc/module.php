@@ -54,6 +54,15 @@ if (!defined('VARIABLETYPE_BOOLEAN'))
     define('VARIABLETYPE_STRING', 3);
 }
 
+if (!defined('KL_DEBUG'))
+{
+    define('KL_DEBUG', 10206);
+    define('KL_ERROR', 10206);
+    define('KL_MESSAGE', 10201);
+    define('KL_NOTIFY', 10203);
+    define('KL_WARNING', 10204);
+}
+
 
 	class E3DC extends IPSModule {
 
