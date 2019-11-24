@@ -1443,66 +1443,167 @@ Bit 13  Nicht belegt";
 
 		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
 		{
-//			$instanceId = IPS_GetInstanceIDByName($instanceIdent, $this->InstanceID);
-//			$varId = IPS_GetVariableIDByName($variableIdent, $instanceId);
 			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
 			$varId = IPS_GetObjectIDByIdent($this->removeInvalidChars($variableIdent), $instanceId);
 
 			return GetValue($varId);
 		}
 
-		public function GetAutarkie()
+
+		/********************************
+			public functions
+		  *******************************/
+		  
+		public function GetAutarky()
 		{
 			return $this->GetVariableValue(40082, "Autarkie");
 		}
 
-		public function GetEigenverbrauch()
+		public function GetAutarkie()
+		{
+			$message = MODUL_PREFIX."_GetAutarkie() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetAutarky()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetAutarky();
+		}
+
+		public function GetSelfConsumption()
 		{
 			return $this->GetVariableValue(40082, "Eigenverbrauch");
 		}
 
-		public function GetBatterieLeistungW()
+		public function GetEigenverbrauch()
+		{
+			$message = MODUL_PREFIX."_GetEigenverbrauch() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetSelfConsumption()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetSelfConsumption();
+		}
+
+		public function GetBatteryPowerW()
 		{
 			return $this->GetVariableValue(40070, "Value");
 		}
 
-		public function GetBatterieLeistungKW()
+		public function GetBatterieLeistungW()
 		{
-			return ($this->GetBatterieLeistungW() / 1000);
+			$message = MODUL_PREFIX."_GetBatterieLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerW()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetBatteryPowerW();
 		}
 
-		public function GetBatterieSOC()
+		public function GetBatteryPowerKw()
+		{
+			return ($this->GetBatteryPowerW() / 1000);
+		}
+
+		public function GetBatterieLeistungKW()
+		{
+			$message = MODUL_PREFIX."_() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerKw()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetBatteryPowerKw();
+		}
+
+		public function GetBatterySOC()
 		{
 			return $this->GetVariableValue(40083, "Value");
 		}
 
-		public function GetNetzLeistungW()
+		public function GetBatterieSOC()
+		{
+			$message = MODUL_PREFIX."_GetBatterieSOC() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatterySOC()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->();
+		}
+		public function GetGridPowerW()
 		{
 			return $this->GetVariableValue(40074, "Value");
 		}
 
+		public function GetNetzLeistungW()
+		{
+			$message = MODUL_PREFIX."_GetNetzLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerW()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetGridPowerW();
+		}
+
+		public function GetGridPowerKw()
+		{
+			return ($this->GetGridPowerW() / 1000);
+		}
+
 		public function GetNetzLeistungKW()
 		{
-			return ($this->GetNetzLeistungW() / 1000);
+			$message = MODUL_PREFIX."_GetNetzLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerKw()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetGridPowerKw();
+		}
+
+		public function GetPvPowerW()
+		{
+			return abs($this->GetVariableValue(40068, "Value"));
 		}
 
 		public function GetPvLeistungW()
 		{
-			return $this->GetVariableValue(40068, "Value");
+			$message = MODUL_PREFIX."_GetPvLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerW()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetPvPowerW();
+		}
+
+		public function GetPvPowerKw()
+		{
+			return ($this->GetPvPowerW() / 1000);
 		}
 
 		public function GetPvLeistungKW()
 		{
-			return ($this->GetPvLeistungW() / 1000);
+			$message = MODUL_PREFIX."_GetPvLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerKw()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetPvPowerKw();
 		}
 
-		public function GetVerbrauchsLeistungW()
+		public function GetHomePowerW()
 		{
 			return $this->GetVariableValue(40072, "Value");
 		}
 
+		public function GetVerbrauchsLeistungW()
+		{
+			$message = MODUL_PREFIX."_GetVerbrauchsLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerW()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetHomePowerW();
+		}
+
+		public function GetHomePowerKw()
+		{
+			return ($this->GetHomePowerW() / 1000);
+		}
+
 		public function GetVerbrauchsLeistungKW()
 		{
-			return ($this->GetVerbrauchsLeistungW() / 1000);
+			$message = MODUL_PREFIX."_GetVerbrauchsLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerKw()";
+			echo $message."\n";
+			LogMessage($message, KL_DEBUG);
+			
+			return $this->GetHomePowerKw();
 		}
 	}
