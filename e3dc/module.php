@@ -247,6 +247,7 @@ if(false !== \$varId)
 			$hostIp = $this->ReadPropertyString('hostIp');
 			$hostPort = $this->ReadPropertyInteger('hostPort');
 			$hostmodbusDevice = $this->ReadPropertyInteger('hostmodbusDevice');
+			$hostSwapWords = 1; // E3DC = true
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -271,7 +272,7 @@ if(false !== \$varId)
 			{
 				$this->checkProfiles();
 				list($gatewayId_Old, $interfaceId_Old) = $this->readOldModbusGateway();
-				list($gatewayId, $interfaceId) = $this->checkModbusGateway($hostIp, $hostPort, $hostmodbusDevice);
+				list($gatewayId, $interfaceId) = $this->checkModbusGateway($hostIp, $hostPort, $hostmodbusDevice, $hostSwapWords);
 
 				$parentId = $this->InstanceID;
 
@@ -1081,7 +1082,7 @@ Bit 13  Nicht belegt";
 			}
 		}
 
-		private function checkModbusGateway($hostIp, $hostPort, $hostmodbusDevice)
+		private function checkModbusGateway($hostIp, $hostPort, $hostmodbusDevice, $hostSwapWords)
 		{
 			// Splitter-Instance Id des ModbusGateways
 			$gatewayId = 0;
@@ -1129,9 +1130,9 @@ Bit 13  Nicht belegt";
 				IPS_SetProperty($gatewayId, "DeviceID", $hostmodbusDevice);
 				$applyChanges = true;
 			}
-			if(1 != IPS_GetProperty($gatewayId, "SwapWords"))
+			if($hostSwapWords != IPS_GetProperty($gatewayId, "SwapWords"))
 			{
-				IPS_SetProperty($gatewayId, "SwapWords", 1);
+				IPS_SetProperty($gatewayId, "SwapWords", $hostSwapWords);
 				$applyChanges = true;
 			}
 
