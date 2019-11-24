@@ -287,18 +287,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 				}
 				else
 				{
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
 				}
 
 
@@ -323,18 +312,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 					// deaktiviert einen Timer
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
 
-					foreach($inverterModelRegister_array AS $register)
-					{
-						$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						if(false !== $instanceId)
-						{
-							foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($instanceId);
-						}
-					}
+					$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
 				}
 
 
@@ -809,11 +787,7 @@ Bit 13  Nicht belegt";
 					{
 						foreach(IPS_GetChildrenIDs($categoryId) AS $childId)
 						{
-							foreach(IPS_GetChildrenIDs($childId) AS $childChildId)
-							{
-								IPS_DeleteVariable($childChildId);
-							}
-							IPS_DeleteInstance($childId);
+							$this->deleteInstanceRecursive($childId);
 						}
 						IPS_DeleteCategory($categoryId);
 					}
@@ -1378,6 +1352,27 @@ Bit 13  Nicht belegt";
 		private function removeInvalidChars($input)
 		{
 			return preg_replace( '/[^a-z0-9]/i', '', $input);
+		}
+
+		private function deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId)
+		{
+			foreach($inverterModelRegister_array AS $register)
+			{
+				$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
+				if(false !== $instanceId)
+				{
+					$this->deleteInstanceRecursive($instanceId);
+				}
+			}
+		}
+
+		private function deleteInstanceRecursive($instanceId)
+		{
+			foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
+			{
+				IPS_DeleteVariable($childChildId);
+			}
+			IPS_DeleteInstance($instanceId);
 		}
 
 		private function MaintainInstanceVariable($Ident, $varName, $Typ, $Profil, $Position, $Beibehalten, $instanceId, $varInfo)
