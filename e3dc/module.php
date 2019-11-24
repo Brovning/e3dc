@@ -88,6 +88,7 @@ if (!defined('KL_DEBUG'))
 			$this->RegisterPropertyBoolean('readWallbox7', 'false');
 			$this->RegisterPropertyBoolean('readDcString', 'false');
 			$this->RegisterPropertyBoolean("loggingPowerW", 'true');
+			$this->RegisterPropertyBoolean("loggingPowerKw", 'false');
 			$this->RegisterPropertyBoolean("loggingBatterySoc", 'true');
 			$this->RegisterPropertyBoolean("loggingAutarky", 'true');
 			$this->RegisterPropertyBoolean("loggingSelfconsumption", 'true');
@@ -169,6 +170,35 @@ function removeInvalidChars(\$input)
 }");
 
 
+			// Berechnung der Werte in kW
+			$this->RegisterTimer("Update-ValuesKw", 0, "\$modbusAddress_Array = array(40068, 40070, 40072, 40074, 40078, 40080, 40076);
+foreach(\$modbusAddress_Array AS \$modbusAddress)
+{
+	\$instanceId = @IPS_GetObjectIDByIdent(\$modbusAddress, ".$this->InstanceID.");
+	
+	if(false !== \$instanceId)
+	{
+		\$kwId = @IPS_GetObjectIDByIdent(\"Value_kW\", \$instanceId);
+
+		if(false !== \$kwId)
+		{
+			\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
+			\$varValue = GetValue(\$varId);
+
+			\$kwValue = \$varValue / 1000;
+
+			if(GetValue(\$kwId) != \$kwValue)
+			{
+				SetValue(\$kwId, \$kwValue);
+			}
+		}
+		else
+		{
+			// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
+			break;
+		}
+	}
+}
 			// *** Erstelle Variablen-Profile ***
 			$this->checkProfiles();
 		}
@@ -206,6 +236,7 @@ function removeInvalidChars(\$input)
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 			$readDcString = $this->ReadPropertyBoolean('readDcString');
 			$loggingPowerW = $this->ReadPropertyBoolean("loggingPowerW");
+			$loggingPowerKw = $this->ReadPropertyBoolean("loggingPowerKw");
 			$loggingBatterySoc = $this->ReadPropertyBoolean("loggingBatterySoc");
 			$loggingAutarky = $this->ReadPropertyBoolean("loggingAutarky");
 			$loggingSelfconsumption = $this->ReadPropertyBoolean("loggingSelfconsumption");
@@ -254,6 +285,29 @@ function removeInvalidChars(\$input)
 					AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);	
 				}
 
+				// Variablen für kW-Logging erstellen, sofern nötig                           
+				foreach($inverterModelRegister_array AS $inverterModelRegister)
+				{
+					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+					
+					$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+					if(false !== $varId)
+					{
+						AC_SetLoggingStatus($archivId, $varId, $loggingPowerKw);
+					}
+				}
+
+				if($loggingPowerKw || $readExtLeistung)
+				{
+					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
+					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
+				}
+				else
+				{
+					// Deaktiviert einen Timer
+					$this->SetTimerInterval("Update-ValuesKw", 0);
+				}
 
 				$inverterModelRegister_array = array(
 					array(40082, 1, 3, "Autarkie-Eigenverbrauch", "Uint8+Uint8", "", "Autarkie und Eigenverbrauch in Prozent"),
@@ -350,6 +404,19 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 						AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);	
 					}
+
+					// Variablen für kW-Logging erstellen, sofern nötig                           
+					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					{
+						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						
+						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+						if(false !== $varId)
+						{
+							AC_SetLoggingStatus($archivId, $varId, $loggingPowerKw);
+						}
+					}
 				}
 				else
 				{
@@ -380,6 +447,19 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
+
+					// Variablen für kW-Logging erstellen, sofern nötig                           
+					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					{
+						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						
+						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+						if(false !== $varId)
+						{
+							AC_SetLoggingStatus($archivId, $varId, $loggingPowerKw);
+						}
+					}
 				}
 				else
 				{

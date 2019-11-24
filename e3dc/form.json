@@ -121,6 +121,11 @@
         },
         {
             "type": "CheckBox",
+            "caption": "Leistungsvariablen in kW",
+            "name": "loggingPowerKw"
+        },
+        {
+            "type": "CheckBox",
             "caption": "Batterie SOC (Ladezustand) in %",
             "name": "loggingBatterySoc"
         },
