@@ -158,7 +158,7 @@ Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Integer in W
 Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Float in Kilo-Watt (kW) zurück
 
 
-`int E3DC_GetBatterySOC(int $InstanzID)`
+`int E3DC_GetBatterySoc(int $InstanzID)`
 
 Gibt den aktuelle Batterie-State-Of-Charge (SOC) der E3DC-Instanz $InstanzID als Integer in Prozent (%) zurück
 
