@@ -84,17 +84,13 @@ if (!defined('VARIABLETYPE_BOOLEAN'))
 			// *** Erstelle deaktivierte Timer ***
 			// Autarkie und Eigenverbrauch
 			$this->RegisterTimer("Update-Autarkie-Eigenverbrauch", 0, "\$instanceId = IPS_GetInstanceIDByName(\"Autarkie-Eigenverbrauch\", ".$this->InstanceID.");
-\$varId = @IPS_GetVariableIDByName(\"Value\", \$instanceId);
-if(false === \$varId)
-{
-	\$varId = IPS_GetVariableIDByName(\"Wert\", \$instanceId);
-}
+\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
 \$varValue = GetValue(\$varId);
 \$Autarkie = (\$varValue >> 8 ) & 0xFF;
 \$Eigenverbrauch = (\$varValue & 0xFF);
 
-\$AutarkieId = IPS_GetVariableIDByName(\"Autarkie\", \$instanceId);
-\$EigenverbrauchId = IPS_GetVariableIDByName(\"Eigenverbrauch\", \$instanceId);
+\$AutarkieId = IPS_GetObjectIDByIdent(\"Autarkie\", \$instanceId);
+\$EigenverbrauchId = IPS_GetObjectIDByIdent(\"Eigenverbrauch\", \$instanceId);
 
 if(GetValue(\$AutarkieId) != \$Autarkie)
 {
@@ -108,18 +104,14 @@ if(GetValue(\$EigenverbrauchId) != \$Eigenverbrauch)
 
 			// EMS-Status Bits
 			$this->RegisterTimer("Update-EMS-Status", 0, "\$instanceId = IPS_GetInstanceIDByName(\"EMS-Status\", ".$this->InstanceID.");
-\$varId = @IPS_GetVariableIDByName(\"Value\", \$instanceId);
-if(false === \$varId)
-{
-	\$varId = IPS_GetVariableIDByName(\"Wert\", \$instanceId);
-}
+\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
 \$varValue = GetValue(\$varId);
 
 \$bitArray = array(\"Batterie laden\", \"Batterie entladen\", \"Notstrommodus\", \"Wetterbasiertes Laden\", \"Abregelungs-Status\", \"Ladesperrzeit\", \"Entladesperrzeit\");
 
 for(\$i = 0; \$i < count(\$bitArray); \$i++)
 {
-	\$bitId = IPS_GetVariableIDByName(\$bitArray[\$i], \$instanceId);
+	\$bitId = IPS_GetObjectIDByIdent(removeInvalidChars(\$bitArray[\$i]), \$instanceId);
     \$bitValue = (\$varValue >> \$i ) & 0x1;
 
 	if(GetValue(\$bitId) != \$bitValue)
@@ -135,18 +127,14 @@ for(\$i = 0; \$i < count(\$bitArray); \$i++)
 	
 	if(false !== \$instanceId)
 	{
-		\$varId = @IPS_GetVariableIDByName(\"Value\", \$instanceId);
-		if(false === \$varId)
-		{
-			\$varId = IPS_GetVariableIDByName(\"Wert\", \$instanceId);
-		}
+		\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
 		\$varValue = GetValue(\$varId);
 
 		\$bitArray = array(\"Wallbox\", \"Solarbetrieb\", \"Laden sperren\", \"Ladevorgang\", \"Typ-2-Stecker verriegelt\", \"Typ-2-Stecker gesteckt\", \"Schukosteckdose\", \"Schukostecker gesteckt\", \"Schukostecker verriegelt\", \"16A 1 Phase\", \"16A 3 Phasen\", \"32A 3 Phasen\", \"1 Phase\");
 
 		for(\$i = 0; \$i < count(\$bitArray); \$i++)
 		{
-			\$bitId = IPS_GetVariableIDByName(\$bitArray[\$i], \$instanceId);
+			\$bitId = IPS_GetObjectIDByIdent(removeInvalidChars(\$bitArray[\$i]), \$instanceId);
 			\$bitValue = (\$varValue >> \$i ) & 0x1;
 
 			if(GetValue(\$bitId) != \$bitValue)
@@ -155,6 +143,11 @@ for(\$i = 0; \$i < count(\$bitArray); \$i++)
 			}
 		}
 	}
+}
+
+function removeInvalidChars(\$input)
+{
+	return preg_replace( '/[^a-z0-9]/i', '', \$input);
 }");
 
 
@@ -243,38 +236,17 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 				);
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
+
 				// Autarkie und Eigenverbrauch aus "Autarkie-Eigenverbrauch" erstellen
 				$instanceId = IPS_GetInstanceIDByName("Autarkie-Eigenverbrauch", $categoryId);
-				$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-				if(false === $varId)
-				{
-					$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-				}
+				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				IPS_SetHidden($varId, true);
 				
 				$varName = "Autarkie";
-				$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-				if(false === $varId)
-				{
-					$varId = IPS_CreateVariable(1);
-					IPS_SetName($varId, $varName);
-					IPS_SetParent($varId, $instanceId);
-					IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-				}
-				IPS_SetVariableCustomProfile($varId, "~Valve");
-				IPS_SetInfo($varId, "Autarkie in Prozent");
+				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Autarkie in Prozent");
 
 				$varName = "Eigenverbrauch";
-				$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-				if(false === $varId)
-				{
-					$varId = IPS_CreateVariable(1);
-					IPS_SetName($varId, $varName);
-					IPS_SetParent($varId, $instanceId);
-					IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-				}
-				IPS_SetVariableCustomProfile($varId, "~Valve");
-				IPS_SetInfo($varId, "Eigenverbrauch in Prozent");
+ 				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Eigenverbrauch in Prozent");
 
 				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
@@ -282,11 +254,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 				// Bit 0 - 6 für "EMS-Status" erstellen
 				$instanceId = IPS_GetInstanceIDByName("EMS-Status", $categoryId);
-				$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-				if(false === $varId)
-				{
-					$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-				}
+				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				IPS_SetHidden($varId, true);
 				
 				$bitArray = array(
@@ -301,17 +269,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 				foreach($bitArray AS $bit)
 				{
-					$varName = $bit['varName'];
-					$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-					if(false === $varId)
-					{
-						$varId = IPS_CreateVariable(0);
-						IPS_SetName($varId, $varName);
-						IPS_SetParent($varId, $instanceId);
-						IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-					}
-					IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-					IPS_SetInfo($varId, $bit['varInfo']);
+					$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
 				}
 
 				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
@@ -789,27 +747,12 @@ Bit 13  Nicht belegt";
 					{
 						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 						$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
-						$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-						if(false === $varId)
-						{
-							$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-						}
+					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 						IPS_SetHidden($varId, true);
 						
 						foreach($bitArray AS $bit)
-						{
-							$varName = $bit['varName'];
-							$varId = @IPS_GetVariableIDByName($varName, $instanceId);
-							if(false === $varId)
-							{
-								$varId = IPS_CreateVariable(0);
-								IPS_SetName($varId, $varName);
-								IPS_SetParent($varId, $instanceId);
-								IPS_SetIdent($varId, $this->removeInvalidChars($varName));
-							}
-							IPS_SetVariableCustomProfile($varId, $bit['varProfile']);
-							IPS_SetInfo($varId, $bit['varInfo']);
-						}
+					{
+						$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
 					}
 				}
 				else
@@ -1162,11 +1105,7 @@ Bit 13  Nicht belegt";
 					//IPS_Sleep(100);
 				}
 
-				$varId = @IPS_GetVariableIDByName("Value", $instanceId);
-				if(false === $varId)
-				{
-					$varId = IPS_GetVariableIDByName("Wert", $instanceId);
-				}
+				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 
 				// Profil der Statusvariable zuweisen
 				if(false != $profile && $profile != IPS_GetVariable($varId)['VariableCustomProfile'])
@@ -1439,6 +1378,32 @@ Bit 13  Nicht belegt";
 		private function removeInvalidChars($input)
 		{
 			return preg_replace( '/[^a-z0-9]/i', '', $input);
+		}
+
+		private function MaintainInstanceVariable($Ident, $varName, $Typ, $Profil, $Position, $Beibehalten, $instanceId, $varInfo)
+		{
+// not used: $Position
+			$varId = @IPS_GetObjectIDByIdent($Ident, $instanceId);
+			if(false === $varId && $Beibehalten)
+			{
+				$varId = IPS_CreateVariable($Typ);
+				IPS_SetIdent($varId, $Ident);
+				IPS_SetName($varId, $varName);
+				IPS_SetParent($varId, $instanceId);
+			}
+			
+			if($Beibehalten)
+			{
+				IPS_SetVariableCustomProfile($varId, $Profil);
+				IPS_SetInfo($varId, $varInfo);
+			}
+			else if(!$Beibehalten && false !== $varId)
+			{
+				IPS_DeleteVariable($varId);
+				$varId = false;
+			}
+
+			return $varId;
 		}
 
 		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
