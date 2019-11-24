@@ -1470,7 +1470,7 @@ Bit 13  Nicht belegt";
 			return $this->GetBatteryPowerKw();
 		}
 
-		public function GetBatterySOC()
+		public function GetBatterySoc()
 		{
 			return $this->GetVariableValue(40083, "Value");
 		}
@@ -1481,7 +1481,7 @@ Bit 13  Nicht belegt";
 			echo $message."\n";
 			LogMessage($message, KL_DEBUG);
 			
-			return $this->();
+			return $this->GetBatterySoc();
 		}
 
 		public function GetExtPowerW()
