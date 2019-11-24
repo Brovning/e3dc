@@ -1306,7 +1306,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetAutarkie() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetAutarky()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetAutarky();
 		}
@@ -1320,7 +1320,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetEigenverbrauch() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetSelfConsumption()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetSelfConsumption();
 		}
@@ -1334,7 +1334,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetBatterieLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerW()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetBatteryPowerW();
 		}
@@ -1348,7 +1348,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerKw()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetBatteryPowerKw();
 		}
@@ -1362,7 +1362,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetBatterieSOC() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatterySOC()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetBatterySoc();
 		}
@@ -1396,7 +1396,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetNetzLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerW()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetGridPowerW();
 		}
@@ -1410,7 +1410,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetNetzLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerKw()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetGridPowerKw();
 		}
@@ -1424,7 +1424,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetPvLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerW()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetPvPowerW();
 		}
@@ -1438,7 +1438,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetPvLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerKw()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetPvPowerKw();
 		}
@@ -1452,7 +1452,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetVerbrauchsLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerW()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetHomePowerW();
 		}
@@ -1466,7 +1466,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetVerbrauchsLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerKw()";
 			echo $message."\n";
-			LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_DEBUG);
 			
 			return $this->GetHomePowerKw();
 		}
