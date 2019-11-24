@@ -1523,6 +1523,27 @@ Bit 13  Nicht belegt";
 			
 			return $this->();
 		}
+
+		public function GetExtPowerW()
+		{
+			return ($readExtLeistung ? $this->GetVariableValue(40076, "Value") : 0);
+		}
+
+		public function GetExtPowerKw()
+		{
+			return ($this->GetExtPowerW() / 1000);
+		}
+
+		public function GetProductionPowerW()
+		{
+			return ($readExtLeistung ? $this->GetExtPowerW() + $this->GetPvPowerW() : $this->GetPvPowerW());
+		}
+
+		public function GetProductionPowerKw()
+		{
+			return ($this->GetProductionPowerW() / 1000);
+		}
+
 		public function GetGridPowerW()
 		{
 			return $this->GetVariableValue(40074, "Value");
@@ -1605,5 +1626,25 @@ Bit 13  Nicht belegt";
 			LogMessage($message, KL_DEBUG);
 			
 			return $this->GetHomePowerKw();
+		}
+
+		public function GetWallboxPowerW()
+		{
+			return (($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7) ? $this->GetVariableValue(40078, "Value") : 0);
+		}
+
+		public function GetWallboxPowerKw()
+		{
+			return ($this->GetWallboxPowerW() / 1000);
+		}
+
+		public function GetWallboxPowerSolarW()
+		{
+			return (($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7) ? $this->GetVariableValue(40080, "Value") : 0);
+		}
+
+		public function GetWallboxPowerSolarKw()
+		{
+			return ($this->GetWallboxPowerSolarW() / 1000);
 		}
 	}
