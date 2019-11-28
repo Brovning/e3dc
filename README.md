@@ -11,6 +11,7 @@ IP-Symcon (IPS) Modul für E3DC Stromspeicher mit TCP Modbus Unterstützung (bsp
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
 6. [WebFront](#6-webfront)
 7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+8. [Versionshistorie](#8-versionshistorie)
 
 ### 1. Funktionsumfang
 
@@ -251,3 +252,25 @@ Bitte auf die neuen Funktionsnamen umstellen.
 - E3DC_GetPvLeistungKW()
 - E3DC_GetVerbrauchsLeistungW()
 - E3DC_GetVerbrauchsLeistungKW()
+
+
+### 8. Versionshistorie
+
+#### v0.4
+- Konfigurationsoption für Variablen-Logging hinzugefügt
+- Logging für Leistungswerte in kW hinzugefügt
+- Berechnung und Logging der Gesamt-Produktionsleistung mit Ext-Generator in W und kW hinzugefügt
+- Public Funktionen in Englisch umbenannt (siehe Beschreibung unter Veraltete Funktionen)
+- Public Funktionen hinzugefügt: E3DC_GetExtPowerW(), E3DC_GetExtPowerKw(), E3DC_GetProductionPowerW(), E3DC_GetProductionPowerKw(), E3DC_GetWallboxPowerW(), E3DC_GetWallboxPowerKw(), E3DC_GetWallboxPowerSolarW(), E3DC_GetWallboxPowerSolarKw()
+- Fix für: Postfix war nicht bei allen Variablen-Profilen hinzugefügt
+- Review-Findings für Stable Kanal eingearbeitet
+
+#### v0.3
+- Rechtschreibfehler ClientSocket behoben
+- Swap LSW/MSW for 32Bit/64Bit aktiviert
+- Modbus Geräte ID zum Konfigurationsformular hinzugefügt
+- alte ClientSockets und Modbus-Gateways werden beim ändern der IP oder Port gelöscht
+- Performance-Optimierungen
+- Postfix zu allen Variablen-Profilen hinzugefügt
+- Public Funktionen hinzugefügt: E3DC_GetAutarkie(), E3DC_GetEigenverbrauch(), E3DC_GetEigenverbrauch(), E3DC_GetBatterieLeistungW(), E3DC_GetBatterieLeistungKW(), E3DC_GetBatterieSOC(), E3DC_GetNetzLeistungW(), E3DC_GetNetzLeistungKW(), E3DC_GetPvLeistungW(), E3DC_GetPvLeistungKW(), E3DC_GetVerbrauchsLeistungW(), E3DC_GetVerbrauchsLeistungKW()
+- Fix für Fehlerticket #1, #2
