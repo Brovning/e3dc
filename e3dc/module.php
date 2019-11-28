@@ -56,11 +56,11 @@ if (!defined('VARIABLETYPE_BOOLEAN'))
 
 if (!defined('KL_DEBUG'))
 {
-    define('KL_DEBUG', 10206);
-    define('KL_ERROR', 10206);
-    define('KL_MESSAGE', 10201);
-    define('KL_NOTIFY', 10203);
-    define('KL_WARNING', 10204);
+    define('KL_DEBUG', 10206);		// Debugmeldung (werden ausschließlich ins Log geschrieben. Bei Deaktivierung des Spezialschalter "LogfileVerbose" werden diese nichtmal ins Log geschrieben.)
+    define('KL_ERROR', 10206);		// Fehlermeldung
+    define('KL_MESSAGE', 10201);	// Nachricht
+    define('KL_NOTIFY', 10203);		// Benachrichtigung
+    define('KL_WARNING', 10204);	// Warnung
 }
 
 
@@ -97,7 +97,7 @@ if (!defined('KL_DEBUG'))
 
 			// *** Erstelle deaktivierte Timer ***
 			// Autarkie und Eigenverbrauch
-			$this->RegisterTimer("Update-Autarkie-Eigenverbrauch", 0, "\$instanceId = IPS_GetInstanceIDByName(\"Autarkie-Eigenverbrauch\", ".$this->InstanceID.");
+			$this->RegisterTimer("Update-Autarkie-Eigenverbrauch", 0, "\$instanceId = IPS_GetObjectIDByIdent(\"40082\", ".$this->InstanceID.");
 \$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
 \$varValue = GetValue(\$varId);
 \$Autarkie = (\$varValue >> 8 ) & 0xFF;
@@ -117,7 +117,7 @@ if(GetValue(\$EigenverbrauchId) != \$Eigenverbrauch)
 }");
 
 			// EMS-Status Bits
-			$this->RegisterTimer("Update-EMS-Status", 0, "\$instanceId = IPS_GetInstanceIDByName(\"EMS-Status\", ".$this->InstanceID.");
+			$this->RegisterTimer("Update-EMS-Status", 0, "\$instanceId = IPS_GetObjectIDByIdent(\"40085\", ".$this->InstanceID.");
 \$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
 \$varValue = GetValue(\$varId);
 
@@ -140,9 +140,10 @@ function removeInvalidChars(\$input)
 }");
 
 			// WallBox_X_CTRL Bits
-			$this->RegisterTimer("Update-WallBox_X_CTRL", 0, "for(\$wallbox = 0; \$wallbox <= 7; \$wallbox++)
+			$this->RegisterTimer("Update-WallBox_X_CTRL", 0, "\$modbusAddress_Array = array(40088, 40089, 40090, 40091, 40092, 40093, 40094, 40095);
+foreach(\$modbusAddress_Array AS \$modbusAddress)
 {
-	\$instanceId = @IPS_GetInstanceIDByName(\"WallBox_\".\$wallbox.\"_CTRL\", ".$this->InstanceID.");
+	\$instanceId = @IPS_GetObjectIDByIdent(\$modbusAddress, ".$this->InstanceID.");
 	
 	if(false !== \$instanceId)
 	{
@@ -372,7 +373,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 
 				// Autarkie und Eigenverbrauch aus "Autarkie-Eigenverbrauch" erstellen
-				$instanceId = IPS_GetInstanceIDByName("Autarkie-Eigenverbrauch", $categoryId);
+				$instanceId = IPS_GetObjectIDByIdent("40082", $categoryId);
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				IPS_SetHidden($varId, true);
 				
@@ -389,7 +390,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben
 
 
 				// Bit 0 - 6 für "EMS-Status" erstellen
-				$instanceId = IPS_GetInstanceIDByName("EMS-Status", $categoryId);
+				$instanceId = IPS_GetObjectIDByIdent("40085", $categoryId);
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				IPS_SetHidden($varId, true);
 				
@@ -621,7 +622,7 @@ Bit 13  Nicht belegt";
 				foreach($inverterModelRegister_array AS $register)
 				{
 					// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-					$instanceId = IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
+					$instanceId = IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 					IPS_SetHidden($varId, true);
 					
@@ -636,7 +637,7 @@ Bit 13  Nicht belegt";
 
 
 				$categoryName = "DC_String";
-				$categoryId = @IPS_GetCategoryIDByName($categoryName, $parentId);
+				$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
 				if($readDcString)
 				{
 					$inverterModelRegister_array = array(
@@ -657,11 +658,11 @@ Bit 13  Nicht belegt";
 					if(false === $categoryId)
 					{
 						$categoryId = IPS_CreateCategory();
-						IPS_SetParent($categoryId, $parentId);
-						IPS_SetName($categoryId, $categoryName);
 						IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
+						IPS_SetName($categoryId, $categoryName);
+						IPS_SetParent($categoryId, $parentId);
+						IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!");
 					}
-					IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!");
 
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				}
@@ -733,7 +734,31 @@ Bit 13  Nicht belegt";
 				$this->SetStatus(104);
 			}
 		}
+/*
+BESCHREIBUNG
+Aktiviert die Standardaktion der Statusvariable. Dadurch ist diese in der Visualisierung veränderbar und kann auch beschrieben werden. Diese Funktion muss aufgerufen werden, da alle Statusvariablen standardmäßig ohne Standardaktion erstellt werden. Sofern die Standardaktion aktiviert ist, muss auf Änderungsanfragen innerhalb von RequestAction reagiert werden.
 
+BEISPIEL
+// Aktiviert die Standardaktion der Statusvariable
+$this->EnableAction("Status");
+
+		public function RequestAction($Ident, $Value)
+		{
+		 
+			switch($Ident) {
+				case "TestVariable":
+					//Hier würde normalerweise eine Aktion z.B. das Schalten ausgeführt werden
+					//Ausgaben über 'echo' werden an die Visualisierung zurückgeleitet
+		 
+					//Neuen Wert in die Statusvariable schreiben
+					SetValue($this->GetIDForIdent($Ident), $Value);
+					break;
+				default:
+					throw new Exception("Invalid Ident");
+			}
+		 
+		}
+*/
 		private function createModbusInstances($inverterModelRegister_array, $parentId, $gatewayId, $pollCycle)
 		{
 			// Erstelle Modbus Instancen
@@ -881,15 +906,20 @@ Bit 13  Nicht belegt";
 				}
 
 
-				$instanceId = @IPS_GetInstanceIDByName(/*"REG_".$inverterModelRegister[IMR_START_REGISTER]. " - ".*/$inverterModelRegister[IMR_NAME], $parentId);
+				$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $parentId);
+				$initialCreation = false;
 				$applyChanges = false;
-				// Instanz erstellen
+				// Modbus-Instanz erstellen, sofern noch nicht vorhanden
 				if(false === $instanceId)
 				{
 					$instanceId = IPS_CreateInstance(MODBUS_ADDRESSES);
-					IPS_SetParent($instanceId, $parentId);
+					IPS_SetIdent($instanceId, $inverterModelRegister[IMR_START_REGISTER]);
 					IPS_SetName($instanceId, /*"REG_".$inverterModelRegister[IMR_START_REGISTER]. " - ".*/$inverterModelRegister[IMR_NAME]);
+					IPS_SetParent($instanceId, $parentId);
+					IPS_SetInfo($instanceId, $inverterModelRegister[IMR_DESCRIPTION]);
+
 					$applyChanges = true;
+					$initialCreation = true;
 				}
 
 				// Gateway setzen
@@ -903,14 +933,7 @@ Bit 13  Nicht belegt";
 					$applyChanges = true;
 				}
 
-				if($inverterModelRegister[IMR_DESCRIPTION] != IPS_GetObject($instanceId)['ObjectInfo'])
-				{
-					IPS_SetInfo($instanceId, $inverterModelRegister[IMR_DESCRIPTION]);
-				}
-				
-				// Ident der Modbus-Instanz setzen
-				IPS_SetIdent($instanceId, $inverterModelRegister[IMR_START_REGISTER]);
-
+			
 				// Modbus-Instanz konfigurieren
 				if($datenTyp != IPS_GetProperty($instanceId, "DataType"))
 				{
@@ -927,13 +950,13 @@ Bit 13  Nicht belegt";
 					IPS_SetProperty($instanceId, "Poller", $pollCycle);
 					$applyChanges = true;
 				}
-	/*
+/*
 				if(0 != IPS_GetProperty($instanceId, "Factor"))
 				{
 					IPS_SetProperty($instanceId, "Factor", 0);
 					$applyChanges = true;
 				}
-	*/
+*/
 				if($inverterModelRegister[IMR_START_REGISTER] + REGISTER_TO_ADDRESS_OFFSET != IPS_GetProperty($instanceId, "ReadAddress"))
 				{
 					IPS_SetProperty($instanceId, "ReadAddress", $inverterModelRegister[IMR_START_REGISTER] + REGISTER_TO_ADDRESS_OFFSET);
@@ -944,13 +967,13 @@ Bit 13  Nicht belegt";
 					IPS_SetProperty($instanceId, "ReadFunctionCode", $inverterModelRegister[IMR_FUNCTION_CODE]);
 					$applyChanges = true;
 				}
-	/*
+/*
 				if( != IPS_GetProperty($instanceId, "WriteAddress"))
 				{
 					IPS_SetProperty($instanceId, "WriteAddress", );
 					$applyChanges = true;
 				}
-	*/
+*/
 				if(0 != IPS_GetProperty($instanceId, "WriteFunctionCode"))
 				{
 					IPS_SetProperty($instanceId, "WriteFunctionCode", 0);
@@ -963,11 +986,14 @@ Bit 13  Nicht belegt";
 					//IPS_Sleep(100);
 				}
 
+				// Statusvariable der Modbus-Instanz ermitteln
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 
-				// Profil der Statusvariable zuweisen
-				if(false != $profile && $profile != IPS_GetVariable($varId)['VariableCustomProfile'])
+				// Profil der Statusvariable initial einmal zuweisen
+				if($initialCreation && false != $profile)
 				{
+					// Justification Rule 11: es ist die Funktion RegisterVariable...() in diesem Fall nicht nutzbar, da die Variable durch die Modbus-Instanz bereits erstellt wurde
+					// --> Custo Profil wird initial einmal beim Instanz-erstellen gesetzt
 					IPS_SetVariableCustomProfile($varId, $profile);
 				}
 			}
@@ -975,7 +1001,7 @@ Bit 13  Nicht belegt";
 		
 		private function checkProfiles()
 		{
-	/*
+/*
 			$this->createVarProfile("SunSpec.StateCodes.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
 					array('Name' => "OFF", 'Wert' => 1, "Wechselrichter ist aus"),
@@ -1005,7 +1031,7 @@ Bit 13  Nicht belegt";
 					array('Name' => "AFCI", 'Wert' => 13, "AFCI Event (Arc-Erkennung)"),
 				)
 			);
-	*/
+*/
 			$this->createVarProfile(MODUL_PREFIX.".Emergency-Power.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "nicht unterstützt", 'Wert' => 0, "Notstrom wird nicht von Ihrem Gerät unterstützt", 'Farbe' => 16753920),
 					array('Name' => "aktiv", 'Wert' => 1, "Notstrom aktiv (Ausfall des Stromnetzes)", 'Farbe' => 65280),
@@ -1014,20 +1040,20 @@ Bit 13  Nicht belegt";
 					array('Name' => "Fehler", 'Wert' => 4, "Der Motorschalter des S10 E befindet sich nicht in der richtigen Position, sondern wurde manuell abgeschaltet oder nicht eingeschaltet.", 'Farbe' => 16711680),
 				)
 			);
-	/*						
+/*						
 			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Int", VARIABLETYPE_INTEGER, ' VA');
 			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Float", VARIABLETYPE_FLOAT, ' VA');
 			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Int", VARIABLETYPE_INTEGER, ' Var');
 			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Float", VARIABLETYPE_FLOAT, ' Var');
 			$this->createVarProfile(MODUL_PREFIX.".Angle.Int", VARIABLETYPE_INTEGER, ' °');
-	*/
+*/
 			$this->createVarProfile(MODUL_PREFIX.".Watt.Int", VARIABLETYPE_INTEGER, ' W');
 			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
-	/*
+/*
 			$this->createVarProfile(MODUL_PREFIX.".Electricity.Float", VARIABLETYPE_FLOAT, ' Wh');
 			$this->createVarProfile(MODUL_PREFIX.".Electricity.Int", VARIABLETYPE_INTEGER, ' Wh');
 			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Int", VARIABLETYPE_INTEGER, ' Ah');
-	*/
+*/
 			$this->createVarProfile(MODUL_PREFIX.".Volt.Int", VARIABLETYPE_INTEGER, ' V');
 		}
 
@@ -1242,7 +1268,7 @@ Bit 13  Nicht belegt";
 		{
 			foreach($inverterModelRegister_array AS $register)
 			{
-				$instanceId = @IPS_GetInstanceIDByName($register[IMR_NAME], $categoryId);
+				$instanceId = @IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
 				if(false !== $instanceId)
 				{
 					$this->deleteInstanceRecursive($instanceId);
@@ -1259,24 +1285,35 @@ Bit 13  Nicht belegt";
 			IPS_DeleteInstance($instanceId);
 		}
 
-		private function MaintainInstanceVariable($Ident, $varName, $Typ, $Profil, $Position, $Beibehalten, $instanceId, $varInfo)
+		private function MaintainInstanceVariable($Ident, $varName, $Typ, $Profil = "", $Position = 0, $Beibehalten = true, $instanceId, $varInfo = "")
 		{
-// not used: $Position
 			$varId = @IPS_GetObjectIDByIdent($Ident, $instanceId);
 			if(false === $varId && $Beibehalten)
 			{
-				$varId = IPS_CreateVariable($Typ);
-				IPS_SetIdent($varId, $Ident);
-				IPS_SetName($varId, $varName);
+				switch($Typ)
+				{
+					case VARIABLETYPE_BOOLEAN:
+						$varId = $this->RegisterVariableBoolean($Ident, $varName, $Profil, $Position);
+						break;
+					case VARIABLETYPE_FLOAT:
+						$varId = $this->RegisterVariableFloat($Ident, $varName, $Profil, $Position);
+						break;
+					case VARIABLETYPE_INTEGER:
+						$varId = $this->RegisterVariableInteger($Ident, $varName, $Profil, $Position);
+						break;
+					case VARIABLETYPE_STRING:
+						$varId = $this->RegisterVariableString($Ident, $varName, $Profil, $Position);
+						break;
+					default:
+						echo "Variable-Type unknown!";
+						$varId = false;
+						exit;
+				}
 				IPS_SetParent($varId, $instanceId);
-			}
-			
-			if($Beibehalten)
-			{
-				IPS_SetVariableCustomProfile($varId, $Profil);
 				IPS_SetInfo($varId, $varInfo);
 			}
-			else if(!$Beibehalten && false !== $varId)
+			
+			if(!$Beibehalten && false !== $varId)
 			{
 				IPS_DeleteVariable($varId);
 				$varId = false;
@@ -1307,7 +1344,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetAutarkie() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetAutarky()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetAutarky();
 		}
@@ -1321,7 +1358,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetEigenverbrauch() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetSelfConsumption()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetSelfConsumption();
 		}
@@ -1335,7 +1372,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetBatterieLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerW()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetBatteryPowerW();
 		}
@@ -1349,7 +1386,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerKw()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetBatteryPowerKw();
 		}
@@ -1363,7 +1400,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetBatterieSOC() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatterySOC()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetBatterySoc();
 		}
@@ -1397,7 +1434,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetNetzLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerW()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetGridPowerW();
 		}
@@ -1411,7 +1448,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetNetzLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerKw()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetGridPowerKw();
 		}
@@ -1425,7 +1462,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetPvLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerW()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetPvPowerW();
 		}
@@ -1439,7 +1476,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetPvLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerKw()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetPvPowerKw();
 		}
@@ -1453,7 +1490,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetVerbrauchsLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerW()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetHomePowerW();
 		}
@@ -1467,7 +1504,7 @@ Bit 13  Nicht belegt";
 		{
 			$message = MODUL_PREFIX."_GetVerbrauchsLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerKw()";
 			echo $message."\n";
-			$this->LogMessage($message, KL_DEBUG);
+			$this->LogMessage($message, KL_NOTIFY);
 			
 			return $this->GetHomePowerKw();
 		}
@@ -1491,4 +1528,32 @@ Bit 13  Nicht belegt";
 		{
 			return ($this->GetWallboxPowerSolarW() / 1000);
 		}
+
+/*
+EmergencyPowerState
+DeratingState
+ErrorState
+ErrorMessage
+
+		public function Wallbox...($wallboxId)
+		{
+				IsWallboxAvailable
+				IsWallboxLocked
+				IsWallboxCharging
+				...
+			"Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0   Wallbox vorhanden und verfügbar (1) R"),
+			"Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1   Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
+			"Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2   Laden abgebrochen (1) Laden freigegeben (0) RW"),
+			"Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3   Auto lädt (1) Auto lädt nicht (0)  R"),
+			"Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4   Typ-2-Stecker verriegelt (1)    R"),
+			"Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5   Typ-2-Stecker gesteckt (1)  R"),
+			"Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6   Schukosteckdose an (1)  RW"),
+			"Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7   Schukostecker gesteckt (1)  R"),
+			"Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8   Schukostecker verriegelt (1)    R"),
+			"16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9   Relais an, 16A 1 Phase, Schukosteckdose R"),
+			"16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10  Relais an, 16A 3 Phasen, Typ 2  R"),
+			"32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11  Relais an, 32A 3 Phasen, Typ 2  R"),
+			"1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12  Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
+		}
+*/
 	}
