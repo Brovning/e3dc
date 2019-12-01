@@ -172,5 +172,5 @@ return PhpCsFixer\Config::create()
         'whitespace_after_comma_in_array' => true,
         //yoda_style
     ])
-    ->setIndent("    ")
+    ->setIndent("\t")
     ->setLineEnding("\n");
