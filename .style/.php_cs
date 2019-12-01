@@ -151,7 +151,7 @@ return PhpCsFixer\Config::create()
         'single_import_per_statement' => true,
         'single_line_after_imports' => true,
         //single_line_comment_style
-        'single_quote' => true,
+        'single_quote' => false,
         'single_trait_insert_per_statement' => true,
         'space_after_semicolon' => true,
         //standardize_increment
