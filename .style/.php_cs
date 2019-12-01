@@ -6,7 +6,7 @@ return PhpCsFixer\Config::create()
         ],
         'array_indentation' => true,
         'array_syntax' => [
-            'syntax' => 'short'
+            'syntax' => 'long'
         ],
         //backtick_to_shell_exec
         'binary_operator_spaces' => [
