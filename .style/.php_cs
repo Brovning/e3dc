@@ -17,7 +17,7 @@ return PhpCsFixer\Config::create()
         'blank_line_before_statement' => false,
         'braces' => [
             'position_after_anonymous_constructs' => 'next',
-            'position_after_control_structures' => 'same',
+            'position_after_control_structures' => 'next',
             'position_after_functions_and_oop_constructs' => 'next'
         ],
         'cast_spaces' => true,
