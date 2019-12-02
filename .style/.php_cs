@@ -73,7 +73,7 @@ return PhpCsFixer\Config::create()
         //comment_to_phpdoc
         //compact_nullable_typehint
         'concat_space' => [
-            'spacing' => 'one'
+            'spacing' => 'none'
         ],
         //date_time_immutable
         'declare_strict_types' => true,
