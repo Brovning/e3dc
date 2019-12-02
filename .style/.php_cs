@@ -10,7 +10,11 @@ return PhpCsFixer\Config::create()
         ],
         //backtick_to_shell_exec
         'binary_operator_spaces' => [
-            'align_double_arrow' => true
+            'operators' => [
+                '=' => 'align_single_space',
+                '=>' => 'align_single_space',
+                '.' => 'no_space',
+            ]
         ],
         'blank_line_after_namespace' => true,
         'blank_line_after_opening_tag' => true,
