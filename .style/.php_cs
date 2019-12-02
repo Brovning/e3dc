@@ -136,9 +136,7 @@ return PhpCsFixer\Config::create()
         'no_empty_comment' => true,
         'no_empty_phpdoc' => true,
         'no_empty_statement' => true,
-        'no_extra_blank_lines' => [
-            'tokens' => ['switch', 'if']
-        ],
+        'no_extra_blank_lines' => false,
         //no_homoglyph_names
         //no_leading_import_slash
         'no_leading_namespace_whitespace' => true,
