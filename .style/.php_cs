@@ -10,7 +10,50 @@ return PhpCsFixer\Config::create()
         ],
         //backtick_to_shell_exec
         'binary_operator_spaces' => [
-            'align_double_arrow' => true
+            'operators' => [
+                '=' => 'single_space',
+                '*' => 'single_space',
+                '/' => 'single_space',
+                '%' => 'single_space',
+                '<' => 'single_space',
+                '>' => 'single_space',
+                '|' => 'single_space',
+                '^' => 'single_space',
+                '+' => 'single_space',
+                '-' => 'single_space',
+                '&' => 'single_space',
+                '&=' => 'single_space',
+                '&&' => 'single_space',
+                '||' => 'single_space',
+                '.=' => 'single_space',
+                '/=' => 'single_space',
+                '==' => 'single_space',
+                '>=' => 'single_space',
+                '===' => 'single_space',
+                '!=' => 'single_space',
+                '<>' => 'single_space',
+                '!==' => 'single_space',
+                '<=' => 'single_space',
+                'and' => 'single_space',
+                'or' => 'single_space',
+                'xor' => 'single_space',
+                '-=' => 'single_space',
+                '%=' => 'single_space',
+                '*=' => 'single_space',
+                '|=' => 'single_space',
+                '+=' => 'single_space',
+                '<<' => 'single_space',
+                '<<=' => 'single_space',
+                '>>' => 'single_space',
+                '>>=' => 'single_space',
+                '^=' => 'single_space',
+                '**' => 'single_space',
+                '**=' => 'single_space',
+                '<=>' => 'single_space',
+                '??' => 'single_space',
+                '??=' => 'single_space',
+                '=>' => 'single_space',
+            ]
         ],
         'blank_line_after_namespace' => true,
         'blank_line_after_opening_tag' => true,
@@ -20,7 +63,7 @@ return PhpCsFixer\Config::create()
             'position_after_control_structures' => 'next',
             'position_after_functions_and_oop_constructs' => 'next'
         ],
-        'cast_spaces' => true,
+        'cast_spaces' => false,
         'class_attributes_separation' => false,
         'class_definition' => true,
         //class_keyword_remove
@@ -30,7 +73,7 @@ return PhpCsFixer\Config::create()
         //comment_to_phpdoc
         //compact_nullable_typehint
         'concat_space' => [
-            'spacing' => 'one'
+            'spacing' => 'none'
         ],
         //date_time_immutable
         'declare_strict_types' => true,
@@ -93,7 +136,7 @@ return PhpCsFixer\Config::create()
         'no_empty_comment' => true,
         'no_empty_phpdoc' => true,
         'no_empty_statement' => true,
-        'no_extra_blank_lines' => true,
+        'no_extra_blank_lines' => false,
         //no_homoglyph_names
         //no_leading_import_slash
         'no_leading_namespace_whitespace' => true,
