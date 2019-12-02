@@ -63,7 +63,7 @@ return PhpCsFixer\Config::create()
             'position_after_control_structures' => 'next',
             'position_after_functions_and_oop_constructs' => 'next'
         ],
-        'cast_spaces' => true,
+        'cast_spaces' => false,
         'class_attributes_separation' => false,
         'class_definition' => true,
         //class_keyword_remove
