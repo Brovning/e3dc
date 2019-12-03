@@ -3,4 +3,9 @@
     <php>
         <const name="PHPUNIT_TESTSUITE" value="true"/>
     </php>
+    <testsuites>
+        <testsuite name="Schema">
+            <file>./tests/Validator.php</file>
+        </testsuite>
+    </testsuites>
 </phpunit>
