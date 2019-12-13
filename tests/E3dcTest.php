@@ -8,10 +8,10 @@ include_once __DIR__ . '/stubs/KernelStubs.php';
 include_once __DIR__ . '/stubs/ModuleStubs.php';
 include_once __DIR__ . '/stubs/MessageStubs.php';
 
-define("MODUL_INSTANCES", "{C9508720-B23D-B37A-B5C2-97B607221CE1}");
-
 class E3dcTest extends TestCase
 {
+    private $moduleInstanceID = "{C9508720-B23D-B37A-B5C2-97B607221CE1}";
+
     public function setUp(): void
     {
         //Reset
@@ -26,11 +26,11 @@ class E3dcTest extends TestCase
         //Setting up a variable with ActionScript
 
         // E3DC-Modul erstellen
-        $myModuleId = IPS_CreateInstance(MODUL_INSTANCES);
+/*        $myModuleId = IPS_CreateInstance($this->moduleInstanceID);
 
         // Moduleigenschaften setzen
         IPS_SetProperty($myModuleId, 'hostIp', "192.168.1.111");
-
+*/
         $this->assertEquals(5, 5);
 
     }
