@@ -11,6 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
       with:
+        ref: develop
         token: ${{ secrets.BAEGOON_TOKEN }}
         submodules: true
 
