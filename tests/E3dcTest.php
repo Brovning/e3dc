@@ -26,8 +26,8 @@ class E3dcTest extends TestCase
         //Setting up a variable with ActionScript
 
         // E3DC-Modul erstellen
-/*        $myModuleId = IPS_CreateInstance($this->moduleInstanceID);
-
+        $myModuleId = IPS_CreateInstance($this->moduleInstanceID);
+/*
         // Moduleigenschaften setzen
         IPS_SetProperty($myModuleId, 'hostIp', "192.168.1.111");
 */
