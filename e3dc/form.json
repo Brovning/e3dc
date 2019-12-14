@@ -183,6 +183,11 @@
             "code": 200,
             "icon": "error",
             "caption": "IP oder Port sind nicht erreichtbar"
+        },
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "Archiv nicht gefunden"
         }
     ]
 }
