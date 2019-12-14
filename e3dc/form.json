@@ -2,15 +2,15 @@
     "elements": [
         {
             "type": "Label",
-            "label": "Der E3DC Stromspeicher muss Modbus TCP unterstützen!"
+            "label": "Der E3DC Stromspeicher muss Modbus TCP unterstï¿½tzen!"
         },
         {
             "type": "Label",
-            "label": "Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version \nunter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder \nunter Hauptmenü > Smart-Funktionen > Smart Home > Modbus aktiviert werden."
+            "label": "Im Konfigurationsmenï¿½ des E3DC Stromspeichers muss je nach Version \nunter Hauptmenï¿½ > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder \nunter Hauptmenï¿½ > Smart-Funktionen > Smart Home > Modbus aktiviert werden."
         },
         {
             "type": "Label",
-            "label": ""
+            "label": " "
         },
         {
             "type": "CheckBox",
@@ -29,16 +29,16 @@
         },
         {
             "type": "NumberSpinner",
-            "caption": "Geräte ID",
+            "caption": "Gerï¿½te ID",
             "name": "hostmodbusDevice"
         },
         {
             "type": "Label",
-            "label": ""
+            "label": " "
         },
         {
             "type": "Label",
-            "label": "Ist ein zusätzlicher Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) angeschlossen?"
+            "label": "Ist ein zusï¿½tzlicher Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) angeschlossen?"
         },
         {
             "type": "CheckBox",
@@ -47,7 +47,7 @@
         },
         {
             "type": "Label",
-            "label": ""
+            "label": " "
         },
         {
             "type": "Label",
@@ -95,11 +95,11 @@
         },
         {
             "type": "Label",
-            "label": ""
+            "label": " "
         },
         {
             "type": "Label",
-            "label": "Sollen V, A und W der DC-Strings ausgelesen werden? (erst ab Release S10_2017_02 verfügbar)"
+            "label": "Sollen V, A und W der DC-Strings ausgelesen werden? (erst ab Release S10_2017_02 verfï¿½gbar)"
         },
         {
             "type": "CheckBox",
@@ -108,11 +108,11 @@
         },
         {
             "type": "Label",
-            "label": ""
+            "label": " "
         },
-       {
+        {
             "type": "Label",
-            "label": "Für welche Variablen soll das Logging aktiviert werden?"
+            "label": "Fï¿½r welche Variablen soll das Logging aktiviert werden?"
         },
         {
             "type": "CheckBox",
@@ -141,7 +141,7 @@
         },
         {
             "type": "Label",
-            "label": ""
+            "label": " "
         },
 		{
             "type": "ValidationTextBox",
@@ -150,7 +150,7 @@
         },
         {
             "type": "Label",
-            "label": "Achtung: Abfrage-Intervall nicht zu klein wählen, um die Systemlast und auch die Archiv-Größe bei Logging nicht unnötig zu erhöhen!"
+            "label": "Achtung: Abfrage-Intervall nicht zu klein wï¿½hlen, um die Systemlast und auch die Archiv-Grï¿½ï¿½e bei Logging nicht unnï¿½tig zu erhï¿½hen!"
         }
     ],
     "status": [
@@ -167,7 +167,7 @@
         {
             "code": 103,
             "icon": "inactive",
-            "caption": "Instanz wird gelöscht"
+            "caption": "Instanz wird gelï¿½scht"
         },
         {
             "code": 104,
@@ -183,6 +183,11 @@
             "code": 200,
             "icon": "error",
             "caption": "IP oder Port sind nicht erreichtbar"
+        },
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "Archiv nicht gefunden"
         }
     ]
 }

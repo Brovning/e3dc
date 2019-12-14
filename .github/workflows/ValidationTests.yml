@@ -1,4 +1,4 @@
-name: Run Tests
+name: Validation Tests
 
 on: [push, pull_request]
 
@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
  
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
       with:
-        submodules: true
+          submodules: true
 
     - name: Install latest PHPUnit
       run: wget https://phar.phpunit.de/phpunit.phar
 
     - name: Run Tests
-      run: phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml
+      run: phpdbg -qrr phpunit.phar tests
