@@ -21,15 +21,17 @@ class E3dcTest extends TestCase
         parent::setUp();
     }
     
-    public function testFunctions()
+    public function testNoArchiveAvailable()
     {
         //Setting up a variable with ActionScript
-
+/*
         // E3DC-Modul erstellen
         $myModuleId = IPS_CreateInstance($this->moduleInstanceID);
-/*
+
         // Moduleigenschaften setzen
         IPS_SetProperty($myModuleId, 'hostIp', "192.168.1.111");
+        IPS_SetProperty($myModuleId, 'hostPort', "502");
+        IPS_ApplyChanges($myModuleId);
 */
         $this->assertEquals(5, 5);
 
