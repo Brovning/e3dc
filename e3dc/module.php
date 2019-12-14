@@ -1407,9 +1407,9 @@ $this->EnableAction("Status");
 
 		public function GetExtPowerW()
 		{
-			global $readExtLeistung;
+			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 				
-			return ($readExtLeistung ? $this->GetVariableValue(40076, "Value") : 0);
+			return ($readExtLeistung ? abs($this->GetVariableValue(40076, "Value")) : 0);
 		}
 
 		public function GetExtPowerKw()
@@ -1419,7 +1419,7 @@ $this->EnableAction("Status");
 
 		public function GetProductionPowerW()
 		{
-			global $readExtLeistung;
+			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
 			return ($readExtLeistung ? $this->GetExtPowerW() + $this->GetPvPowerW() : $this->GetPvPowerW());
 		}
@@ -1515,7 +1515,14 @@ $this->EnableAction("Status");
 
 		public function GetWallboxPowerW()
 		{
-			global $readWallbox0, $readWallbox1, $readWallbox2, $readWallbox3, $readWallbox4, $readWallbox5, $readWallbox6, $readWallbox7;
+			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 			
 			return (($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7) ? $this->GetVariableValue(40078, "Value") : 0);
 		}
@@ -1527,7 +1534,14 @@ $this->EnableAction("Status");
 
 		public function GetWallboxPowerSolarW()
 		{
-			global $readWallbox0, $readWallbox1, $readWallbox2, $readWallbox3, $readWallbox4, $readWallbox5, $readWallbox6, $readWallbox7;
+			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 
 			return (($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7) ? $this->GetVariableValue(40080, "Value") : 0);
 		}
