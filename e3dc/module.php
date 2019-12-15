@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../libs/myFunctions.php';  // globale Funktionen
+
 if (!defined('DEBUG'))
 {
 	define("DEBUG", false);
@@ -45,26 +47,9 @@ if (!defined('IMR_START_REGISTER'))
 	define("IMR_DESCRIPTION", 6);
 }
 
-
-if (!defined('VARIABLETYPE_BOOLEAN'))
-{
-    define('VARIABLETYPE_BOOLEAN', 0);
-    define('VARIABLETYPE_INTEGER', 1);
-    define('VARIABLETYPE_FLOAT', 2);
-    define('VARIABLETYPE_STRING', 3);
-}
-
-if (!defined('KL_DEBUG'))
-{
-    define('KL_DEBUG', 10206);		// Debugmeldung (werden ausschlie�lich ins Log geschrieben. Bei Deaktivierung des Spezialschalter "LogfileVerbose" werden diese nichtmal ins Log geschrieben.)
-    define('KL_ERROR', 10206);		// Fehlermeldung
-    define('KL_MESSAGE', 10201);	// Nachricht
-    define('KL_NOTIFY', 10203);		// Benachrichtigung
-    define('KL_WARNING', 10204);	// Warnung
-}
-
-
-	class E3DC extends IPSModule {
+	class E3DC extends IPSModule
+	{
+		use myFunctions;
 
 		public function Create()
 		{
@@ -1091,271 +1076,6 @@ $this->EnableAction("Status");
 			$this->createVarProfile(MODUL_PREFIX.".Volt.Int", VARIABLETYPE_INTEGER, ' V');
 		}
 
-		private function readOldModbusGateway()
-		{
-			$modbusGatewayId_Old = 0;
-			$clientSocketId_Old = 0;
-
-			$childIds = IPS_GetChildrenIDs($this->InstanceID);
-
-			foreach($childIds AS $childId)
-			{
-				$modbusAddressInstanceId = @IPS_GetInstance($childId);
-
-				if(MODBUS_ADDRESSES == $modbusAddressInstanceId['ModuleInfo']['ModuleID'])
-				{
-					$modbusGatewayId_Old = $modbusAddressInstanceId['ConnectionID'];
-					$clientSocketId_Old = @IPS_GetInstance($modbusGatewayId_Old)['ConnectionID'];
-					break;
-				}
-			}
-			
-			return array($modbusGatewayId_Old, $clientSocketId_Old);
-		}
-
-		private function deleteInstanceNotInUse($connectionId_Old, $moduleId)
-		{
-			if(!IPS_ModuleExists($moduleId))
-			{
-				echo "ModuleId ".$moduleId." does not exist!\n";
-			}
-			else
-			{
-				$inUse = false;
-
-				foreach(IPS_GetInstanceListByModuleID($moduleId) AS $instanceId)
-				{
-					$instance = IPS_GetInstance($instanceId);
-
-					if($connectionId_Old == $instance['ConnectionID'])
-					{
-						$inUse = true;
-						break;
-					}
-				}
-
-				// L�sche Connection-Instanz (bspw. ModbusAddress, ClientSocket,...), wenn nicht mehr in Verwendung
-				if(!$inUse)
-				{
-					IPS_DeleteInstance($connectionId_Old);
-				}
-			}
-		}
-
-		private function checkModbusGateway($hostIp, $hostPort, $hostmodbusDevice, $hostSwapWords)
-		{
-			// Splitter-Instance Id des ModbusGateways
-			$gatewayId = 0;
-			// I/O Instance Id des ClientSockets
-			$interfaceId = 0;
-
-			foreach(IPS_GetInstanceListByModuleID(MODBUS_INSTANCES) AS $modbusInstanceId)
-			{
-				$connectionInstanceId = IPS_GetInstance($modbusInstanceId)['ConnectionID'];
-
-				if(0 != (int)$connectionInstanceId && $hostIp == IPS_GetProperty($connectionInstanceId, "Host") && $hostPort == IPS_GetProperty($connectionInstanceId, "Port"))
-				{
-					if(DEBUG) echo "ModBus Instance and ClientSocket found: ".$modbusInstanceId.", ".$connectionInstanceId."\n";
-
-					$gatewayId = $modbusInstanceId;
-					$interfaceId = $connectionInstanceId;
-					break;
-				}
-			}
-
-			// Modbus-Gateway erstellen, sofern noch nicht vorhanden
-			$applyChanges = false;
-			if(0 == $gatewayId)
-			{
-				if(DEBUG) echo "ModBus Instance not found!\n";
-
-				// ModBus Gateway erstellen
-				$gatewayId = IPS_CreateInstance(MODBUS_INSTANCES); 
-				IPS_SetInfo($gatewayId, MODUL_PREFIX."-Modul: ".date("Y-m-d H:i:s"));
-				$applyChanges = true;
-			}
-
-			// Modbus-Gateway Einstellungen setzen
-			if(MODUL_PREFIX."ModbusGateway" != IPS_GetName($gatewayId))
-			{
-				IPS_SetName($gatewayId, MODUL_PREFIX."ModbusGateway");
-			}
-			if(0 != IPS_GetProperty($gatewayId, "GatewayMode"))
-			{
-				IPS_SetProperty($gatewayId, "GatewayMode", 0);
-				$applyChanges = true;
-			}
-			if($hostmodbusDevice != IPS_GetProperty($gatewayId, "DeviceID"))
-			{
-				IPS_SetProperty($gatewayId, "DeviceID", $hostmodbusDevice);
-				$applyChanges = true;
-			}
-			if($hostSwapWords != IPS_GetProperty($gatewayId, "SwapWords"))
-			{
-				IPS_SetProperty($gatewayId, "SwapWords", $hostSwapWords);
-				$applyChanges = true;
-			}
-
-			if($applyChanges)
-			{
-				@IPS_ApplyChanges($gatewayId);
-				IPS_Sleep(100);
-			}
-
-			
-			// Hat Modbus-Gateway bereits einen ClientSocket?
-			$applyChanges = false;
-			$clientSocketId = (int)IPS_GetInstance($gatewayId)['ConnectionID'];
-			if(0 == $interfaceId && 0 != $clientSocketId)
-			{
-				$interfaceId = $clientSocketId;
-			}
-
-			// ClientSocket erstellen, sofern noch nicht vorhanden
-			if(0 == $interfaceId)
-			{
-				if(DEBUG) echo "Client Socket not found!\n";
-
-				// Client Soket erstellen
-				$interfaceId = IPS_CreateInstance(CLIENT_SOCKETS);
-				IPS_SetInfo($interfaceId, MODUL_PREFIX."-Modul: ".date("Y-m-d H:i:s"));
-
-				$applyChanges = true;
-			}
-
-			// ClientSocket Einstellungen setzen
-			if(MODUL_PREFIX."ClientSocket" != IPS_GetName($interfaceId))
-			{
-				IPS_SetName($interfaceId, MODUL_PREFIX."ClientSocket");
-				$applyChanges = true;
-			}
-			if($hostIp != IPS_GetProperty($interfaceId, "Host"))
-			{
-				IPS_SetProperty($interfaceId, "Host", $hostIp);
-				$applyChanges = true;
-			}
-			if($hostPort != IPS_GetProperty($interfaceId, "Port"))
-			{
-				IPS_SetProperty($interfaceId, "Port", $hostPort);
-				$applyChanges = true;
-			}
-			if(true != IPS_GetProperty($interfaceId, "Open"))
-			{
-				IPS_SetProperty($interfaceId, "Open", true);
-				$applyChanges = true;
-			}
-
-			if($applyChanges)
-			{
-				@IPS_ApplyChanges($interfaceId);
-				IPS_Sleep(100);
-			}
-
-
-			// Client Socket mit Gateway verbinden
-			if(0 != $clientSocketId)
-			{
-				IPS_DisconnectInstance($gatewayId);
-				IPS_ConnectInstance($gatewayId, $interfaceId);
-			}
-			
-			return array($gatewayId, $interfaceId);
-		}
-		
-		private function createVarProfile($ProfilName, $ProfileType, $Suffix = '', $MinValue = 0, $MaxValue = 0, $StepSize = 0, $Digits = 0, $Icon = 0, $Associations = '')
-		{
-			if(!IPS_VariableProfileExists($ProfilName))
-			{
-				IPS_CreateVariableProfile($ProfilName, $ProfileType);
-				IPS_SetVariableProfileText($ProfilName, '', $Suffix);
-				
-				if(in_array($ProfileType, array(VARIABLETYPE_INTEGER, VARIABLETYPE_FLOAT)))
-				{
-					IPS_SetVariableProfileValues($ProfilName, $MinValue, $MaxValue, $StepSize);
-					IPS_SetVariableProfileDigits($ProfilName, $Digits);
-				}
-				
-				IPS_SetVariableProfileIcon($ProfilName, $Icon);
-				
-				if($Associations != '')
-				{
-					foreach ($Associations as $a)
-					{
-						$w = isset($a['Wert']) ? $a['Wert'] : '';
-						$n = isset($a['Name']) ? $a['Name'] : '';
-						$i = isset($a['Icon']) ? $a['Icon'] : '';
-						$f = isset($a['Farbe']) ? $a['Farbe'] : -1;
-						IPS_SetVariableProfileAssociation($ProfilName, $w, $n, $i, $f);
-					}
-				}
-
-				if(DEBUG) echo "Profil ".$ProfilName." erstellt\n";
-			}
-		}
-
-		private function removeInvalidChars($input)
-		{
-			return preg_replace( '/[^a-z0-9]/i', '', $input);
-		}
-
-		private function deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId)
-		{
-			foreach($inverterModelRegister_array AS $register)
-			{
-				$instanceId = @IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
-				if(false !== $instanceId)
-				{
-					$this->deleteInstanceRecursive($instanceId);
-				}
-			}
-		}
-
-		private function deleteInstanceRecursive($instanceId)
-		{
-			foreach(IPS_GetChildrenIDs($instanceId) AS $childChildId)
-			{
-				IPS_DeleteVariable($childChildId);
-			}
-			IPS_DeleteInstance($instanceId);
-		}
-
-		private function MaintainInstanceVariable($Ident, $varName, $Typ, $Profil = "", $Position = 0, $Beibehalten = true, $instanceId, $varInfo = "")
-		{
-			$varId = @IPS_GetObjectIDByIdent($Ident, $instanceId);
-			if(false === $varId && $Beibehalten)
-			{
-				switch($Typ)
-				{
-					case VARIABLETYPE_BOOLEAN:
-						$varId = $this->RegisterVariableBoolean($Ident, $varName, $Profil, $Position);
-						break;
-					case VARIABLETYPE_FLOAT:
-						$varId = $this->RegisterVariableFloat($Ident, $varName, $Profil, $Position);
-						break;
-					case VARIABLETYPE_INTEGER:
-						$varId = $this->RegisterVariableInteger($Ident, $varName, $Profil, $Position);
-						break;
-					case VARIABLETYPE_STRING:
-						$varId = $this->RegisterVariableString($Ident, $varName, $Profil, $Position);
-						break;
-					default:
-						echo "Variable-Type unknown!";
-						$varId = false;
-						exit;
-				}
-				IPS_SetParent($varId, $instanceId);
-				IPS_SetInfo($varId, $varInfo);
-			}
-			
-			if(!$Beibehalten && false !== $varId)
-			{
-				IPS_DeleteVariable($varId);
-				$varId = false;
-			}
-
-			return $varId;
-		}
-
 		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
 		{
 			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
@@ -1364,6 +1084,36 @@ $this->EnableAction("Status");
 			return GetValue($varId);
 		}
 
+		private function GetVariableId($instanceIdent, $variableIdent = "Value")
+		{
+			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
+			$varId = IPS_GetObjectIDByIdent($this->removeInvalidChars($variableIdent), $instanceId);
+
+			return $varId;
+		}
+
+		private function GetLoggedValuesInterval($id, $minutes)
+		{
+			$archivId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}");
+			if (isset($archivId[0]))
+			{
+				$archivId = $archivId[0];
+
+				$returnValue = $this->getArithMittelOfLog($archivId, $id, $minutes);
+			}
+			else
+			{
+				$archivId = false;
+
+				// no archive found
+				$this->SetStatus(201);
+				echo MODUL_PREFIX."_GetBatteryPowerW(): Archive not found!";
+
+				$returnValue = GetValue($id);
+			}
+
+			return $returnValue;
+		}
 
 		/********************************
 			public functions
@@ -1374,55 +1124,40 @@ $this->EnableAction("Status");
 			return $this->GetVariableValue(40082, "Autarkie");
 		}
 
-		public function GetAutarkie()
-		{
-			$message = MODUL_PREFIX."_GetAutarkie() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetAutarky()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetAutarky();
-		}
-
 		public function GetSelfConsumption()
 		{
 			return $this->GetVariableValue(40082, "Eigenverbrauch");
 		}
 
-		public function GetEigenverbrauch()
-		{
-			$message = MODUL_PREFIX."_GetEigenverbrauch() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetSelfConsumption()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetSelfConsumption();
-		}
-
 		public function GetBatteryPowerW()
 		{
-			return $this->GetVariableValue(40070, "Value");
+			return $this->GetBatteryPowerIntervalW(0);
 		}
 
-		public function GetBatterieLeistungW()
+		public function GetBatteryPowerIntervalW($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_GetBatterieLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerW()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetBatteryPowerW();
+			$varIdent = 40070;
+
+			if (0 < $timeIntervalInMinutes)
+			{
+				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
+			}
+			else
+			{
+				$returnValue = $this->GetVariableValue($varIdent, "Value");
+			}
+
+			return $returnValue;
 		}
 
 		public function GetBatteryPowerKw()
 		{
-			return ($this->GetBatteryPowerW() / 1000);
+			return $this->GetBatteryPowerIntervalKw(0);
 		}
 
-		public function GetBatterieLeistungKW()
+		public function GetBatteryPowerIntervalKw($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatteryPowerKw()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetBatteryPowerKw();
+			return ($this->GetBatteryPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 		public function GetBatterySoc()
@@ -1430,125 +1165,165 @@ $this->EnableAction("Status");
 			return $this->GetVariableValue(40083, "Value");
 		}
 
-		public function GetBatterieSOC()
-		{
-			$message = MODUL_PREFIX."_GetBatterieSOC() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetBatterySOC()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetBatterySoc();
-		}
-
 		public function GetExtPowerW()
 		{
+			return $this->GetExtPowerIntervalW(0);
+		}
+
+		public function GetExtPowerIntervalW($timeIntervalInMinutes)
+		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
-				
-			return ($readExtLeistung ? abs($this->GetVariableValue(40076, "Value")) : 0);
+
+			$varIdent = 40076;
+
+			if (false === $readExtLeistung)
+			{
+				$returnValue = 0;
+			}
+			else if (0 < $timeIntervalInMinutes)
+			{
+				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
+			}
+			else
+			{
+				$returnValue = $this->GetVariableValue($varIdent, "Value");
+			}
+
+			return abs($returnValue);
 		}
 
 		public function GetExtPowerKw()
 		{
-			return ($this->GetExtPowerW() / 1000);
+			return $this->GetExtPowerIntervalKw(0);
+		}
+
+		public function GetExtPowerIntervalKw($timeIntervalInMinutes)
+		{
+			return ($this->GetExtPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 		public function GetProductionPowerW()
 		{
+			return $this->GetProductionPowerIntervalW(0);
+		}
+
+		public function GetProductionPowerIntervalW($timeIntervalInMinutes)
+		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
-			return ($readExtLeistung ? $this->GetExtPowerW() + $this->GetPvPowerW() : $this->GetPvPowerW());
+			return ($readExtLeistung ? $this->GetExtPowerIntervalW($timeIntervalInMinutes) + $this->GetPvPowerIntervalW($timeIntervalInMinutes) : $this->GetPvPowerIntervalW($timeIntervalInMinutes));
 		}
 
 		public function GetProductionPowerKw()
 		{
-			return ($this->GetProductionPowerW() / 1000);
+			return $this->GetProductionPowerIntervalKw(0);
+		}
+
+		public function GetProductionPowerIntervalKw($timeIntervalInMinutes)
+		{
+			return ($this->GetProductionPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 		public function GetGridPowerW()
 		{
-			return $this->GetVariableValue(40074, "Value");
+			return $this->GetGridPowerIntervalW(0);
 		}
 
-		public function GetNetzLeistungW()
+		public function GetGridPowerIntervalW($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_GetNetzLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerW()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetGridPowerW();
+			$varIdent = 40074;
+
+			if (0 < $timeIntervalInMinutes)
+			{
+				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
+			}
+			else
+			{
+				$returnValue = $this->GetVariableValue($varIdent, "Value");
+			}
+
+			return $returnValue;
 		}
 
 		public function GetGridPowerKw()
 		{
-			return ($this->GetGridPowerW() / 1000);
+			return $this->GetGridPowerIntervalKw(0);
 		}
 
-		public function GetNetzLeistungKW()
+		public function GetGridPowerIntervalKw($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_GetNetzLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetGridPowerKw()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetGridPowerKw();
+			return ($this->GetGridPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 		public function GetPvPowerW()
 		{
-			return abs($this->GetVariableValue(40068, "Value"));
+			return $this->GetPvPowerIntervalW(0);
 		}
 
-		public function GetPvLeistungW()
+		public function GetPvPowerIntervalW($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_GetPvLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerW()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetPvPowerW();
+			$varIdent = 40068;
+
+			if (0 < $timeIntervalInMinutes)
+			{
+				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
+			}
+			else
+			{
+				$returnValue = $this->GetVariableValue($varIdent, "Value");
+			}
+
+			return abs($returnValue);
 		}
 
 		public function GetPvPowerKw()
 		{
-			return ($this->GetPvPowerW() / 1000);
+			return $this->GetPvPowerIntervalKw(0);
 		}
 
-		public function GetPvLeistungKW()
+		public function GetPvPowerIntervalKw($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_GetPvLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetPvPowerKw()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetPvPowerKw();
+			return ($this->GetPvPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 		public function GetHomePowerW()
 		{
-			return $this->GetVariableValue(40072, "Value");
+			return $this->GetHomePowerIntervalW(0);
 		}
 
-		public function GetVerbrauchsLeistungW()
+		public function GetHomePowerIntervalW($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_GetVerbrauchsLeistungW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerW()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetHomePowerW();
+			$varIdent = 40072;
+
+			if (0 < $timeIntervalInMinutes)
+			{
+				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
+			}
+			else
+			{
+				$returnValue = $this->GetVariableValue($varIdent, "Value");
+			}
+
+			return $returnValue;
 		}
 
 		public function GetHomePowerKw()
 		{
-			return ($this->GetHomePowerW() / 1000);
+			return $this->GetHomePowerIntervalKw(0);
 		}
 
-		public function GetVerbrauchsLeistungKW()
+		public function GetHomePowerIntervalKw($timeIntervalInMinutes)
 		{
-			$message = MODUL_PREFIX."_GetVerbrauchsLeistungKW() is deprecated and will be removed with next stable release. Please use ".MODUL_PREFIX."_GetHomePowerKw()";
-			echo $message."\n";
-			$this->LogMessage($message, KL_NOTIFY);
-			
-			return $this->GetHomePowerKw();
+			return ($this->GetHomePowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 		public function GetWallboxPowerW()
 		{
+			return $this->GetWallboxPowerIntervalW(0);
+		}
+
+		public function GetWallboxPowerIntervalW($timeIntervalInMinutes)
+		{
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
 			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
@@ -1558,15 +1333,40 @@ $this->EnableAction("Status");
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 			
-			return (($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7) ? $this->GetVariableValue(40078, "Value") : 0);
+			$varIdent = 40078;
+
+			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			{
+				$returnValue = 0;
+			}
+			else if (0 < $timeIntervalInMinutes)
+			{
+				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
+			}
+			else
+			{
+				$returnValue = $this->GetVariableValue($varIdent, "Value");
+			}
+
+			return $returnValue;
 		}
 
 		public function GetWallboxPowerKw()
 		{
-			return ($this->GetWallboxPowerW() / 1000);
+			return $this->GetWallboxPowerIntervalKw(0);
+		}
+
+		public function GetWallboxPowerIntervalKw($timeIntervalInMinutes)
+		{
+			return ($this->GetWallboxPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 		public function GetWallboxPowerSolarW()
+		{
+			return $this->GetWallboxPowerSolarIntervalW(0);
+		}
+
+		public function GetWallboxPowerSolarIntervalW($timeIntervalInMinutes)
 		{
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -1577,12 +1377,32 @@ $this->EnableAction("Status");
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 
-			return (($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7) ? $this->GetVariableValue(40080, "Value") : 0);
+			$varIdent = 40080;
+
+			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			{
+				$returnValue = 0;
+			}
+			else if (0 < $timeIntervalInMinutes)
+			{
+				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
+			}
+			else
+			{
+				$returnValue = $this->GetVariableValue($varIdent, "Value");
+			}
+
+			return $returnValue;
 		}
 
 		public function GetWallboxPowerSolarKw()
 		{
-			return ($this->GetWallboxPowerSolarW() / 1000);
+			return $this->GetWallboxPowerSolarIntervalKw(0);
+		}
+
+		public function GetWallboxPowerSolarIntervalKw($timeIntervalInMinutes)
+		{
+			return ($this->GetWallboxPowerSolarIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
 /*
