@@ -47,6 +47,13 @@ if (!defined('IMR_START_REGISTER'))
 	define("IMR_DESCRIPTION", 6);
 }
 
+// E3DC settings
+if (!defined('BATTERY_DISCHARGE_MAX'))
+{
+	// Aktuelle E3DC-Modelle können maximal 90% der Batterykapazität nutzen
+	define("BATTERY_DISCHARGE_MAX", 90);
+}
+
 	class E3DC extends IPSModule
 	{
 		use myFunctions;
@@ -62,6 +69,7 @@ if (!defined('IMR_START_REGISTER'))
 			$this->RegisterPropertyString('hostIp', '');
 			$this->RegisterPropertyInteger('hostPort', '502');
 			$this->RegisterPropertyInteger('hostmodbusDevice', '1');
+			$this->RegisterPropertyFloat('batterySize', '0');
 			$this->RegisterPropertyBoolean('readExtLeistung', 'false');
 			$this->RegisterPropertyBoolean('readWallbox0', 'false');
 			$this->RegisterPropertyBoolean('readWallbox1', 'false');
@@ -71,6 +79,8 @@ if (!defined('IMR_START_REGISTER'))
 			$this->RegisterPropertyBoolean('readWallbox5', 'false');
 			$this->RegisterPropertyBoolean('readWallbox6', 'false');
 			$this->RegisterPropertyBoolean('readWallbox7', 'false');
+			$this->RegisterPropertyBoolean('readEmergencyPower', 'false');
+			$this->RegisterPropertyFloat('emergencyPowerBuffer', '0');
 			$this->RegisterPropertyBoolean('readDcString', 'false');
 			$this->RegisterPropertyBoolean("loggingPowerW", 'true');
 			$this->RegisterPropertyBoolean("loggingPowerKw", 'false');
@@ -234,6 +244,8 @@ if(false !== \$varId)
 			$hostPort = $this->ReadPropertyInteger('hostPort');
 			$hostmodbusDevice = $this->ReadPropertyInteger('hostmodbusDevice');
 			$hostSwapWords = 1; // E3DC = true
+			$batterySize = $this->ReadPropertyFloat('batterySize');
+			$batteryDischargeMax = BATTERY_DISCHARGE_MAX;
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -243,6 +255,8 @@ if(false !== \$varId)
 			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
+			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
 			$readDcString = $this->ReadPropertyBoolean('readDcString');
 			$loggingPowerW = $this->ReadPropertyBoolean("loggingPowerW");
 			$loggingPowerKw = $this->ReadPropertyBoolean("loggingPowerKw");
@@ -1165,6 +1179,28 @@ $this->EnableAction("Status");
 			return $this->GetVariableValue(40083, "Value");
 		}
 
+		public function GetBatteryRangeKwh()
+		{
+			$batterySize = $this->ReadPropertyFloat('batterySize');
+			$batteryDischargeMax = BATTERY_DISCHARGE_MAX;
+			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
+			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
+
+			$batteryRange = ($this->GetBatterySoc() / 100) * $batterySize * ($batteryDischargeMax / 100);
+
+			if($readEmergencyPower)
+			{
+				$batteryRange = $batteryRange - $emergencyPowerBuffer;
+			}
+
+			return $batteryRange;
+		}
+
+		public function GetBatteryRangeWh()
+		{
+			return $this->GetBatteryRangeWh() * 1000;
+		}
+
 		public function GetExtPowerW()
 		{
 			return $this->GetExtPowerIntervalW(0);
@@ -1407,6 +1443,8 @@ $this->EnableAction("Status");
 
 /*
 EmergencyPowerState
+			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
+			$emergencyPowerBuffer = $this->ReadPropertyInteger('emergencyPowerBuffer');
 DeratingState
 ErrorState
 ErrorMessage

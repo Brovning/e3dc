@@ -2,11 +2,11 @@
     "elements": [
         {
             "type": "Label",
-            "label": "Der E3DC Stromspeicher muss Modbus TCP unterst�tzen!"
+            "label": "Der E3DC Stromspeicher muss Modbus TCP unterstützen!"
         },
         {
             "type": "Label",
-            "label": "Im Konfigurationsmen� des E3DC Stromspeichers muss je nach Version \nunter Hauptmen� > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder \nunter Hauptmen� > Smart-Funktionen > Smart Home > Modbus aktiviert werden."
+            "label": "Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version \nunter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder \nunter Hauptmenü > Smart-Funktionen > Smart Home > Modbus aktiviert werden."
         },
         {
             "type": "Label",
@@ -25,12 +25,14 @@
         {
             "type": "NumberSpinner",
             "caption": "Port",
-            "name": "hostPort"
+            "name": "hostPort",
+            "digits": 0
         },
         {
             "type": "NumberSpinner",
-            "caption": "Ger�te ID",
-            "name": "hostmodbusDevice"
+            "caption": "Geräte ID",
+            "name": "hostmodbusDevice",
+            "digits": 0
         },
         {
             "type": "Label",
@@ -38,7 +40,21 @@
         },
         {
             "type": "Label",
-            "label": "Ist ein zus�tzlicher Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) angeschlossen?"
+            "label": "Welche Batteriekapazität in kWh ist installiert?"
+        },
+        {
+            "type": "NumberSpinner",
+            "caption": "Batteriekapazität (bspw. 6.5, 10, 13, 15, 19.5)",
+            "name": "batterySize",
+            "digits": 1
+        },
+        {
+            "type": "Label",
+            "label": " "
+        },
+        {
+            "type": "Label",
+            "label": "Ist ein zusätzlicher Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) angeschlossen?"
         },
         {
             "type": "CheckBox",
@@ -99,7 +115,30 @@
         },
         {
             "type": "Label",
-            "label": "Sollen V, A und W der DC-Strings ausgelesen werden? (erst ab Release S10_2017_02 verf�gbar)"
+            "label": "Ist im E3DC eine Notstromversorgung installiert?"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Notstromversorgung",
+            "name": "readEmergencyPower"
+        },
+        {
+            "type": "Label",
+            "label": "Wenn Notstromversorgung vorhanden, welche Notstrom-Reserve in kWh wurde im Speicher eingestellt (siehe Notstrom > Einstellungen)?"
+        },
+        {
+            "type": "NumberSpinner",
+            "caption": "Notstrom-Reserve (in kWh)",
+            "name": "emergencyPowerBuffer",
+            "digits": 3
+        },
+        {
+            "type": "Label",
+            "label": " "
+        },
+        {
+            "type": "Label",
+            "label": "Sollen V, A und W der DC-Strings ausgelesen werden? (erst ab Release S10_2017_02 verfügbar)"
         },
         {
             "type": "CheckBox",
@@ -112,7 +151,7 @@
         },
         {
             "type": "Label",
-            "label": "F�r welche Variablen soll das Logging aktiviert werden?"
+            "label": "Für welche Variablen soll das Logging aktiviert werden?"
         },
         {
             "type": "CheckBox",
@@ -150,7 +189,7 @@
         },
         {
             "type": "Label",
-            "label": "Achtung: Abfrage-Intervall nicht zu klein w�hlen, um die Systemlast und auch die Archiv-Gr��e bei Logging nicht unn�tig zu erh�hen!"
+            "label": "Achtung: Abfrage-Intervall nicht zu klein wählen, um die Systemlast und auch die Archiv-Größe bei Logging nicht unnötig zu erhöhen!"
         }
     ],
     "status": [
@@ -167,7 +206,7 @@
         {
             "code": 103,
             "icon": "inactive",
-            "caption": "Instanz wird gel�scht"
+            "caption": "Instanz wird gelöscht"
         },
         {
             "code": 104,
