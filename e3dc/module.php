@@ -1161,7 +1161,7 @@ $this->EnableAction("Status");
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return $returnValue;
+			return round($returnValue);
 		}
 
 		public function GetBatteryPowerKw()
@@ -1225,7 +1225,7 @@ $this->EnableAction("Status");
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return abs($returnValue);
+			return abs(round($returnValue));
 		}
 
 		public function GetExtPowerKw()
@@ -1278,7 +1278,7 @@ $this->EnableAction("Status");
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return $returnValue;
+			return round($returnValue);
 		}
 
 		public function GetGridPowerKw()
@@ -1309,7 +1309,7 @@ $this->EnableAction("Status");
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return abs($returnValue);
+			return abs(round($returnValue));
 		}
 
 		public function GetPvPowerKw()
