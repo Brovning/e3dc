@@ -292,9 +292,9 @@ if(false !== \$varId)
 
 				$inverterModelRegister_array = array(
 				/* ********** Identifikationsblock **************************************************************************/
-/*					array(40001, 1, 3, "Magicbyte", "UInt16", "", "Magicbyte � S10 ModBus ID (Immer 0xE3DC)"),
+/*					array(40001, 1, 3, "Magicbyte", "UInt16", "", "Magicbyte - S10 ModBus ID (Immer 0xE3DC)"),
 					array(40002, 1, 3, "ModBus-Firmware", "UInt8+UInt8", "", "S10 ModBus-Firmware-Version"),
-					array(40003, 1, 3, "Register", "UInt16", "", "Anzahl unterst�tzter Register"),
+					array(40003, 1, 3, "Register", "UInt16", "", "Anzahl unterstützter Register"),
 //					array(40004, 16, 3, "Hersteller", "String", "", "Hersteller: 'E3/DC GmbH'"),
 //					array(40020, 16, 3, "Modell", "String", "", "Modell, z. B.: 'S10 E AIO'"),
 //					array(40036, 16, 3, "Seriennummer", "String", "", "Seriennummer, z. B.: 'S10-12345678912'"),
@@ -307,7 +307,7 @@ if(false !== \$varId)
 					array(40068, 2, 3, "PV-Leistung", "Int32", "W", "Photovoltaik-Leistung in Watt"),
 					array(40070, 2, 3, "Batterie-Leistung", "Int32", "W", "Batterie-Leistung in Watt (negative Werte = Entladung)"),
 					array(40072, 2, 3, "Verbrauchs-Leistung", "Int32", "W", "Hausverbrauchs-Leistung in Watt"),
-					array(40074, 2, 3, "Netz-Leistung", "Int32", "W", "Leistung am Netz�bergabepunkt in Watt (negative Werte = Einspeisung)"),
+					array(40074, 2, 3, "Netz-Leistung", "Int32", "W", "Leistung am Netzübergabepunkt in Watt (negative Werte = Einspeisung)"),
 				);
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				// Logging setzen
@@ -321,7 +321,7 @@ if(false !== \$varId)
 					}
 				}
 
-				// Variablen f�r kW-Logging erstellen, sofern n�tig                           
+				// Variablen für kW-Logging erstellen, sofern nötig                           
 				foreach($inverterModelRegister_array AS $inverterModelRegister)
 				{
 					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
@@ -367,20 +367,20 @@ if(false !== \$varId)
 
 				$inverterModelRegister_array = array(
 					array(40084, 1, 3, "Emergency-Power", "Uint16", "", "Emergency-Power Status:
-0 = Notstrom wird nicht von Ihrem Ger�t unterst�tzt (bei Ger�ten der �lteren Ger�tegeneration, z. B. S10-SP40, S10-P5002).
+0 = Notstrom wird nicht von Ihrem Gerät unterstützt (bei Geräten der älteren Gerätegeneration, z. B. S10-SP40, S10-P5002).
 1 = Notstrom aktiv (Ausfall des Stromnetzes)
 2 = Notstrom nicht aktiv
-3 = Notstrom nicht verf�gbar
+3 = Notstrom nicht verfügbar
 4 = Der Motorschalter des S10 E befindet sich nicht in der richtigen Position, sondern wurde manuell abgeschaltet oder nicht eingeschaltet.
-Hinweis: Falls der Motorschalter nicht bewusst ausgeschaltet wurde, haben Sie eventuell �bersehen, den Schieberegler am Motorschalter in die Position �ON� zu bringen (s. die folgende Abbildung zur Erl�uterung)."),
+Hinweis: Falls der Motorschalter nicht bewusst ausgeschaltet wurde, haben Sie eventuell übersehen, den Schieberegler am Motorschalter in die Position 'ON' zu bringen (s. die folgende Abbildung zur Erläuterung)."),
 					array(40085, 1, 3, "EMS-Status", "Uint16", "", "EMS-Status: EMS-Register    Beschreibung    Zugriff
 Bit 0    Laden der Batterien ist gesperrt (1)    R
 Bit 1    Entladen der Batterien ist gesperrt (1)    R
-Bit 2    Notstrommodus ist m�glich (1) (wenn die Batterien geladen sind)    R
-Bit 3    Wetterbasiertes Laden: 1 = Es wird Ladekapazit�t zur�ckgehalten, damit der erwartete Sonnenschein maximal ausgenutzt werden kann. Dies ist n�tig, wenn die maximale Einspeisung begrenzt ist.;        0 = Es wird keine Ladekapazit�t zur�ckgehalten    R
+Bit 2    Notstrommodus ist möglich (1) (wenn die Batterien geladen sind)    R
+Bit 3    Wetterbasiertes Laden: 1 = Es wird Ladekapazität zurückgehalten, damit der erwartete Sonnenschein maximal ausgenutzt werden kann. Dies ist nötig, wenn die maximale Einspeisung begrenzt ist.;        0 = Es wird keine Ladekapazität zurückgehalten    R
 Bit 4    Abregelungs-Status: 1 = Die Ausgangsleistung des S10 Hauskraftwerks wird abgeregelt, da die maximale Einspeisung erreicht ist;    0 = Dieser Fall ist nicht eingetreten    R
-Bit 5    1 = Ladesperrzeit aktiv: Den Zeitraum f�r die Ladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Ladesperrzeit    R
-Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Entladesperrzeit    R"),
+Bit 5    1 = Ladesperrzeit aktiv: Den Zeitraum für die Ladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Ladesperrzeit    R
+Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Entladesperrzeit    R"),
 					array(40086, 1, 3, "EMS Remote Control", "int16", "", "EMS Remote Control"),
 					array(40087, 1, 3, "EMS CTRL", "Uint16", "", "EMS CTRL"),
 				);
@@ -410,7 +410,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geb
 				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
 
 
-				// Bit 0 - 6 f�r "EMS-Status" erstellen
+				// Bit 0 - 6 für "EMS-Status" erstellen
 				$instanceId = IPS_GetObjectIDByIdent("40085", $categoryId);
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				IPS_SetHidden($varId, true);
@@ -418,11 +418,11 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geb
 				$bitArray = array(
 					array('varName' => "Batterie laden", 'varProfile' => "~Lock", 'varInfo' => "Bit 0: Laden der Batterien ist gesperrt (1)    R"),
 					array('varName' => "Batterie entladen", 'varProfile' => "~Lock", 'varInfo' => "Bit 1: Entladen der Batterien ist gesperrt (1)    R"),
-					array('varName' => "Notstrommodus", 'varProfile' => "~Switch", 'varInfo' => "Bit 2: Notstrommodus ist m�glich (1) (wenn die Batterien geladen sind)    R"),
-					array('varName' => "Wetterbasiertes Laden", 'varProfile' => "~Switch", 'varInfo' =>  "Bit 3: Wetterbasiertes Laden: 1 = Es wird Ladekapazit�t zur�ckgehalten, damit der erwartete Sonnenschein maximal ausgenutzt werden kann. Dies ist n�tig, wenn die maximale Einspeisung begrenzt ist.;        0 = Es wird keine Ladekapazit�t zur�ckgehalten    R"),
+					array('varName' => "Notstrommodus", 'varProfile' => "~Switch", 'varInfo' => "Bit 2: Notstrommodus ist möglich (1) (wenn die Batterien geladen sind)    R"),
+					array('varName' => "Wetterbasiertes Laden", 'varProfile' => "~Switch", 'varInfo' =>  "Bit 3: Wetterbasiertes Laden: 1 = Es wird Ladekapazität zurückgehalten, damit der erwartete Sonnenschein maximal ausgenutzt werden kann. Dies ist nötig, wenn die maximale Einspeisung begrenzt ist.;        0 = Es wird keine Ladekapazität zurückgehalten    R"),
 					array('varName' => "Abregelungs-Status", 'varProfile' => "~Alert", 'varInfo' => "Bit 4: Abregelungs-Status: 1 = Die Ausgangsleistung des S10 Hauskraftwerks wird abgeregelt, da die maximale Einspeisung erreicht ist;    0 = Dieser Fall ist nicht eingetreten    R"),
-					array('varName' => "Ladesperrzeit", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: 1 = Ladesperrzeit aktiv: Den Zeitraum f�r die Ladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Ladesperrzeit    R"),
-					array('varName' => "Entladesperrzeit", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: 1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Entladesperrzeit    R"),
+					array('varName' => "Ladesperrzeit", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: 1 = Ladesperrzeit aktiv: Den Zeitraum für die Ladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Ladesperrzeit    R"),
+					array('varName' => "Entladesperrzeit", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: 1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Entladesperrzeit    R"),
 				);
 
 				foreach($bitArray AS $bit)
@@ -436,7 +436,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geb
 
 
 				$inverterModelRegister_array = array(
-					array(40076, 2, 3, "Ext-Leistung", "Int32", "W", "Leistung aller zus�tzlichen Einspeiser in Watt"),
+					array(40076, 2, 3, "Ext-Leistung", "Int32", "W", "Leistung aller zusätzlichen Einspeiser in Watt"),
 				);
 
 				if($readExtLeistung)
@@ -453,7 +453,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geb
 						}
 					}
 
-					// Variablen f�r kW-Logging erstellen, sofern n�tig                           
+					// Variablen für kW-Logging erstellen, sofern nötig                           
 					foreach($inverterModelRegister_array AS $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
@@ -493,7 +493,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geb
 				
 
 				/* ********** Spezifische Abfragen zur Steuerung der Wallbox **************************************
-					Hinweis: Es k�nnen nicht alle Bits geschaltet werden. Bereiche, bei denen die aktive Steuerung sinnvoll ist, sind mit RW (= �Read� und �Write�) gekennzeichnet.
+					Hinweis: Es können nicht alle Bits geschaltet werden. Bereiche, bei denen die aktive Steuerung sinnvoll ist, sind mit RW (= 'Read' und 'Write') gekennzeichnet.
 				 ************************************************************************************************** */
 
 				$inverterModelRegister_array = array(
@@ -519,7 +519,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geb
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
 
-					// Variablen f�r kW-Logging erstellen, sofern n�tig                           
+					// Variablen fuer kW-Logging erstellen, sofern noetig                           
 					foreach($inverterModelRegister_array AS $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
@@ -543,10 +543,10 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum f�r die Entladesperrzeit geb
 
 
 				$wallboxDescription = "Wallbox_X_CTRL  Beschreibung    Datentyp
-Bit 0   Wallbox vorhanden und verf�gbar (1) R
+Bit 0   Wallbox vorhanden und verfügbar (1) R
 Bit 1   Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW
 Bit 2   Laden abgebrochen (1) Laden freigegeben (0) RW
-Bit 3   Autor l�dt (1) Auto l�dt nicht (0)  R
+Bit 3   Autor lädt (1) Auto lädt nicht (0)  R
 Bit 4   Typ-2-Stecker verriegelt (1)    R
 Bit 5   Typ-2-Stecker gesteckt (1)  R
 Bit 6   Schukosteckdose an (1)  RW
@@ -559,10 +559,10 @@ Bit 12  Eine Phase aktiv (1) drei Phasen aktiv (0)  RW
 Bit 13  Nicht belegt";
 
 				$bitArray = array(
-					array('varName' => "Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0: Wallbox vorhanden und verf�gbar (1) R"),
+					array('varName' => "Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0: Wallbox vorhanden und verfügbar (1) R"),
 					array('varName' => "Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1: Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
 					array('varName' => "Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2: Laden abgebrochen (1) Laden freigegeben (0) RW"),
-					array('varName' => "Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3: Auto l�dt (1) Auto l�dt nicht (0)  R"),
+					array('varName' => "Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3: Auto lädt (1) Auto lädt nicht (0)  R"),
 					array('varName' => "Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4: Typ-2-Stecker verriegelt (1)    R"),
 					array('varName' => "Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: Typ-2-Stecker gesteckt (1)  R"),
 					array('varName' => "Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: Schukosteckdose an (1)  RW"),
@@ -654,7 +654,7 @@ Bit 13  Nicht belegt";
 
 				foreach($inverterModelRegister_array AS $register)
 				{
-					// Bit 0 - 12 f�r "WallBox_X_CTRL" erstellen
+					// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 					$instanceId = IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 					IPS_SetHidden($varId, true);
@@ -675,7 +675,7 @@ Bit 13  Nicht belegt";
 				{
 					$inverterModelRegister_array = array(
 					/* ********** DC-String **************************************************************************
-						Hinweis: Die folgenden Register 40096 bis 40104 k�nnen ab dem Release S10_2017_02 genutzt werden!
+						Hinweis: Die folgenden Register 40096 bis 40104 koennen ab dem Release S10_2017_02 genutzt werden!
 					 *************************************************************************************************/
 						array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage"),
 						array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage"),
@@ -694,7 +694,7 @@ Bit 13  Nicht belegt";
 						IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
 						IPS_SetName($categoryId, $categoryName);
 						IPS_SetParent($categoryId, $parentId);
-						IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 k�nnen ab dem Release S10_2017_02 genutzt werden!");
+						IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!");
 					}
 
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
@@ -714,7 +714,7 @@ Bit 13  Nicht belegt";
 
 				if($active)
 				{
-					// Erreichbarkeit von IP und Port pr�fen
+					// Erreichbarkeit von IP und Port pruefen
 					$portOpen = false;
 					$waitTimeoutInSeconds = 1; 
 					if($fp = @fsockopen($hostIp, $hostPort, $errCode, $errStr, $waitTimeoutInSeconds))
@@ -749,13 +749,13 @@ Bit 13  Nicht belegt";
 				}
 
 
-				// pr�fen, ob sich ModBus-Gateway ge�ndert hat
+				// pruefen, ob sich ModBus-Gateway geaendert hat
 				if(0 != $gatewayId_Old && $gatewayId != $gatewayId_Old)
 				{
 					$this->deleteInstanceNotInUse($gatewayId_Old, MODBUS_ADDRESSES);
 				}
 
-				// pr�fen, ob sich ClientSocket Interface ge�ndert hat
+				// pruefen, ob sich ClientSocket Interface geaendert hat
 				if(0 != $interfaceId_Old && $interfaceId != $interfaceId_Old)
 				{
 					$this->deleteInstanceNotInUse($interfaceId_Old, MODBUS_INSTANCES);
@@ -769,7 +769,7 @@ Bit 13  Nicht belegt";
 		}
 /*
 BESCHREIBUNG
-Aktiviert die Standardaktion der Statusvariable. Dadurch ist diese in der Visualisierung ver�nderbar und kann auch beschrieben werden. Diese Funktion muss aufgerufen werden, da alle Statusvariablen standardm��ig ohne Standardaktion erstellt werden. Sofern die Standardaktion aktiviert ist, muss auf �nderungsanfragen innerhalb von RequestAction reagiert werden.
+Aktiviert die Standardaktion der Statusvariable. Dadurch ist diese in der Visualisierung veraenderbar und kann auch beschrieben werden. Diese Funktion muss aufgerufen werden, da alle Statusvariablen standardmaeßig ohne Standardaktion erstellt werden. Sofern die Standardaktion aktiviert ist, muss auf Aenderungsanfragen innerhalb von RequestAction reagiert werden.
 
 BEISPIEL
 // Aktiviert die Standardaktion der Statusvariable
@@ -780,8 +780,8 @@ $this->EnableAction("Status");
 		 
 			switch($Ident) {
 				case "TestVariable":
-					//Hier w�rde normalerweise eine Aktion z.B. das Schalten ausgef�hrt werden
-					//Ausgaben �ber 'echo' werden an die Visualisierung zur�ckgeleitet
+					//Hier wuerde normalerweise eine Aktion z.B. das Schalten ausgefuehrt werden
+					//Ausgaben ueber 'echo' werden an die Visualisierung zurueckgeleitet
 		 
 					//Neuen Wert in die Statusvariable schreiben
 					SetValue($this->GetIDForIdent($Ident), $Value);
@@ -827,7 +827,7 @@ $this->EnableAction("Status");
 					|| "string16" == strtolower($inverterModelRegister[IMR_TYPE])
 					|| "string" == strtolower($inverterModelRegister[IMR_TYPE]))
 				{
-					echo "Datentyp '".$inverterModelRegister[IMR_TYPE]."' wird von Modbus in IPS nicht unterst�tzt! --> skip\n";
+					echo "Datentyp '".$inverterModelRegister[IMR_TYPE]."' wird von Modbus in IPS nicht unterstützt! --> skip\n";
 					continue;
 				}
 				else
@@ -869,22 +869,22 @@ $this->EnableAction("Status");
 				{
 					$profile = "~Hertz";
 				}
-/*				// Voltampere f�r elektrische Scheinleistung
+/*				// Voltampere fuer elektrische Scheinleistung
 				elseif("va" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
 				{
 					$profile = MODUL_PREFIX.".Scheinleistung.Float";
 				}
-				// Voltampere f�r elektrische Scheinleistung
+				// Voltampere fuer elektrische Scheinleistung
 				elseif("va" == strtolower($inverterModelRegister[IMR_UNITS]))
 				{
 					$profile = MODUL_PREFIX.".Scheinleistung.Int";
 				}
-				// Var f�r elektrische Blindleistung
+				// Var fuer elektrische Blindleistung
 				elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
 				{
 					$profile = MODUL_PREFIX.".Blindleistung.Float";
 				}
-				// Var f�r elektrische Blindleistung
+				// Var fuer elektrische Blindleistung
 				elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) || "var" == $inverterModelRegister[IMR_UNITS])
 				{
 					$profile = MODUL_PREFIX.".Blindleistung.Int";
@@ -905,7 +905,7 @@ $this->EnableAction("Status");
 				{
 					$profile = MODUL_PREFIX.".Electricity.Int";
 				}
-*/				elseif("� C" == $inverterModelRegister[IMR_UNITS])
+*/				elseif("° C" == $inverterModelRegister[IMR_UNITS])
 				{
 					$profile = "~Temperature";
 				}
@@ -1058,18 +1058,18 @@ $this->EnableAction("Status");
 					array('Name' => "FAULT", 'Wert' => 7, "Ein oder mehr Fehler existieren, siehe St * oder Evt * Register", 'Farbe' => 16711680),
 					array('Name' => "STANDBY", 'Wert' => 8, "Standby"),
 					array('Name' => "NO_BUSINIT", 'Wert' => 9, "Keine SolarNet Kommunikation"),
-					array('Name' => "NO_COMM_INV", 'Wert' => 10, "Keine Kommunikation mit Wechselrichter m�glich"),
-					array('Name' => "SN_OVERCURRENT", 'Wert' => 11, "�berstrom an SolarNet Stecker erkannt"),
+					array('Name' => "NO_COMM_INV", 'Wert' => 10, "Keine Kommunikation mit Wechselrichter möglich"),
+					array('Name' => "SN_OVERCURRENT", 'Wert' => 11, "Überstrom an SolarNet Stecker erkannt"),
 					array('Name' => "BOOTLOAD", 'Wert' => 12, "Wechselrichter wird gerade upgedatet"),
 					array('Name' => "AFCI", 'Wert' => 13, "AFCI Event (Arc-Erkennung)"),
 				)
 			);
 */
 			$this->createVarProfile(MODUL_PREFIX.".Emergency-Power.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "nicht unterst�tzt", 'Wert' => 0, "Notstrom wird nicht von Ihrem Ger�t unterst�tzt", 'Farbe' => 16753920),
+					array('Name' => "nicht unterstützt", 'Wert' => 0, "Notstrom wird nicht von Ihrem Gerät unterstützt", 'Farbe' => 16753920),
 					array('Name' => "aktiv", 'Wert' => 1, "Notstrom aktiv (Ausfall des Stromnetzes)", 'Farbe' => 65280),
 					array('Name' => "nicht aktiv", 'Wert' => 2, "Notstrom nicht aktiv", 'Farbe' => -1),
-					array('Name' => "nicht verf�gbar", 'Wert' => 3, "Notstrom nicht verf�gbar", 'Farbe' => 16753920),
+					array('Name' => "nicht verfügbar", 'Wert' => 3, "Notstrom nicht verfügbar", 'Farbe' => 16753920),
 					array('Name' => "Fehler", 'Wert' => 4, "Der Motorschalter des S10 E befindet sich nicht in der richtigen Position, sondern wurde manuell abgeschaltet oder nicht eingeschaltet.", 'Farbe' => 16711680),
 				)
 			);
@@ -1078,7 +1078,7 @@ $this->EnableAction("Status");
 			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Float", VARIABLETYPE_FLOAT, ' VA');
 			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Int", VARIABLETYPE_INTEGER, ' Var');
 			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Float", VARIABLETYPE_FLOAT, ' Var');
-			$this->createVarProfile(MODUL_PREFIX.".Angle.Int", VARIABLETYPE_INTEGER, ' �');
+			$this->createVarProfile(MODUL_PREFIX.".Angle.Int", VARIABLETYPE_INTEGER, ' °');
 */
 			$this->createVarProfile(MODUL_PREFIX.".Watt.Int", VARIABLETYPE_INTEGER, ' W');
 			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
@@ -1455,10 +1455,10 @@ ErrorMessage
 				IsWallboxLocked
 				IsWallboxCharging
 				...
-			"Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0   Wallbox vorhanden und verf�gbar (1) R"),
+			"Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0   Wallbox vorhanden und verfügbar (1) R"),
 			"Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1   Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
 			"Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2   Laden abgebrochen (1) Laden freigegeben (0) RW"),
-			"Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3   Auto l�dt (1) Auto l�dt nicht (0)  R"),
+			"Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3   Auto lädt (1) Auto lädt nicht (0)  R"),
 			"Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4   Typ-2-Stecker verriegelt (1)    R"),
 			"Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5   Typ-2-Stecker gesteckt (1)  R"),
 			"Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6   Schukosteckdose an (1)  RW"),
