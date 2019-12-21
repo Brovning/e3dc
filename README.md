@@ -47,13 +47,16 @@ __Konfigurationsseite__:
 
 Name     | Beschreibung
 -------- | ------------------
-Open | Schalter zum aktivieren und deaktivieren der Instanz
+Open | Schalter zum aktivieren und deaktivieren der Instanz. Default: aus
 IP | IP-Adresse des E3DC-Stromspeichers im lokalen Netzwerk
 Port | Port, welcher im E3DC unter dem Menüpunkt Modbus angegeben wurde. Default: 502
 Geräte Id | Modbus Geräte ID, welche im E3DC Menü gesetzt werden kann. Default: 1
-externer Einspeiser | Schalter, um die Variable für einen zusätzlichen Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) einzulesen
-Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen
-DC String Informationen | Schalter, um die Variablen für V, A und W der DC-Strings einzulesen (erst ab Release S10_2017_02 verfügbar).
+Batteriekapazität | Welche Batteriekapazität in Kilo-Watt-Stunden (kWh) ist im E3DC installiert (bspw. 6.5, 10, 13, 15, 19.5). Diese Angabe wird optional benötigt, um die Reichweite der Batterie berechnen zu können. Default: 0
+externer Einspeiser | Schalter, um die Variable für einen zusätzlichen Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) einzulesen. Default: aus
+Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen. Default: aus
+Notstromversorgung | Schalter, um angeben zu können, ob eine Notstromversorgung im E3DC verbaut ist. Default: aus
+Notstrom-Reserve | Bei vorhandener Notstromversorgung kann am E3DC unter dem Menüpunkt Notstrom > Einstellungen eine Reserve angegeben werden, bis zu welcher die Batterie maximal entladen werden soll. Diese Angabe wird optional benötigt, um die Reichweite der Batterie korrekt berechnen zu können. Default: 0
+DC String Informationen | Schalter, um die Variablen für V, A und W der DC-Strings einzulesen (erst ab Release S10_2017_02 verfügbar). Default: aus
 Variablen-Logging | Für welche Variablen soll das Logging aktiviert werden? Zur Auswahl stehen Leistungsvariablen in W, Leistungsvariablen in kW (bei Auswahl werden zusätzliche Variablen in kW erstellt), Batterie SOC (Ladezustand) in %, Autarkie in %, Eigenverbrauch in %
 Abfrage-Intervall	| Intervall (in ms) in welchem die Modbus-Adressen abgefragt werden sollen. Achtung: Abfrage-Intervall nicht zu klein wählen, um die Systemlast und auch die Archiv-Größe bei Logging nicht unnötig zu erhöhen! Default: 60000 (=60 Sekunden)
 
