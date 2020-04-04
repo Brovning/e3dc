@@ -58,7 +58,9 @@ Notstromversorgung | Schalter, um angeben zu können, ob eine Notstromversorgung
 Notstrom-Reserve | Bei vorhandener Notstromversorgung kann am E3DC unter dem Menüpunkt Notstrom > Einstellungen eine Reserve angegeben werden, bis zu welcher die Batterie maximal entladen werden soll. Diese Angabe wird optional benötigt, um die Reichweite der Batterie korrekt berechnen zu können. Default: 0
 DC String Informationen | Schalter, um die Variablen für V, A und W der DC-Strings einzulesen (erst ab Release S10_2017_02 verfügbar). Default: aus
 Variablen-Logging | Für welche Variablen soll das Logging aktiviert werden? Zur Auswahl stehen Leistungsvariablen in W, Leistungsvariablen in kW (bei Auswahl werden zusätzliche Variablen in kW erstellt), Batterie SOC (Ladezustand) in %, Autarkie in %, Eigenverbrauch in %
-Abfrage-Intervall	| Intervall (in ms) in welchem die Modbus-Adressen abgefragt werden sollen. Achtung: Abfrage-Intervall nicht zu klein wählen, um die Systemlast und auch die Archiv-Größe bei Logging nicht unnötig zu erhöhen! Default: 60000 (=60 Sekunden)
+Tageswerte der Wirkarbeit | Sollen die Tageswerte in Wh oder kWh berechnet werden? Bei Auswahl werden zusätzliche Variablen in Wh oder kWh erstellt.
+Wirkarbeit loggen | Sollen für die Tageswerte in Wh oder kWh das Logging aktiviert werden? Nur möglich, sofern zuvor die Tageswerte-Berechnung auch aktiviert wurde!
+Abfrage-Intervall	| Intervall (in Sekunden) in welchem die Modbus-Adressen abgefragt werden sollen. Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird. Jedoch je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei Logging! Default: 60 Sekunden
 
 
 ### 5. Statusvariablen und Profile
@@ -148,29 +150,39 @@ Sofern nur eine Instanz des E3DC-Moduls im Einsatz ist, sollte die $InstanzID wi
 
 `int E3DC_GetAutarky(int $InstanzID)`
 
-Gibt den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück
+Gibt den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück.
 
 
 `int E3DC_GetSelfConsumption(int $InstanzID)`
 
-Gibt den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück
+Gibt den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück.
 
 
 ##### Batterie
 
 `int E3DC_GetBatterySoc(int $InstanzID)`
 
-Gibt den aktuelle Batterie-State-Of-Charge (SOC) der E3DC-Instanz $InstanzID als Integer in Prozent (%) zurück
+Gibt den aktuelle Batterie-State-Of-Charge (SOC) der E3DC-Instanz $InstanzID als Integer in Prozent (%) zurück.
 
 
 `int E3DC_GetBatteryPowerW(int $InstanzID)` bzw. `float E3DC_GetBatteryPowerKw(int $InstanzID)`
 
-Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetBatteryPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetBatteryPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Batterie-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die gemittelte Batterie-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+
+
+`int GetBatteryChargeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetBatteryChargeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Batterie-Lade-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
+
+
+`int GetBatteryDischargeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetBatteryDischargeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Batterie-Entlade-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
 `int E3DC_GetBatteryRangeWh(int $InstanzID)` bzw. `float E3DC_GetBatteryRangeKwh(int $InstanzID)`
@@ -178,36 +190,57 @@ Gibt die gemittelte Batterie-Leistung der E3DC-Instanz $InstanzID über die letz
 Gibt die aktuelle Batterie-Reichweite der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert wird berechnet aus dem SOC, der in der Instanz angegebenen Batterie-Kapazität und der maximal nutzbaren Entladetiefe. Sofern eine Notstrom-Funktion installiert ist, wird auch die in der Instanz angegebene Notstromreserve berücksichtigt.
 
 
+
 ##### Leistungswerte PV, ExtGen und Haus
 
 `int E3DC_GetGridPowerW(int $InstanzID)` bzw. `float E3DC_GetGridPowerKw(int $InstanzID)`
 
-Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetGridPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetGridPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Netz-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die gemittelte Netz-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+
+
+`int GetGridConsumptionEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetGridConsumptionEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Netz-Bezugs-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
+
+
+`int GetGridFeedEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetGridFeedEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Netz-Einspeise-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
 `int E3DC_GetHomePowerW(int $InstanzID)` bzw. `float E3DC_GetHomePowerKw(int $InstanzID)`
 
-Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetHomePowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetHomePowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die gemittelte Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+
+
+`int GetHomeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetHomeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Haus-Verbrauchs-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
 `int E3DC_GetPvPowerW(int $InstanzID)` bzw. `float E3DC_GetPvPowerKw(int $InstanzID)`
 
-Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetPvPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetPvPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte PV-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die gemittelte PV-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+
+
+`int GetPvEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetPvEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die PV-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
 `int E3DC_GetExtPowerW(int $InstanzID)` bzw. `float E3DC_GetExtPowerKw(int $InstanzID)`
@@ -220,6 +253,11 @@ Gibt die aktuelle Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselric
 Gibt die gemittelte Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert ist nur verfügbar, wenn eine externe Generatorquelle angeschlossen ist.
 
 
+`int GetExtEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetExtEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Ext-Energie (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
+
+
 `int E3DC_GetProductionPowerW(int $InstanzID)` bzw. `float E3DC_GetProductionPowerKw(int $InstanzID)`
 
 Gibt die aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von E3DC_GetPVPowerW() bzw. E3DC_GetPVPowerKw().
@@ -230,31 +268,52 @@ Gibt die aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E
 Gibt die gemittelte Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von E3DC_GetPVPowerW() bzw. E3DC_GetPVPowerKw().
 
 
+`int GetProductionEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetProductionEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Gesamt-Produktions-Energie (Ext-Energie + PV-Energie) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von GetPvEnergyWh() bzw. GetPvEnergyKwh().
+
 
 ##### Wallbox
 
 `int E3DC_GetWallboxPowerW(int $InstanzID)` bzw. `float E3DC_GetWallboxPowerKw(int $InstanzID)`
 
-Gibt die aktuelle Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die aktuelle Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetWallboxPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetWallboxPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die gemittelte Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetWallboxPowerSolarW(int $InstanzID)` bzw. `float E3DC_GetWallboxPowerSolarKw(int $InstanzID)`
 
-Gibt die aktuelle Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die aktuelle Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetWallboxPowerSolarIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetWallboxPowerSolarIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück
+Gibt die gemittelte Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+
+
+`int GetWallboxEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetWallboxEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Wallbox-Energie (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
+
+
+`int GetWallboxSolarEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetWallboxSolarEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+
+Gibt die Wallbox-Solar-Energie (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
 
 ### 8. Versionshistorie
+
+#### v1.0
+- Feature Requests: #4 Tageswerte loggen
+- pollCycle von ms auf Sekunden umgestellt
+- intern umstrukturiert, interne Variablen umbenannt, interne Funktionen hinzugefügt,...
+- Public Funktionen hinzugefügt: GetBatteryChargeEnergyWh(), GetBatteryChargeEnergyKwh(), GetBatteryDischargeEnergyWh(), GetBatteryDischargeEnergyKwh(), GetExtEnergyWh(), GetExtEnergyKwh(), GetProductionEnergyWh(), GetProductionEnergyKwh(), GetGridConsumptionEnergyWh(), GetGridConsumptionEnergyKwh(), GetGridFeedEnergyWh(), GetGridFeedEnergyKwh(), GetPvEnergyWh(), GetPvEnergyKwh(), GetHomeEnergyWh(), GetHomeEnergyKwh(), GetWallboxEnergyWh(), GetWallboxEnergyKwh(), GetWallboxSolarEnergyWh(), GetWallboxSolarEnergyKwh()
+- Behobene Fehler: #6
 
 #### v0.5
 - Veraltete Funktionen (deutsche Funktionsnamen) entfernt
