@@ -243,15 +243,10 @@ if(false !== \$varId)
 			$loggingSelfconsumption = $this->ReadPropertyBoolean("loggingSelfconsumption");
 			$pollCycle = $this->ReadPropertyInteger('pollCycle');
 
-			$archivId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}");
-			if (isset($archivId[0]))
-			{
-				$archivId = $archivId[0];
-			}
-			else
-			{
-				$archivId = false;
 
+			$archiveId = $this->getArchiveId();
+			if (false === $archiveId)
+			{
 				// no archive found
 				$this->SetStatus(201);
 			}
@@ -293,9 +288,9 @@ if(false !== \$varId)
 				{
 					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-					if (false !== $archivId)
+					if (false !== $varId && false !== $archiveId)
 					{
-						AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);
+						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
 					}
 				}
 
@@ -306,9 +301,9 @@ if(false !== \$varId)
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 					
 					$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-					if(false !== $varId && false !== $archivId)
+					if(false !== $varId && false !== $archiveId)
 					{
-						AC_SetLoggingStatus($archivId, $varId, $loggingPowerKw);
+						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 					}
 				}
 
@@ -337,9 +332,9 @@ if(false !== \$varId)
 				{
 					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-					if (false !== $archivId)
+					if (false !== $varId && false !== $archiveId)
 					{
-						AC_SetLoggingStatus($archivId, $varId, $loggingBatterySoc);
+						AC_SetLoggingStatus($archiveId, $varId, $loggingBatterySoc);
 					}
 				}
 
@@ -372,16 +367,16 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				
 				$varName = "Autarkie";
 				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Autarkie in Prozent");
-				if (false !== $archivId)
+				if (false !== $varId && false !== $archiveId)
 				{
-					AC_SetLoggingStatus($archivId, $varId, $loggingAutarky);
+					AC_SetLoggingStatus($archiveId, $varId, $loggingAutarky);
 				}
 
 				$varName = "Eigenverbrauch";
  				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Eigenverbrauch in Prozent");
-				if (false !== $archivId)
+				if (false !== $varId && false !== $archiveId)
 				{
-					AC_SetLoggingStatus($archivId, $varId, $loggingSelfconsumption);
+					AC_SetLoggingStatus($archiveId, $varId, $loggingSelfconsumption);
 				}
 
 				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
@@ -425,9 +420,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-						if (false !== $archivId)
+						if (false !== $varId && false !== $archiveId)
 						{
-							AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);
+							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
 						}
 					}
 
@@ -438,9 +433,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 						
 						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-						if(false !== $varId && false !== $archivId)
+						if(false !== $varId && false !== $archiveId)
 						{
-							AC_SetLoggingStatus($archivId, $varId, $loggingPowerKw);
+							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 						}
 					}
 				}
@@ -453,9 +448,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				if($readExtLeistung)
 				{
 					$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung", $categoryId);
-					if (false !== $archivId)
+				if(false !== $varId && false !== $archiveId)
 					{
-						AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);
+						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
 					}			
 				}
 
@@ -463,9 +458,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				if($readExtLeistung && $loggingPowerKw)
 				{
 					$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung_kW", $categoryId);
-					if (false !== $archivId)
+				if(false !== $varId && false !== $archiveId)
 					{
-						AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);
+						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
 					}
 				}
 				
@@ -488,9 +483,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-						if (false !== $archivId)
+						if (false !== $varId && false !== $archiveId)
 						{
-							AC_SetLoggingStatus($archivId, $varId, $loggingPowerW);
+							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
 						}
 					}
 
@@ -504,9 +499,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 						
 						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-						if(false !== $varId	&& false !== $archivId)
+						if(false !== $varId	&& false !== $archiveId)
 						{
-							AC_SetLoggingStatus($archivId, $varId, $loggingPowerKw);
+							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 						}
 					}
 				}
@@ -772,240 +767,247 @@ $this->EnableAction("Status");
 */
 		private function createModbusInstances($inverterModelRegister_array, $parentId, $gatewayId, $pollCycle)
 		{
-			// Erstelle Modbus Instancen
-			foreach($inverterModelRegister_array AS $inverterModelRegister)
+			// Workaround für "InstanceInterface not available" Fehlermeldung beim Server-Start...
+			if (KR_READY == IPS_GetKernelRunlevel())
 			{
-				if(DEBUG) echo "REG_".$inverterModelRegister[IMR_START_REGISTER]. " - ".$inverterModelRegister[IMR_NAME]."\n";
-				// Datentyp ermitteln
-				// 0=Bit, 1=Byte, 2=Word, 3=DWord, 4=ShortInt, 5=SmallInt, 6=Integer, 7=Real
-				if("uint16" == strtolower($inverterModelRegister[IMR_TYPE])
-					|| "enum16" == strtolower($inverterModelRegister[IMR_TYPE])
-					|| "uint8+uint8" == strtolower($inverterModelRegister[IMR_TYPE]))
+				// Erstelle Modbus Instancen
+				foreach ($inverterModelRegister_array as $inverterModelRegister)
 				{
-					$datenTyp = 2;
-				}
-				elseif("uint32" == strtolower($inverterModelRegister[IMR_TYPE]))
-				{
-					$datenTyp = 3;
-				}
-				elseif("int16" == strtolower($inverterModelRegister[IMR_TYPE])
-					|| "sunssf" == strtolower($inverterModelRegister[IMR_TYPE]))
-				{
-					$datenTyp = 4;
-				}
-				elseif("int32" == strtolower($inverterModelRegister[IMR_TYPE]))
-				{
-					$datenTyp = 6;
-				}
-				elseif("float32" == strtolower($inverterModelRegister[IMR_TYPE]))
-				{
-					$datenTyp = 7;
-				}
-				elseif("string32" == strtolower($inverterModelRegister[IMR_TYPE])
-					|| "string16" == strtolower($inverterModelRegister[IMR_TYPE])
-					|| "string" == strtolower($inverterModelRegister[IMR_TYPE]))
-				{
-					echo "Datentyp '".$inverterModelRegister[IMR_TYPE]."' wird von Modbus in IPS nicht unterstützt! --> skip\n";
-					continue;
-				}
-				else
-				{
-					echo "Fehler: Unbekannter Datentyp '".$inverterModelRegister[IMR_TYPE]."'! --> skip\n";
-					continue;
-				}
-
-				// Profil ermitteln
-				if("a" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
-				{
-					$profile = "~Ampere";
-				}
-				elseif("a" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".Ampere.Int";
-				}
-/*				elseif("ah" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".AmpereHour.Int";
-				}
-*/				elseif("v" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
-				{
-					$profile = "~Volt";
-				}
-				elseif("v" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".Volt.Int";
-				}
-				elseif("w" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
-				{
-					$profile = "~Watt.14490";
-				}
-				elseif("w" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".Watt.Int";
-				}
-				elseif("hz" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = "~Hertz";
-				}
-/*				// Voltampere fuer elektrische Scheinleistung
-				elseif("va" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
-				{
-					$profile = MODUL_PREFIX.".Scheinleistung.Float";
-				}
-				// Voltampere fuer elektrische Scheinleistung
-				elseif("va" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".Scheinleistung.Int";
-				}
-				// Var fuer elektrische Blindleistung
-				elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
-				{
-					$profile = MODUL_PREFIX.".Blindleistung.Float";
-				}
-				// Var fuer elektrische Blindleistung
-				elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) || "var" == $inverterModelRegister[IMR_UNITS])
-				{
-					$profile = MODUL_PREFIX.".Blindleistung.Int";
-				}
-*/				elseif("%" == $inverterModelRegister[IMR_UNITS] && 7 == $datenTyp)
-				{
-					$profile = "~Valve.F";
-				}
-				elseif("%" == $inverterModelRegister[IMR_UNITS])
-				{
-					$profile = "~Valve";
-				}
-				elseif("wh" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
-				{
-					$profile = MODUL_PREFIX.".Electricity.Float";
-				}
-/*				elseif("wh" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".Electricity.Int";
-				}
-*/				elseif("° C" == $inverterModelRegister[IMR_UNITS])
-				{
-					$profile = "~Temperature";
-				}
-/*				elseif("cos()" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".Angle.Int";
-				}
-				elseif("enumerated_st" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = "SunSpec.StateCodes.Int";
-				}
-				elseif("enumerated_stvnd" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = MODUL_PREFIX.".StateCodes.Int";
-				}
-*/				elseif("" == $inverterModelRegister[IMR_UNITS] && "emergency-power" == strtolower($inverterModelRegister[IMR_NAME]))
-				{
-					$profile = MODUL_PREFIX.".Emergency-Power.Int";
-				}
-				elseif("bitfield" == strtolower($inverterModelRegister[IMR_UNITS]))
-				{
-					$profile = false;
-				}
-				else
-				{
-					$profile = false;
-					if("" != $inverterModelRegister[IMR_UNITS])
+					if (DEBUG)
 					{
-						echo "Profil '".$inverterModelRegister[IMR_UNITS]."' unbekannt.\n";
+						echo "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME]."\n";
 					}
-				}
-
-
-				$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $parentId);
-				$initialCreation = false;
-				$applyChanges = false;
-				// Modbus-Instanz erstellen, sofern noch nicht vorhanden
-				if(false === $instanceId)
-				{
-					$instanceId = IPS_CreateInstance(MODBUS_ADDRESSES);
-					IPS_SetIdent($instanceId, $inverterModelRegister[IMR_START_REGISTER]);
-					IPS_SetName($instanceId, /*"REG_".$inverterModelRegister[IMR_START_REGISTER]. " - ".*/$inverterModelRegister[IMR_NAME]);
-					IPS_SetParent($instanceId, $parentId);
-					IPS_SetInfo($instanceId, $inverterModelRegister[IMR_DESCRIPTION]);
-
-					$applyChanges = true;
-					$initialCreation = true;
-				}
-
-				// Gateway setzen
-				if(IPS_GetInstance($instanceId)['ConnectionID'] != $gatewayId)
-				{
-					if(0 != IPS_GetInstance($instanceId)['ConnectionID'])
+					// Datentyp ermitteln
+					// 0=Bit, 1=Byte, 2=Word, 3=DWord, 4=ShortInt, 5=SmallInt, 6=Integer, 7=Real
+					if ("uint16" == strtolower($inverterModelRegister[IMR_TYPE])
+						|| "enum16" == strtolower($inverterModelRegister[IMR_TYPE])
+						|| "uint8+uint8" == strtolower($inverterModelRegister[IMR_TYPE]))
 					{
-						IPS_DisconnectInstance($instanceId);
+						$datenTyp = 2;
 					}
-					IPS_ConnectInstance($instanceId, $gatewayId);
-					$applyChanges = true;
-				}
+					elseif ("uint32" == strtolower($inverterModelRegister[IMR_TYPE]))
+					{
+						$datenTyp = 3;
+					}
+					elseif ("int16" == strtolower($inverterModelRegister[IMR_TYPE])
+						|| "sunssf" == strtolower($inverterModelRegister[IMR_TYPE]))
+					{
+						$datenTyp = 4;
+					}
+					elseif ("int32" == strtolower($inverterModelRegister[IMR_TYPE]))
+					{
+						$datenTyp = 6;
+					}
+					elseif ("float32" == strtolower($inverterModelRegister[IMR_TYPE]))
+					{
+						$datenTyp = 7;
+					}
+					elseif ("string32" == strtolower($inverterModelRegister[IMR_TYPE])
+						|| "string16" == strtolower($inverterModelRegister[IMR_TYPE])
+						|| "string" == strtolower($inverterModelRegister[IMR_TYPE]))
+					{
+						echo "Datentyp '".$inverterModelRegister[IMR_TYPE]."' wird von Modbus in IPS nicht unterstützt! --> skip\n";
+						continue;
+					}
+					else
+					{
+						echo "Fehler: Unbekannter Datentyp '".$inverterModelRegister[IMR_TYPE]."'! --> skip\n";
+						continue;
+					}
 
-			
-				// Modbus-Instanz konfigurieren
-				if($datenTyp != IPS_GetProperty($instanceId, "DataType"))
-				{
-					IPS_SetProperty($instanceId, "DataType",  $datenTyp);
-					$applyChanges = true;
-				}
-				if(false != IPS_GetProperty($instanceId, "EmulateStatus"))
-				{
-					IPS_SetProperty($instanceId, "EmulateStatus", false);
-					$applyChanges = true;
-				}
-				if($pollCycle != IPS_GetProperty($instanceId, "Poller"))
-				{
-					IPS_SetProperty($instanceId, "Poller", $pollCycle);
-					$applyChanges = true;
-				}
-/*
-				if(0 != IPS_GetProperty($instanceId, "Factor"))
-				{
-					IPS_SetProperty($instanceId, "Factor", 0);
-					$applyChanges = true;
-				}
-*/
-				if($inverterModelRegister[IMR_START_REGISTER] + REGISTER_TO_ADDRESS_OFFSET != IPS_GetProperty($instanceId, "ReadAddress"))
-				{
-					IPS_SetProperty($instanceId, "ReadAddress", $inverterModelRegister[IMR_START_REGISTER] + REGISTER_TO_ADDRESS_OFFSET);
-					$applyChanges = true;
-				}
-				if($inverterModelRegister[IMR_FUNCTION_CODE] != IPS_GetProperty($instanceId, "ReadFunctionCode"))
-				{
-					IPS_SetProperty($instanceId, "ReadFunctionCode", $inverterModelRegister[IMR_FUNCTION_CODE]);
-					$applyChanges = true;
-				}
-/*
-				if( != IPS_GetProperty($instanceId, "WriteAddress"))
-				{
-					IPS_SetProperty($instanceId, "WriteAddress", );
-					$applyChanges = true;
-				}
-*/
-				if(0 != IPS_GetProperty($instanceId, "WriteFunctionCode"))
-				{
-					IPS_SetProperty($instanceId, "WriteFunctionCode", 0);
-					$applyChanges = true;
-				}
+					// Profil ermitteln
+					if ("a" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
+					{
+						$profile = "~Ampere";
+					}
+					elseif ("a" == strtolower($inverterModelRegister[IMR_UNITS]))
+					{
+						$profile = MODUL_PREFIX.".Ampere.Int";
+					}
+					/*				elseif("ah" == strtolower($inverterModelRegister[IMR_UNITS]))
+									{
+										$profile = MODUL_PREFIX.".AmpereHour.Int";
+									}
+					 */				elseif ("v" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
+					{
+						$profile = "~Volt";
+					}
+					elseif ("v" == strtolower($inverterModelRegister[IMR_UNITS]))
+					{
+						$profile = MODUL_PREFIX.".Volt.Int";
+					}
+					elseif ("w" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
+					{
+						$profile = "~Watt.14490";
+					}
+					elseif ("w" == strtolower($inverterModelRegister[IMR_UNITS]))
+					{
+						$profile = MODUL_PREFIX.".Watt.Int";
+					}
+					elseif ("hz" == strtolower($inverterModelRegister[IMR_UNITS]))
+					{
+						$profile = "~Hertz";
+					}
+					/*				// Voltampere fuer elektrische Scheinleistung
+									elseif("va" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
+									{
+										$profile = MODUL_PREFIX.".Scheinleistung.Float";
+									}
+									// Voltampere fuer elektrische Scheinleistung
+									elseif("va" == strtolower($inverterModelRegister[IMR_UNITS]))
+									{
+										$profile = MODUL_PREFIX.".Scheinleistung.Int";
+									}
+									// Var fuer elektrische Blindleistung
+									elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
+									{
+										$profile = MODUL_PREFIX.".Blindleistung.Float";
+									}
+									// Var fuer elektrische Blindleistung
+									elseif("var" == strtolower($inverterModelRegister[IMR_UNITS]) || "var" == $inverterModelRegister[IMR_UNITS])
+									{
+										$profile = MODUL_PREFIX.".Blindleistung.Int";
+									}
+					 */				elseif ("%" == $inverterModelRegister[IMR_UNITS] && 7 == $datenTyp)
+					{
+						$profile = "~Valve.F";
+					}
+					elseif ("%" == $inverterModelRegister[IMR_UNITS])
+					{
+						$profile = "~Valve";
+					}
+					elseif ("wh" == strtolower($inverterModelRegister[IMR_UNITS]) && 7 == $datenTyp)
+					{
+						$profile = MODUL_PREFIX.".Electricity.Float";
+					}
+					/*				elseif("wh" == strtolower($inverterModelRegister[IMR_UNITS]))
+									{
+										$profile = MODUL_PREFIX.".Electricity.Int";
+									}
+					 */				elseif ("° C" == $inverterModelRegister[IMR_UNITS])
+					{
+						$profile = "~Temperature";
+					}
+					/*				elseif("cos()" == strtolower($inverterModelRegister[IMR_UNITS]))
+									{
+										$profile = MODUL_PREFIX.".Angle.Int";
+									}
+									elseif("enumerated_st" == strtolower($inverterModelRegister[IMR_UNITS]))
+									{
+										$profile = "SunSpec.StateCodes.Int";
+									}
+									elseif("enumerated_stvnd" == strtolower($inverterModelRegister[IMR_UNITS]))
+									{
+										$profile = MODUL_PREFIX.".StateCodes.Int";
+									}
+					 */				elseif ("" == $inverterModelRegister[IMR_UNITS] && "emergency-power" == strtolower($inverterModelRegister[IMR_NAME]))
+					{
+						$profile = MODUL_PREFIX.".Emergency-Power.Int";
+					}
+					elseif ("bitfield" == strtolower($inverterModelRegister[IMR_UNITS]))
+					{
+						$profile = false;
+					}
+					else
+					{
+						$profile = false;
+						if ("" != $inverterModelRegister[IMR_UNITS])
+						{
+							echo "Profil '".$inverterModelRegister[IMR_UNITS]."' unbekannt.\n";
+						}
+					}
 
-				if($applyChanges)
-				{
-					IPS_ApplyChanges($instanceId);
-					//IPS_Sleep(100);
-				}
 
-				// Statusvariable der Modbus-Instanz ermitteln
-				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+					$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $parentId);
+					$initialCreation = false;
+					$applyChanges = false;
+					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+					if (false === $instanceId)
+					{
+						$instanceId = IPS_CreateInstance(MODBUS_ADDRESSES);
+						IPS_SetIdent($instanceId, $inverterModelRegister[IMR_START_REGISTER]);
+						IPS_SetName($instanceId, /*"REG_".$inverterModelRegister[IMR_START_REGISTER]. " - ".*/$inverterModelRegister[IMR_NAME]);
+						IPS_SetParent($instanceId, $parentId);
+						IPS_SetInfo($instanceId, $inverterModelRegister[IMR_DESCRIPTION]);
 
-				// Profil der Statusvariable initial einmal zuweisen
-				if($initialCreation && false != $profile)
-				{
-					// Justification Rule 11: es ist die Funktion RegisterVariable...() in diesem Fall nicht nutzbar, da die Variable durch die Modbus-Instanz bereits erstellt wurde
-					// --> Custo Profil wird initial einmal beim Instanz-erstellen gesetzt
-					IPS_SetVariableCustomProfile($varId, $profile);
+						$applyChanges = true;
+						$initialCreation = true;
+					}
+
+					// Gateway setzen
+					if (IPS_GetInstance($instanceId)['ConnectionID'] != $gatewayId)
+					{
+						if (0 != IPS_GetInstance($instanceId)['ConnectionID'])
+						{
+							IPS_DisconnectInstance($instanceId);
+						}
+						IPS_ConnectInstance($instanceId, $gatewayId);
+						$applyChanges = true;
+					}
+
+
+					// Modbus-Instanz konfigurieren
+					if ($datenTyp != IPS_GetProperty($instanceId, "DataType"))
+					{
+						IPS_SetProperty($instanceId, "DataType", $datenTyp);
+						$applyChanges = true;
+					}
+					if (false != IPS_GetProperty($instanceId, "EmulateStatus"))
+					{
+						IPS_SetProperty($instanceId, "EmulateStatus", false);
+						$applyChanges = true;
+					}
+					if ($pollCycle != IPS_GetProperty($instanceId, "Poller"))
+					{
+						IPS_SetProperty($instanceId, "Poller", $pollCycle);
+						$applyChanges = true;
+					}
+					/*
+									if(0 != IPS_GetProperty($instanceId, "Factor"))
+									{
+										IPS_SetProperty($instanceId, "Factor", 0);
+										$applyChanges = true;
+									}
+					 */
+					if ($inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET != IPS_GetProperty($instanceId, "ReadAddress"))
+					{
+						IPS_SetProperty($instanceId, "ReadAddress", $inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET);
+						$applyChanges = true;
+					}
+					if ($inverterModelRegister[IMR_FUNCTION_CODE] != IPS_GetProperty($instanceId, "ReadFunctionCode"))
+					{
+						IPS_SetProperty($instanceId, "ReadFunctionCode", $inverterModelRegister[IMR_FUNCTION_CODE]);
+						$applyChanges = true;
+					}
+					/*
+									if( != IPS_GetProperty($instanceId, "WriteAddress"))
+									{
+										IPS_SetProperty($instanceId, "WriteAddress", );
+										$applyChanges = true;
+									}
+					 */
+					if (0 != IPS_GetProperty($instanceId, "WriteFunctionCode"))
+					{
+						IPS_SetProperty($instanceId, "WriteFunctionCode", 0);
+						$applyChanges = true;
+					}
+
+					if ($applyChanges)
+					{
+						IPS_ApplyChanges($instanceId);
+						//IPS_Sleep(100);
+					}
+
+					// Statusvariable der Modbus-Instanz ermitteln
+					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+
+					// Profil der Statusvariable initial einmal zuweisen
+					if ($initialCreation && false != $profile)
+					{
+						// Justification Rule 11: es ist die Funktion RegisterVariable...() in diesem Fall nicht nutzbar, da die Variable durch die Modbus-Instanz bereits erstellt wurde
+						// --> Custo Profil wird initial einmal beim Instanz-erstellen gesetzt
+						IPS_SetVariableCustomProfile($varId, $profile);
+					}
 				}
 			}
 		}
@@ -1086,16 +1088,16 @@ $this->EnableAction("Status");
 
 		private function GetLoggedValuesInterval($id, $minutes)
 		{
-			$archivId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}");
-			if (isset($archivId[0]))
+			$archiveId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}");
+			if (isset($archiveId[0]))
 			{
-				$archivId = $archivId[0];
+				$archiveId = $archiveId[0];
 
-				$returnValue = $this->getArithMittelOfLog($archivId, $id, $minutes);
+				$returnValue = $this->getArithMittelOfLog($archiveId, $id, $minutes);
 			}
 			else
 			{
-				$archivId = false;
+				$archiveId = false;
 
 				// no archive found
 				$this->SetStatus(201);
