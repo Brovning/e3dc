@@ -184,12 +184,12 @@
         },
 		{
             "type": "ValidationTextBox",
-            "caption": "Abfrage-Intervall (in ms)",
+            "caption": "Abfrage-Intervall (in Sekunden)",
             "name": "pollCycle"
         },
         {
             "type": "Label",
-            "label": "Achtung: Abfrage-Intervall nicht zu klein wählen, um die Systemlast und auch die Archiv-Größe bei Logging nicht unnötig zu erhöhen!"
+            "label": "Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird. Jedoch je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei Logging!"
         }
     ],
     "status": [

@@ -67,7 +67,7 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 			$this->RegisterPropertyBoolean("loggingBatterySoc", 'true');
 			$this->RegisterPropertyBoolean("loggingAutarky", 'true');
 			$this->RegisterPropertyBoolean("loggingSelfconsumption", 'true');
-			$this->RegisterPropertyInteger('pollCycle', '60000');
+			$this->RegisterPropertyInteger('pollCycle', '60');
 
 
 			// *** Erstelle deaktivierte Timer ***
@@ -241,8 +241,7 @@ if(false !== \$varId)
 			$loggingBatterySoc = $this->ReadPropertyBoolean("loggingBatterySoc");
 			$loggingAutarky = $this->ReadPropertyBoolean("loggingAutarky");
 			$loggingSelfconsumption = $this->ReadPropertyBoolean("loggingSelfconsumption");
-			$pollCycle = $this->ReadPropertyInteger('pollCycle');
-
+			$pollCycle = $this->ReadPropertyInteger('pollCycle') * 1000;
 
 			$archiveId = $this->getArchiveId();
 			if (false === $archiveId)
@@ -430,9 +429,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					foreach($inverterModelRegister_array AS $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						$varIdOrg = IPS_GetObjectIDByIdent("Value", $instanceId);
 						
-						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varIdOrg)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
 						if(false !== $varId && false !== $archiveId)
 						{
 							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
@@ -488,9 +487,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					foreach($inverterModelRegister_array AS $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						$varIdOrg = IPS_GetObjectIDByIdent("Value", $instanceId);
 						
-						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varIdOrg)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
 						if(false !== $varId	&& false !== $archiveId)
 						{
 							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
