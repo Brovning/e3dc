@@ -1386,6 +1386,34 @@ $this->EnableAction("Status");
 			return ($this->GetBatteryPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
+		public function GetBatteryChargeEnergyWh($startTime, $endTime)
+		{
+			$varIdent = 40070;
+
+			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
+
+			return round($returnValue);
+		}
+
+		public function GetBatteryChargeEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetBatteryChargeEnergyWh($startTime, $endTime) / 1000;
+		}
+
+		public function GetBatteryDischargeEnergyWh($startTime, $endTime)
+		{
+			$varIdent = 40070;
+
+			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
+
+			return abs(round($returnValue));
+		}
+
+		public function GetBatteryDischargeEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetBatteryDischargeEnergyWh($startTime, $endTime) / 1000;
+		}
+
 		public function GetBatterySoc()
 		{
 			return $this->GetVariableValue(40083, "Value");
@@ -1450,6 +1478,29 @@ $this->EnableAction("Status");
 			return ($this->GetExtPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
+		public function GetExtEnergyWh($startTime, $endTime)
+		{
+			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
+
+			$varIdent = 40076;
+
+			if (false === $readExtLeistung)
+			{
+				$returnValue = 0;
+			}
+			else
+			{
+				$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
+			}
+
+			return abs(round($returnValue));
+		}
+
+		public function GetExtEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetExtEnergyWh($startTime, $endTime) / 1000;
+		}
+
 		public function GetProductionPowerW()
 		{
 			return $this->GetProductionPowerIntervalW(0);
@@ -1470,6 +1521,29 @@ $this->EnableAction("Status");
 		public function GetProductionPowerIntervalKw($timeIntervalInMinutes)
 		{
 			return ($this->GetProductionPowerIntervalW($timeIntervalInMinutes) / 1000);
+		}
+
+		public function GetProductionEnergyWh($startTime, $endTime)
+		{
+			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
+
+			if ($readExtLeistung)
+			{
+				$returnValue = $this->GetExtEnergyWh($startTime, $endTime) + $this->GetPvEnergyWh($startTime, $endTime);
+			}
+			else
+			{
+				$returnValue = $this->GetPvEnergyWh($startTime, $endTime);
+			}
+
+			echo "Production: ".(int)$readExtLeistung." -> ".$this->GetExtEnergyWh($startTime, $endTime)." + ".$this->GetPvEnergyWh($startTime, $endTime)." = ".$returnValue."\n";
+
+			return round($returnValue);
+		}
+
+		public function GetProductionEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetProductionEnergyWh($startTime, $endTime) / 1000;
 		}
 
 		public function GetGridPowerW()
@@ -1503,6 +1577,34 @@ $this->EnableAction("Status");
 			return ($this->GetGridPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
+		public function GetGridConsumptionEnergyWh($startTime, $endTime)
+		{
+			$varIdent = 40074;
+
+			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
+
+			return round($returnValue);
+		}
+
+		public function GetGridConsumptionEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetGridConsumptionEnergyWh($startTime, $endTime) / 1000;
+		}
+
+		public function GetGridFeedEnergyWh($startTime, $endTime)
+		{
+			$varIdent = 40074;
+
+			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
+
+			return abs(round($returnValue));
+		}
+
+		public function GetGridFeedEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetGridFeedEnergyWh($startTime, $endTime) / 1000;
+		}
+
 		public function GetPvPowerW()
 		{
 			return $this->GetPvPowerIntervalW(0);
@@ -1534,6 +1636,20 @@ $this->EnableAction("Status");
 			return ($this->GetPvPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
+		public function GetPvEnergyWh($startTime, $endTime)
+		{
+			$varIdent = 40068;
+
+			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
+
+			return abs(round($returnValue));
+		}
+
+		public function GetPvEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetPvEnergyWh($startTime, $endTime) / 1000;
+		}
+
 		public function GetHomePowerW()
 		{
 			return $this->GetHomePowerIntervalW(0);
@@ -1563,6 +1679,20 @@ $this->EnableAction("Status");
 		public function GetHomePowerIntervalKw($timeIntervalInMinutes)
 		{
 			return ($this->GetHomePowerIntervalW($timeIntervalInMinutes) / 1000);
+		}
+
+		public function GetHomeEnergyWh($startTime, $endTime)
+		{
+			$varIdent = 40072;
+
+			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
+
+			return round($returnValue);
+		}
+
+		public function GetHomeEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetHomeEnergyWh($startTime, $endTime) / 1000;
 		}
 
 		public function GetWallboxPowerW()
@@ -1609,6 +1739,36 @@ $this->EnableAction("Status");
 			return ($this->GetWallboxPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
+		public function GetWallboxEnergyWh($startTime, $endTime)
+		{
+			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			
+			$varIdent = 40078;
+
+			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			{
+				$returnValue = 0;
+			}
+			else
+			{
+				$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
+			}
+
+			return round($returnValue);
+		}
+
+		public function GetWallboxEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetWallboxEnergyWh($startTime, $endTime) / 1000;
+		}
+
 		public function GetWallboxPowerSolarW()
 		{
 			return $this->GetWallboxPowerSolarIntervalW(0);
@@ -1651,6 +1811,36 @@ $this->EnableAction("Status");
 		public function GetWallboxPowerSolarIntervalKw($timeIntervalInMinutes)
 		{
 			return ($this->GetWallboxPowerSolarIntervalW($timeIntervalInMinutes) / 1000);
+		}
+
+		public function GetWallboxSolarEnergyWh($startTime, $endTime)
+		{
+			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			
+			$varIdent = 40080;
+
+			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			{
+				$returnValue = 0;
+			}
+			else
+			{
+				$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
+			}
+
+			return abs(round($returnValue));
+		}
+
+		public function GetWallboxSolarEnergyKwh($startTime, $endTime)
+		{
+			return $this->GetWallboxSolarEnergyWh($startTime, $endTime) / 1000;
 		}
 
 /*
