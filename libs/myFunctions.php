@@ -426,7 +426,7 @@ trait myFunctions
         else if(10000 <= count($buffer))
         {
             $intervallEdge = $startTime + ($endTime - $startTime) / 2;
-            $bufferSum = getPowerSumOfLog($logId, $startTime, $intervallEdge, $mode) + getPowerSumOfLog($logId, $intervallEdge, $endTime, $mode);
+            $bufferSum = $this->getPowerSumOfLog($logId, $startTime, $intervallEdge, $mode) + $this->getPowerSumOfLog($logId, $intervallEdge, $endTime, $mode);
         }
         // Logwerte vorhanden
         else
