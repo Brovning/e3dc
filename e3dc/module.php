@@ -67,6 +67,9 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 			$this->RegisterPropertyBoolean("loggingBatterySoc", 'true');
 			$this->RegisterPropertyBoolean("loggingAutarky", 'true');
 			$this->RegisterPropertyBoolean("loggingSelfconsumption", 'true');
+			$this->RegisterPropertyBoolean("calcWh", 'false');
+			$this->RegisterPropertyBoolean("calcKwh", 'true');
+			$this->RegisterPropertyBoolean("loggingWirkarbeit", true);
 			$this->RegisterPropertyInteger('pollCycle', '60');
 
 
@@ -194,6 +197,135 @@ if(false !== \$varId)
 }
 ");
 
+			// Berechnung der Wh/kWh-Werte
+			$this->RegisterTimer("Wh-Berechnung", 0, "//require_once '".__DIR__."/../libs/myFunctions.php';
+
+// calculate Wh values
+\$startzeit = microtime(true);
+\$engergyArray = array();
+\$varId = @IPS_GetObjectIDByIdent(\"BatteryChargingWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetBatteryChargeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"BatteryDischargingWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetBatteryDischargeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"ExtWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetExtEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"GridConsumptionWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetGridConsumptionEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"GridFeedWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetGridFeedEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetProductionEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"PvWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetPvEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"HomeWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetHomeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"WallboxWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetWallboxEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"WallboxSolarWh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetWallboxSolarEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+
+// calculate kWh values
+\$varId = @IPS_GetObjectIDByIdent(\"BatteryChargingKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetBatteryChargeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"BatteryDischargingKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetBatteryDischargeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"ExtKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetExtEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"GridConsumptionKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetGridConsumptionEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"GridFeedKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetGridFeedEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetProductionEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"PvKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetPvEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"HomeKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetHomeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"WallboxKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetWallboxEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+\$varId = @IPS_GetObjectIDByIdent(\"WallboxSolarKwh\", ".$this->InstanceID.");
+if(false !== \$varId)
+{
+	\$engergyArray[] = \$varId;
+	SetValue(\$varId, E3DC_GetWallboxSolarEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
+}
+");
 
 			// *** Erstelle Variablen-Profile ***
 			$this->checkProfiles();
@@ -201,12 +333,6 @@ if(false !== \$varId)
 
 		public function Destroy()
 		{
-			// Deaktiviere alle Timer
-/*			$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
-			$this->SetTimerInterval("Update-EMS-Status", 0);
-			$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
-			$this->SetTimerInterval("Update-ValuesKw", 0);
-*/
 			//Never delete this line!
 			parent::Destroy();
 		}
@@ -241,6 +367,9 @@ if(false !== \$varId)
 			$loggingBatterySoc = $this->ReadPropertyBoolean("loggingBatterySoc");
 			$loggingAutarky = $this->ReadPropertyBoolean("loggingAutarky");
 			$loggingSelfconsumption = $this->ReadPropertyBoolean("loggingSelfconsumption");
+			$calcWh = $this->ReadPropertyBoolean("calcWh");
+			$calcKwh = $this->ReadPropertyBoolean("calcKwh");
+			$loggingWirkarbeit = $this->ReadPropertyBoolean("loggingWirkarbeit");
 			$pollCycle = $this->ReadPropertyInteger('pollCycle') * 1000;
 
 			$archiveId = $this->getArchiveId();
@@ -289,7 +418,7 @@ if(false !== \$varId)
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 					if (false !== $varId && false !== $archiveId)
 					{
-						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
+						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW || $calcWh || $calcKwh);
 					}
 				}
 
@@ -455,6 +584,116 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 				}
 				
+				// Wirkarbeit in Wh berechnen
+				$varId = $this->myMaintainVariable("BatteryChargingWh", "Batterie-Lade-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("BatteryDischargingWh", "Batterie-Entlade-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("ExtWh", "Ext-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && $readExtLeistung);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("GesamtproduktionWh", "Gesamtproduktion-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && $readExtLeistung);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("GridConsumptionWh", "Netz-Bezug-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("GridFeedWh", "Netz-Einspeisung-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("PvWh", "PV-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("HomeWh", "Verbrauchs-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("WallboxWh", "Wallbox-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("WallboxSolarWh", "Wallbox-Solar-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				
+				// Wirkarbeit in kWh berechnen
+				$varId = $this->myMaintainVariable("BatteryChargingKwh", "Batterie-Lade-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("BatteryDischargingKwh", "Batterie-Entlade-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("ExtKwh", "Ext-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && $readExtLeistung);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("GesamtproduktionKwh", "Gesamtproduktion-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && $readExtLeistung);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("GridConsumptionKwh", "Netz-Bezug-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("GridFeedKwh", "Netz-Einspeisung-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("PvKwh", "PV-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("HomeKwh", "Verbrauchs-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("WallboxKwh", "Wallbox-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+				$varId = $this->myMaintainVariable("WallboxSolarKwh", "Wallbox-Solar-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
+				if(false !== $varId && false !== $archiveId)
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+				}
+
+				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
+				if($calcWh || $calcKwh)
+				{
+					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
+				}
+			
 
 				/* ********** Spezifische Abfragen zur Steuerung der Wallbox **************************************
 					Hinweis: Es können nicht alle Bits geschaltet werden. Bereiche, bei denen die aktive Steuerung sinnvoll ist, sind mit RW (= 'Read' und 'Write') gekennzeichnet.
@@ -1055,7 +1294,9 @@ $this->EnableAction("Status");
 			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
 /*
 			$this->createVarProfile(MODUL_PREFIX.".Electricity.Float", VARIABLETYPE_FLOAT, ' Wh');
+*/
 			$this->createVarProfile(MODUL_PREFIX.".Electricity.Int", VARIABLETYPE_INTEGER, ' Wh');
+/*
 			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Int", VARIABLETYPE_INTEGER, ' Ah');
 */
 			$this->createVarProfile(MODUL_PREFIX.".Volt.Int", VARIABLETYPE_INTEGER, ' V');

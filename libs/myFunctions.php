@@ -410,4 +410,80 @@ trait myFunctions
 
         return $varId;
     }
+
+    private function getPowerSumOfLog($logId, $startTime, $endTime, $mode=0)
+    {
+        $archiveId = $this->getArchiveId();
+        $bufferSum = 0;
+
+        // Lese Logwerte der TimeRange Minuten beginnend ab StartZeit
+        $buffer = AC_GetLoggedValues($archiveId, $logId, $startTime, $endTime, 0);
+
+        // Keine Logwerte in der TimeRange vorhanden
+        if(0 == count($buffer))
+        {
+            // --> abbrechen
+            $bufferSum = 0;
+        }
+        // Zu viele Logwerte in der TimeRange vorhanden
+        else if(10000 <= count($buffer))
+        {
+            $intervallEdge = $startTime + ($endTime - $startTime) / 2;
+            $bufferSum = getPowerSumOfLog($logId, $startTime, $intervallEdge, $mode) + getPowerSumOfLog($logId, $intervallEdge, $endTime, $mode);
+        }
+        // Logwerte vorhanden
+        else
+        {
+            // Duration der jeweiligen Messung ermitteln
+            $buffer[0]['Duration'] = 0;
+            for($i = 1; $i < count($buffer); $i++)
+            {
+                $buffer[$i]['Duration'] = $buffer[$i-1]['TimeStamp'] - $buffer[$i]['TimeStamp'];
+            }
+
+            // ermittle die Werte für die Weiterverarbeitung
+            for($i = 0; $i < count($buffer); $i++)
+            {
+                // Wert mit Gewichtung Multiplizieren
+                if(0 == $mode)
+                {
+                    // --> alle Werte aufsummieren
+                    $bufferSum += ($buffer[$i]['Value'] * $buffer[$i]['Duration'] / 3600);
+                }
+                else if(1 == $mode && 0 <= $buffer[$i]['Value'])
+                {
+                    // --> nur positive Werte aufsummieren
+                    $bufferSum += ($buffer[$i]['Value'] * $buffer[$i]['Duration'] / 3600);
+                }
+                else if(2 == $mode && 0 > $buffer[$i]['Value'])
+                {
+                    // --> nur negative Werte aufsummieren
+                    $bufferSum += ($buffer[$i]['Value'] * $buffer[$i]['Duration'] / 3600);
+                }
+                else if(2 < $mode)
+                {
+                    echo "Error in getPowerSumOfLog(): Mode '".$mode."' unkown!\n";
+                }
+            }
+        }
+
+        return $bufferSum;
+    }
+
+    // ermittelt die InstanzId des Archive Controls (Datanbank des Variablen-Loggings)
+    private function getArchiveId()
+    {
+        $archiveId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}");
+        if (isset($archiveId[0]))
+        {
+            $archiveId = $archiveId[0];
+        }
+        else
+        {
+            $archiveId = false;
+        }
+
+        return $archiveId;
+    }
+
 }

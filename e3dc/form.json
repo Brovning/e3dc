@@ -182,6 +182,45 @@
             "type": "Label",
             "label": " "
         },
+        {
+            "type": "Label",
+            "label": "Sollen die Tageswerte der Wirkarbeit (in Wh/kWh) berechnet werden?"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Tageswerte in Wh",
+            "name": "calcWh"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Tageswerte in kWh",
+            "name": "calcKwh"
+        },
+        {
+            "type": "Label",
+            "label": "Achtung: Hierbei handelt es sich lediglich um eine näherungsweise Berechnung anhand der geloggten Leistungswerte, da die exakten Werte des Leistungsmessers von E3DC nicht per Modbus zur Verfügung gestellt werden!"
+        },
+        {
+            "type": "Label",
+            "label": " "
+        },
+        {
+            "type": "Label",
+            "label": "Sollen die Werte der Wirkarbeit (in Wh/kWh) gelogged werden?"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Logging von Wh/kWh",
+            "name": "loggingWirkarbeit"
+        },
+        {
+            "type": "Label",
+            "label": " "
+        },
+        {
+            "type": "Label",
+            "label": "In welchem Zeitintervall sollen die Modbus-Werte abgefragt werden (Empfehlung: 10 Sekunden)?"
+        },
 		{
             "type": "ValidationTextBox",
             "caption": "Abfrage-Intervall (in Sekunden)",
