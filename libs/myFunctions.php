@@ -19,13 +19,33 @@ if (!defined('KL_DEBUG'))
     define('KL_WARNING', 10204);	// Warnung
 }
 
+// ModBus RTU TCP
+if (!defined('MODBUS_INSTANCES'))
+{
+	define("MODBUS_INSTANCES", "{A5F663AB-C400-4FE5-B207-4D67CC030564}");
+}
+if (!defined('CLIENT_SOCKETS'))
+{
+	define("CLIENT_SOCKETS", "{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
+}
+if (!defined('MODBUS_ADDRESSES'))
+{
+	define("MODBUS_ADDRESSES", "{CB197E50-273D-4535-8C91-BB35273E3CA5}");
+}
+
+// Offset von Register (erster Wert 1) zu Adresse (erster Wert 0) ist -1
+if (!defined('MODBUS_REGISTER_TO_ADDRESS_OFFSET'))
+{
+	define("MODBUS_REGISTER_TO_ADDRESS_OFFSET", -1);
+}
+
 trait myFunctions
 {
 	/* Arithmetisches Mittel von Logwerten
 	 * ermittelt aus den Logwerten
 	 * TimeRange = Zeitintervall in Minuten
 	 */
-	private function getArithMittelOfLog($archivId, $logId, $timeRange, $startZeit = false)
+	private function getArithMittelOfLog($archiveId, $logId, $timeRange, $startZeit = false)
 	{
 		// Startzeit des Intervalls auf aktuelle Zeit setzen, wenn nicht gesetzt
 		if (!$startZeit)
@@ -34,7 +54,7 @@ trait myFunctions
 		}
 
 		// Lese Logwerte der TimeRange Minuten beginnend ab StartZeit
-		$buffer = AC_GetLoggedValues($archivId, $logId, ($startZeit - ($timeRange * 60)), $startZeit, 0);
+		$buffer = AC_GetLoggedValues($archiveId, $logId, ($startZeit - ($timeRange * 60)), $startZeit, 0);
 		//print_r($buffer);
 
 		// Keine Logwerte in der TimeRange vorhanden
@@ -312,7 +332,7 @@ trait myFunctions
         IPS_DeleteInstance($instanceId);
     }
 
-    private function MaintainInstanceVariable($Ident, $varName, $Typ, $Profil = "", $Position = 0, $Beibehalten = true, $instanceId, $varInfo = "")
+    private function MaintainInstanceVariable($Ident, $Name, $Typ, $Profil = "", $Position = 0, $Beibehalten = true, $instanceId, $varInfo = "")
     {
         $varId = @IPS_GetObjectIDByIdent($Ident, $instanceId);
         if(false === $varId && $Beibehalten)
@@ -320,16 +340,16 @@ trait myFunctions
             switch($Typ)
             {
                 case VARIABLETYPE_BOOLEAN:
-                    $varId = $this->RegisterVariableBoolean($Ident, $varName, $Profil, $Position);
+                    $varId = $this->RegisterVariableBoolean($Ident, $Name, $Profil, $Position);
                     break;
                 case VARIABLETYPE_FLOAT:
-                    $varId = $this->RegisterVariableFloat($Ident, $varName, $Profil, $Position);
+                    $varId = $this->RegisterVariableFloat($Ident, $Name, $Profil, $Position);
                     break;
                 case VARIABLETYPE_INTEGER:
-                    $varId = $this->RegisterVariableInteger($Ident, $varName, $Profil, $Position);
+                    $varId = $this->RegisterVariableInteger($Ident, $Name, $Profil, $Position);
                     break;
                 case VARIABLETYPE_STRING:
-                    $varId = $this->RegisterVariableString($Ident, $varName, $Profil, $Position);
+                    $varId = $this->RegisterVariableString($Ident, $Name, $Profil, $Position);
                     break;
                 default:
                     echo "Variable-Type unknown!";

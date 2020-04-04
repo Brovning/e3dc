@@ -7,30 +7,10 @@ if (!defined('DEBUG'))
 	define("DEBUG", false);
 }
 
-// ModBus RTU TCP
-if (!defined('MODBUS_INSTANCES'))
-{
-	define("MODBUS_INSTANCES", "{A5F663AB-C400-4FE5-B207-4D67CC030564}");
-}
-if (!defined('CLIENT_SOCKETS'))
-{
-	define("CLIENT_SOCKETS", "{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}");
-}
-if (!defined('MODBUS_ADDRESSES'))
-{
-	define("MODBUS_ADDRESSES", "{CB197E50-273D-4535-8C91-BB35273E3CA5}");
-}
-
 // Modul Prefix
 if (!defined('MODUL_PREFIX'))
 {
 	define("MODUL_PREFIX", "E3DC");
-}
-
-// Offset von Register (erster Wert 1) zu Adresse (erster Wert 0) ist -1
-if (!defined('REGISTER_TO_ADDRESS_OFFSET'))
-{
-	define("REGISTER_TO_ADDRESS_OFFSET", -1);
 }
 
 // ArrayOffsets
@@ -50,7 +30,7 @@ if (!defined('IMR_START_REGISTER'))
 // E3DC settings
 if (!defined('BATTERY_DISCHARGE_MAX'))
 {
-	// Aktuelle E3DC-Modelle können maximal 90% der Batterykapazität nutzen
+	// Aktuelle E3DC-Modelle können maximal 90% der angegebenen Batterykapazität nutzen
 	define("BATTERY_DISCHARGE_MAX", 90);
 }
 
@@ -165,7 +145,6 @@ function removeInvalidChars(\$input)
 	return preg_replace( '/[^a-z0-9]/i', '', \$input);
 }");
 
-
 			// Berechnung der Werte in kW
 			$this->RegisterTimer("Update-ValuesKw", 0, "\$modbusAddress_Array = array(40068, 40070, 40072, 40074, 40078, 40080, 40076);
 foreach(\$modbusAddress_Array AS \$modbusAddress)
@@ -195,7 +174,6 @@ foreach(\$modbusAddress_Array AS \$modbusAddress)
 		}
 	}
 }
-
 
 \$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionLeistung\", ".$this->InstanceID.");
 if(false !== \$varId)
