@@ -223,7 +223,7 @@ Gibt die aktuelle Batterie-Reichweite der E3DC-Instanz $InstanzID als Integer in
 
 
 
-##### Leistungswerte PV, ExtGen und Haus
+##### PV, ExtGen und Haus
 
 `int E3DC_GetGridPowerW(int $InstanzID)` bzw. `float E3DC_GetGridPowerKw(int $InstanzID)`
 
