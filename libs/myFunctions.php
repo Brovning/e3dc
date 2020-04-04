@@ -394,4 +394,20 @@ trait myFunctions
 
         return $varId;
     }
+
+    private function myMaintainVariable($Ident, $Name, $Typ, $Profil = "", $Position = 0, $Beibehalten = true)
+    {
+        $this->MaintainVariable($Ident, $Name, $Typ, $Profil, $Position, $Beibehalten);
+
+        if($Beibehalten)
+        {
+			$varId = IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
+        }
+        else
+        {
+            $varId = false;
+        }
+
+        return $varId;
+    }
 }

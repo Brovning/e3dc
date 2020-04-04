@@ -444,24 +444,16 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
 				}
 				
-				$this->MaintainVariable("GesamtproduktionLeistung", "Gesamtproduktion-Leistung",VARIABLETYPE_INTEGER, MODUL_PREFIX.".Watt.Int", 0, $readExtLeistung);
-				if($readExtLeistung)
-				{
-					$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung", $categoryId);
+				$varId = $this->myMaintainVariable("GesamtproduktionLeistung", "Gesamtproduktion-Leistung", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Watt.Int", 0, $readExtLeistung);
 				if(false !== $varId && false !== $archiveId)
-					{
-						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
-					}			
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
 				}
 
-				$this->MaintainVariable("GesamtproduktionLeistung_kW", "Gesamtproduktion-Leistung_kW", VARIABLETYPE_FLOAT, "~Power", 0, $readExtLeistung && $loggingPowerKw);
-				if($readExtLeistung && $loggingPowerKw)
-				{
-					$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung_kW", $categoryId);
+				$varId = $this->myMaintainVariable("GesamtproduktionLeistung_kW", "Gesamtproduktion-Leistung_kW", VARIABLETYPE_FLOAT, "~Power", 0, $readExtLeistung && $loggingPowerKw);
 				if(false !== $varId && false !== $archiveId)
-					{
-						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
-					}
+				{
+					AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 				}
 				
 
