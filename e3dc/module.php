@@ -148,7 +148,7 @@ function removeInvalidChars(\$input)
 	return preg_replace( '/[^a-z0-9]/i', '', \$input);
 }");
 
-			// Berechnung der Werte in kW
+			// Berechnung der Leistungs-Werte in kW
 			$this->RegisterTimer("Update-ValuesKw", 0, "\$modbusAddress_Array = array(40068, 40070, 40072, 40074, 40078, 40080, 40076);
 foreach(\$modbusAddress_Array AS \$modbusAddress)
 {
@@ -197,7 +197,7 @@ if(false !== \$varId)
 }
 ");
 
-			// Berechnung der Wh/kWh-Werte
+			// Berechnung der Energie-Werte in Wh/kWh
 			$this->RegisterTimer("Wh-Berechnung", 0, "//require_once '".__DIR__."/../libs/myFunctions.php';
 
 // calculate Wh values
