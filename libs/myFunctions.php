@@ -233,13 +233,10 @@ trait myFunctions
         {
             // neuen ClientSocket als Interface merken
             $interfaceId = $clientSocketId;
-	}
-	// wenn ja und bereits ein Interface vorhanden, dann den neuen ClientSocket löschen
-	else if(0 != $interfaceId && 0 != $clientSocketId)
-	{
-	    // neuen ClientSocket löschen
-            IPS_DeleteInstance($clientSocketId);
-				
+        }
+        // wenn ja und bereits ein Interface vorhanden, dann den neuen ClientSocket löschen
+        else if(0 != $interfaceId && 0 != $clientSocketId)
+        {
             // bereits vorhandenen ClientSocket weiterverwenden
             $clientSocketId = $interfaceId;
         }
