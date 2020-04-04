@@ -26,10 +26,13 @@ Unterhalb der E3DC Instanz werden die Modbus Adressen für den E3/DC-Simple Mode
 * Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version folgendes aktiviert werden:
 
 entweder unter Hauptmenü > Funktionen > Funktion Modbus > Modbus und Modbus TCP mit Protokoll 'E3/DC Simple-Mode' aktivieren
+
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20Funktionen%20-%20Funktion%20Modbus.png?raw=true "E3DC > Hauptmenü > Funktionen > Funktion Modbus")
 
 oder unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus > erst Modbus aktivieren, dann auf den Pfeil nach Rechts klicken und Modbus TCP mit Protokoll 'E3/DC' aktivieren
+
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20%20Smart-Funktionen%20%20-%20Smart%20Home%20%20-%20Modbus%20-%20Modbus.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Modbus > Modbus")
+
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20%20Smart-Funktionen%20%20-%20Smart%20Home%20%20-%20Modbus%20-%20Modbus%20TCP.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Modbus > Modbus TCP")
 
 
@@ -67,7 +70,7 @@ Abfrage-Intervall	| Intervall (in Sekunden) in welchem die Modbus-Adressen abgef
 
 Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
 
-#### Statusvariablen
+#### Statusregister
 Der E3/DC-Simple Mode ermöglicht den einfachen und schnellen Zugriff auf die wichtigsten und am häufigsten benötigten Daten.
 
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
@@ -89,6 +92,7 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
 40076 | 2 | 3 | Ext-Leistung | Int32 | W | Leistung aller zusätzlichen Einspeiser in Watt
+
 
 ##### optional: Wallbox 0 - 7
 
@@ -121,6 +125,33 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40104 | 1 | 3 | DC_STRING_3_Power | UInt16 | W | DC_STRING_3_Power
 
 
+#### Statusvariablen
+Variablenname | Type | Units | Description
+---- | ---- | ----- | -----------
+Gesamtproduktion-Leistung | Int | W | aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) in Watt (W)
+Gesamtproduktion-Leistung_kW | Float | kW | aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) in Kilo-Watt (kW)
+Gesamtproduktion-Wirkarbeit_Wh | Int | Wh | Gesamtproduktions-Energie (Ext-Energie + PV-Energie) des aktuellen Tages in Watt-Stunden (Wh)
+Gesamtproduktion-Wirkarbeit_kWh | Float | kWh | Gesamtproduktions-Energie (Ext-Energie + PV-Energie) des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Batterie-Entlade-Wirkarbeit_Wh | Int | Wh | Batterie-Entlade-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Batterie-Entlade-Wirkarbeit_kWh | Float | kWh | Batterie-Entlade-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Batterie-Lade-Wirkarbeit_Wh | Int | Wh | Batterie-Lade-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Batterie-Lade-Wirkarbeit_kWh | Float | kWh | Batterie-Lade-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Ext-Wirkarbeit_Wh | Int | Wh | Ext-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Ext-Wirkarbeit_kWh | Float | kWh | Ext-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Netz-Bezug-Wirkarbeit_Wh | Int | Wh | Netz-Bezugs-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Netz-Bezug-Wirkarbeit_kWh | Float | kWh | Netz-Bezugs-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Netz-Einspeisung-Wirkarbeit_Wh | Int | Wh | Netz-Einspeise-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Netz-Einspeisung-Wirkarbeit_kWh | Float | kWh | Netz-Einspeise-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+PV-Wirkarbeit_Wh | Int | Wh | PV-Energie des aktuellen Tages in Watt-Stunden (Wh)
+PV-Wirkarbeit_kWh | Float | kWh | PV-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Verbrauchs-Wirkarbeit_Wh | Int | Wh | Verbrauchs-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Verbrauchs-Wirkarbeit_kWh | Float | kWh | Verbrauchs-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Wallbox-Solar-Wirkarbeit_Wh | Int | Wh | Wallbox-Solar-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Wallbox-Solar-Wirkarbeit_kWh | Float | kWh | Wallbox-Solar-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+Wallbox-Wirkarbeit_Wh | Int | Wh | Wallbox-Energie des aktuellen Tages in Watt-Stunden (Wh)
+Wallbox-Wirkarbeit_kWh | Float | kWh | Wallbox-Energie des aktuellen Tages in Kilo-Watt-Stunden (kWh)
+
+
 #### Profile
 
 Name   | Typ
@@ -128,6 +159,7 @@ Name   | Typ
 E3DC.Emergency-Power.Int | Integer
 E3DC.Watt.Int | Integer
 E3DC.Ampere.Int | Integer
+E3DC.Electricity.Int | Integer
 E3DC.Volt.Int | Integer
 
 
