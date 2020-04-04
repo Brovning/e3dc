@@ -166,12 +166,19 @@ trait myFunctions
         {
             $connectionInstanceId = IPS_GetInstance($modbusInstanceId)['ConnectionID'];
 
+            // check, if hostIp and hostPort of currenct ClientSocket is matching new settings
             if(0 != (int)$connectionInstanceId && $hostIp == IPS_GetProperty($connectionInstanceId, "Host") && $hostPort == IPS_GetProperty($connectionInstanceId, "Port"))
             {
+                $interfaceId = $connectionInstanceId;
+
+                // check, if "Geraete-ID" of currenct ModbusGateway is matching new settings
+                if ($hostmodbusDevice == IPS_GetProperty($modbusInstanceId, "DeviceID"))
+                {
+                    $gatewayId = $modbusInstanceId;
+                }
+
                 if(DEBUG) echo "ModBus Instance and ClientSocket found: ".$modbusInstanceId.", ".$connectionInstanceId."\n";
 
-                $gatewayId = $modbusInstanceId;
-                $interfaceId = $connectionInstanceId;
                 break;
             }
         }
@@ -186,12 +193,14 @@ trait myFunctions
             $gatewayId = IPS_CreateInstance(MODBUS_INSTANCES); 
             IPS_SetInfo($gatewayId, MODUL_PREFIX."-Modul: ".date("Y-m-d H:i:s"));
             $applyChanges = true;
+
+            // Achtung: ClientSocket wird immer mit erstellt
         }
 
         // Modbus-Gateway Einstellungen setzen
         if(MODUL_PREFIX."ModbusGateway" != IPS_GetName($gatewayId))
         {
-            IPS_SetName($gatewayId, MODUL_PREFIX."ModbusGateway");
+            IPS_SetName($gatewayId, MODUL_PREFIX."ModbusGateway".$hostmodbusDevice);
         }
         if(0 != IPS_GetProperty($gatewayId, "GatewayMode"))
         {
@@ -219,9 +228,20 @@ trait myFunctions
         // Hat Modbus-Gateway bereits einen ClientSocket?
         $applyChanges = false;
         $clientSocketId = (int)IPS_GetInstance($gatewayId)['ConnectionID'];
+        // wenn ja und noch kein Interface vorhanden, dann den neuen ClientSocket verwenden
         if(0 == $interfaceId && 0 != $clientSocketId)
         {
+            // neuen ClientSocket als Interface merken
             $interfaceId = $clientSocketId;
+	}
+	// wenn ja und bereits ein Interface vorhanden, dann den neuen ClientSocket löschen
+	else if(0 != $interfaceId && 0 != $clientSocketId)
+	{
+	    // neuen ClientSocket löschen
+            IPS_DeleteInstance($clientSocketId);
+				
+            // bereits vorhandenen ClientSocket weiterverwenden
+            $clientSocketId = $interfaceId;
         }
 
         // ClientSocket erstellen, sofern noch nicht vorhanden
@@ -268,7 +288,13 @@ trait myFunctions
         // Client Socket mit Gateway verbinden
         if(0 != $clientSocketId)
         {
-            IPS_DisconnectInstance($gatewayId);
+            // sofern bereits ein ClientSocket mit dem Gateway verbunden ist, dieses vom Gateway trennen
+            if((int)IPS_GetInstance($gatewayId)['ConnectionID'])
+            {
+                IPS_DisconnectInstance($gatewayId);
+            }
+
+            // neuen ClientSocket mit Gateway verbinden
             IPS_ConnectInstance($gatewayId, $interfaceId);
         }
         
