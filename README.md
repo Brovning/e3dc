@@ -1,5 +1,5 @@
 # E3DC
-IP-Symcon (IPS) Modul für E3DC Stromspeicher mit TCP Modbus Unterstützung (bspw. S10 mini, S10 E und S10 E Pro).
+IP-Symcon (IPS) Modul für E3DC Stromspeicher mit TCP Modbus Unterstützung (bspw. S10 mini, S10 E, S10 E Pro und Quattroporte).
 
 
 ### Inhaltsverzeichnis
@@ -29,11 +29,17 @@ entweder unter Hauptmenü > Funktionen > Funktion Modbus > Modbus und Modbus TCP
 
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20Funktionen%20-%20Funktion%20Modbus.png?raw=true "E3DC > Hauptmenü > Funktionen > Funktion Modbus")
 
-oder unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus > erst Modbus aktivieren, dann auf den Pfeil nach Rechts klicken und Modbus TCP mit Protokoll 'E3/DC' aktivieren
+oder unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus erst Modbus aktivieren, dann auf den Pfeil nach Rechts klicken und Modbus TCP mit Protokoll 'E3/DC' aktivieren
 
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20%20Smart-Funktionen%20%20-%20Smart%20Home%20%20-%20Modbus%20-%20Modbus.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Modbus > Modbus")
 
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20%20Smart-Funktionen%20%20-%20Smart%20Home%20%20-%20Modbus%20-%20Modbus%20TCP.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Modbus > Modbus TCP")
+
+und beim Quattroporte unter Hauptmenü > Smart-Funktionen > Smart Home > Funktion Modbus erst Modbus aktivieren, dann das Protokoll 'E3/DC' aktivieren
+
+![alt text](./docs/E3DC_Quattroporte_-_Modbus_On.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Funktion Modbus")
+
+![alt text](./docs/E3DC_Quattroporte_-_Modbus_TCP.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Funktion Modbus TCP")
 
 
 ### 3. Software-Installation
