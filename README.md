@@ -50,7 +50,7 @@ und beim Quattroporte unter Hauptmenü > Smart-Funktionen > Smart Home > Funktio
 
 ### 4. Einrichten der Instanzen in IP-Symcon
 
- Unter 'Instanz hinzufügen' ist das 'S10 mini'-, 'S10 E'- und 'S10 E Pro'-Modul unter dem Hersteller 'E3DC' aufgeführt.
+ Unter 'Instanz hinzufügen' ist das 'S10 mini'-, 'S10 E'-, 'S10 E Pro'- und 'Quattroporte'-Modul unter dem Hersteller 'E3DC' aufgeführt.
 
 __Konfigurationsseite__:
 
