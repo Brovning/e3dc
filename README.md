@@ -1,5 +1,5 @@
 # E3DC
-IP-Symcon (IPS) Modul für E3DC Stromspeicher mit TCP Modbus Unterstützung (bspw. S10 mini, S10 E, S10 E Pro und Quattroporte).
+IP-Symcon (IPS) Modul für E3DC Stromspeicher mit Modbus TCP Unterstützung (bspw. S10 mini, S10 E, S10 E Pro und Quattroporte).
 
 
 ### Inhaltsverzeichnis
