@@ -115,6 +115,49 @@
         },
         {
             "type": "Label",
+            "label": "Wie viele bzw. welche Leistungsmesser/Powermeter IDs sind am E3DC in Verwendung?"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 0",
+            "name": "readPowermeter0"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 1",
+            "name": "readPowermeter1"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 2",
+            "name": "readPowermeter2"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 3",
+            "name": "readPowermeter3"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 4",
+            "name": "readPowermeter4"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 5",
+            "name": "readPowermeter5"
+        },
+        {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 6",
+            "name": "readPowermeter6"
+        },
+        {
+            "type": "Label",
+            "label": " "
+        },
+        {
+            "type": "Label",
             "label": "Ist im E3DC eine Notstromversorgung installiert?"
         },
         {
@@ -124,7 +167,7 @@
         },
         {
             "type": "Label",
-            "label": "Wenn Notstromversorgung vorhanden, welche Notstrom-Reserve in kWh wurde im Speicher eingestellt (siehe Notstrom > Einstellungen)?"
+            "label": "Wenn Notstromversorgung vorhanden, welche Notstrom-Reserve in kWh wurde im Speicher eingestellt (siehe Notstrom -> Einstellungen)?"
         },
         {
             "type": "NumberSpinner",

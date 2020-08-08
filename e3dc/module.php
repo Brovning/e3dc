@@ -59,6 +59,13 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 			$this->RegisterPropertyBoolean('readWallbox5', 'false');
 			$this->RegisterPropertyBoolean('readWallbox6', 'false');
 			$this->RegisterPropertyBoolean('readWallbox7', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter0', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter1', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter2', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter3', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter4', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter5', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter6', 'false');
 			$this->RegisterPropertyBoolean('readEmergencyPower', 'false');
 			$this->RegisterPropertyFloat('emergencyPowerBuffer', '0');
 			$this->RegisterPropertyBoolean('readDcString', 'false');
@@ -359,6 +366,13 @@ if(false !== \$varId)
 			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			$readPowermeter0 = $this->ReadPropertyBoolean('readPowermeter0');
+			$readPowermeter1 = $this->ReadPropertyBoolean('readPowermeter1');
+			$readPowermeter2 = $this->ReadPropertyBoolean('readPowermeter2');
+			$readPowermeter3 = $this->ReadPropertyBoolean('readPowermeter3');
+			$readPowermeter4 = $this->ReadPropertyBoolean('readPowermeter4');
+			$readPowermeter5 = $this->ReadPropertyBoolean('readPowermeter5');
+			$readPowermeter6 = $this->ReadPropertyBoolean('readPowermeter6');
 			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
 			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
 			$readDcString = $this->ReadPropertyBoolean('readDcString');
@@ -868,6 +882,145 @@ Bit 13  Nicht belegt";
 					}
 				}
 
+				$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
+
+
+
+				/* ********** Spezifische Abfragen der Leistungsmesser **************************************
+					Hinweis: Die im Folgenden gelisteten Leistungsmesser (Register 40105 bis 40132) werden im Kapitel „Typen von Leistungsmessern“
+				 ************************************************************************************************** */
+				if($readPowermeter0 || $readPowermeter1 || $readPowermeter2 || $readPowermeter3 || $readPowermeter4 || $readPowermeter5 || $readPowermeter6)
+				{
+					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
+//					$this->SetTimerInterval("Update-Powermeter", 5000);
+				}
+				else
+				{
+					// deaktiviert einen Timer
+//					$this->SetTimerInterval("Update-Powermeter", 0);
+				}
+
+				$inverterModelRegister_array = array();
+				$inverterModelRegisterDel_array = array();
+
+				$powermeterTypBeschreibung = "Leistungsmessertyp: Typ Bezeichnung Hinweise
+1 Wurzelleistungsmesser Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt.
+2 Externe Produktion
+3 Zweirichtungszähler
+4 Externer Verbrauch
+5 Farm
+6 Wird nicht verwendet
+7 Wallbox
+8 Externer Leistungsmesser Farm
+9 Datenanzeige Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals.
+10 Regelungsbypass Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen.";
+
+				if($readPowermeter0)
+				{
+					$inverterModelRegister_array[] = array(40105, 1, 3, "Powermeter_0", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40106, 1, 3, "Powermeter_0_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40107, 1, 3, "Powermeter_0_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40108, 1, 3, "Powermeter_0_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40105, 1, 3, "Powermeter_0", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40106, 1, 3, "Powermeter_0_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40107, 1, 3, "Powermeter_0_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40108, 1, 3, "Powermeter_0_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				if($readPowermeter1)
+				{
+					$inverterModelRegister_array[] = array(40109, 1, 3, "Powermeter_1", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40110, 1, 3, "Powermeter_1_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40111, 1, 3, "Powermeter_1_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40112, 1, 3, "Powermeter_1_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40109, 1, 3, "Powermeter_1", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40110, 1, 3, "Powermeter_1_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40111, 1, 3, "Powermeter_1_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40112, 1, 3, "Powermeter_1_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				if($readPowermeter2)
+				{
+					$inverterModelRegister_array[] = array(40113, 1, 3, "Powermeter_2", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40114, 1, 3, "Powermeter_2_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40115, 1, 3, "Powermeter_2_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40116, 1, 3, "Powermeter_2_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40113, 1, 3, "Powermeter_2", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40114, 1, 3, "Powermeter_2_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40115, 1, 3, "Powermeter_2_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40116, 1, 3, "Powermeter_2_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				if($readPowermeter3)
+				{
+					$inverterModelRegister_array[] = array(40117, 1, 3, "Powermeter_3", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40118, 1, 3, "Powermeter_3_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40119, 1, 3, "Powermeter_3_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40120, 1, 3, "Powermeter_3_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40117, 1, 3, "Powermeter_3", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40118, 1, 3, "Powermeter_3_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40119, 1, 3, "Powermeter_3_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40120, 1, 3, "Powermeter_3_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				if($readPowermeter4)
+				{
+					$inverterModelRegister_array[] = array(40121, 1, 3, "Powermeter_4", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40122, 1, 3, "Powermeter_4_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40123, 1, 3, "Powermeter_4_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40124, 1, 3, "Powermeter_4_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40121, 1, 3, "Powermeter_4", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40122, 1, 3, "Powermeter_4_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40123, 1, 3, "Powermeter_4_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40124, 1, 3, "Powermeter_4_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				if($readPowermeter5)
+				{
+					$inverterModelRegister_array[] = array(40125, 1, 3, "Powermeter_5", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40126, 1, 3, "Powermeter_5_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40127, 1, 3, "Powermeter_5_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40128, 1, 3, "Powermeter_5_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40125, 1, 3, "Powermeter_5", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40126, 1, 3, "Powermeter_5_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40127, 1, 3, "Powermeter_5_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40128, 1, 3, "Powermeter_5_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				if($readPowermeter6)
+				{
+					$inverterModelRegister_array[] = array(40129, 1, 3, "Powermeter_6", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40130, 1, 3, "Powermeter_6_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40131, 1, 3, "Powermeter_6_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40132, 1, 3, "Powermeter_6_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40129, 1, 3, "Powermeter_6", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40130, 1, 3, "Powermeter_6_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40131, 1, 3, "Powermeter_6_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40132, 1, 3, "Powermeter_6_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
 
 
@@ -1535,8 +1688,6 @@ $this->EnableAction("Status");
 			{
 				$returnValue = $this->GetPvEnergyWh($startTime, $endTime);
 			}
-
-			echo "Production: ".(int)$readExtLeistung." -> ".$this->GetExtEnergyWh($startTime, $endTime)." + ".$this->GetPvEnergyWh($startTime, $endTime)." = ".$returnValue."\n";
 
 			return round($returnValue);
 		}
