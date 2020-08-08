@@ -393,6 +393,15 @@ if(false !== \$varId)
 				$this->SetStatus(201);
 			}
 
+/* Verursacht scheinbar an dieser Stelle Probleme. Manchmal wird Modbus-Instanz nicht mehr aktualisiert...
+			// Workaround für "InstanceInterface not available" Fehlermeldung beim Server-Start...
+			if (KR_READY != IPS_GetKernelRunlevel())
+			{
+				// --> do nothing
+			}
+			// Instanzen nur mit Konfigurierter IP erstellen
+			else 
+*/
 			if("" != $hostIp)
 			{
 				$this->checkProfiles();
@@ -406,7 +415,7 @@ if(false !== \$varId)
 				$categoryId = $parentId;
 
 				$inverterModelRegister_array = array(
-				/* ********** Identifikationsblock **************************************************************************/
+				// ********** Identifikationsblock **************************************************************************
 /*					array(40001, 1, 3, "Magicbyte", "UInt16", "", "Magicbyte - S10 ModBus ID (Immer 0xE3DC)"),
 					array(40002, 1, 3, "ModBus-Firmware", "UInt8+UInt8", "", "S10 ModBus-Firmware-Version"),
 					array(40003, 1, 3, "Register", "UInt16", "", "Anzahl unterstützter Register"),
@@ -418,7 +427,7 @@ if(false !== \$varId)
 
 
 				$inverterModelRegister_array = array(
-				/* ********** Leistungsdaten ************************************************************************/
+				// ********** Leistungsdaten ************************************************************************
 					array(40068, 2, 3, "PV-Leistung", "Int32", "W", "Photovoltaik-Leistung in Watt"),
 					array(40070, 2, 3, "Batterie-Leistung", "Int32", "W", "Batterie-Leistung in Watt (negative Werte = Entladung)"),
 					array(40072, 2, 3, "Verbrauchs-Leistung", "Int32", "W", "Hausverbrauchs-Leistung in Watt"),
@@ -481,7 +490,7 @@ if(false !== \$varId)
 				}
 
 				$inverterModelRegister_array = array(
-					array(40084, 1, 3, "Emergency-Power", "Uint16", "", "Emergency-Power Status:
+					array(40084, 1, 3, "Emergency-Power", "Uint16", "emergency-power", "Emergency-Power Status:
 0 = Notstrom wird nicht von Ihrem Gerät unterstützt (bei Geräten der älteren Gerätegeneration, z. B. S10-SP40, S10-P5002).
 1 = Notstrom aktiv (Ausfall des Stromnetzes)
 2 = Notstrom nicht aktiv
@@ -1025,14 +1034,14 @@ Bit 13  Nicht belegt";
 
 
 
+				/* ********** DC-String **************************************************************************
+					Hinweis: Die folgenden Register 40096 bis 40104 koennen ab dem Release S10_2017_02 genutzt werden!
+					*************************************************************************************************/
 				$categoryName = "DC_String";
 				$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
 				if($readDcString)
 				{
 					$inverterModelRegister_array = array(
-					/* ********** DC-String **************************************************************************
-						Hinweis: Die folgenden Register 40096 bis 40104 koennen ab dem Release S10_2017_02 genutzt werden!
-					 *************************************************************************************************/
 						array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage"),
 						array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage"),
 						array(40098, 1, 3, "DC_STRING_3_Voltage", "UInt16", "V", "DC_STRING_3_Voltage"),
@@ -1080,10 +1089,13 @@ Bit 13  Nicht belegt";
 						fclose($fp);
 
 						// Client Soket aktivieren
-						IPS_SetProperty($interfaceId, "Open", true);
-						IPS_ApplyChanges($interfaceId);
-						//IPS_Sleep(100);
-
+						if (false == IPS_GetProperty($interfaceId, "Open"))
+						{
+							IPS_SetProperty($interfaceId, "Open", true);
+							IPS_ApplyChanges($interfaceId);
+							//IPS_Sleep(100);
+						}
+						
 						// aktiv
 						$this->SetStatus(102);
 					}
@@ -1096,10 +1108,20 @@ Bit 13  Nicht belegt";
 				else
 				{
 					// Client Soket deaktivieren
-					IPS_SetProperty($interfaceId, "Open", false);
-					IPS_ApplyChanges($interfaceId);
-					//IPS_Sleep(100);
-
+					if (true == IPS_GetProperty($interfaceId, "Open"))
+					{
+						IPS_SetProperty($interfaceId, "Open", false);
+						IPS_ApplyChanges($interfaceId);
+						//IPS_Sleep(100);
+					}
+					
+					// Timer deaktivieren
+					$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
+					$this->SetTimerInterval("Update-EMS-Status", 0);
+					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
+					$this->SetTimerInterval("Update-ValuesKw", 0);
+					$this->SetTimerInterval("Wh-Berechnung", 0);
+		
 					// inaktiv
 					$this->SetStatus(104);
 				}
