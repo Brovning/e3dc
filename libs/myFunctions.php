@@ -349,11 +349,11 @@ trait myFunctions
         return preg_replace( '/[^a-z0-9]/i', '', $input);
     }
 
-    private function deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId)
+    private function deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId, $uniqueIdent="")
     {
         foreach($inverterModelRegister_array AS $register)
         {
-            $instanceId = @IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
+            $instanceId = @IPS_GetObjectIDByIdent($register[IMR_START_REGISTER].$uniqueIdent, $categoryId);
             if(false !== $instanceId)
             {
                 $this->deleteInstanceRecursive($instanceId);
