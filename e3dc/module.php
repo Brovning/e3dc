@@ -2152,9 +2152,69 @@ $this->EnableAction("Status");
 EmergencyPowerState
 			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
 			$emergencyPowerBuffer = $this->ReadPropertyInteger('emergencyPowerBuffer');
-DeratingState
 ErrorState
 ErrorMessage
+*/
+
+		public function IsDerating()
+		{
+			$modbusAddress = 40085;
+			$bitName = "Abregelungs-Status";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function IsChargingLocked()
+		{
+			$modbusAddress = 40085;
+			$bitName = "Batterie laden";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function IsDischargingLocked()
+		{
+			$modbusAddress = 40085;
+			$bitName = "Batterie entladen";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
 
 		public function Wallbox...($wallboxId)
 		{
