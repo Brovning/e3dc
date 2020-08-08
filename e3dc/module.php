@@ -782,10 +782,10 @@ Bit 13  Nicht belegt";
 					array('varName' => "Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3: Auto lädt (1) Auto lädt nicht (0)  R"),
 					array('varName' => "Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4: Typ-2-Stecker verriegelt (1)    R"),
 					array('varName' => "Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: Typ-2-Stecker gesteckt (1)  R"),
-					array('varName' => "Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: Schukosteckdose an (1)  RW"),
-					array('varName' => "Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7: Schukostecker gesteckt (1)  R"),
-					array('varName' => "Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8: ukostecker verriegelt (1)    R"),
-					array('varName' => "16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9: Relais an, 16A 1 Phase, Schukosteckdose R"),
+					array('varName' => "Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: Schukosteckdose an (1), Gilt nicht für die Wallbox easy connect!  RW"),
+					array('varName' => "Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7: Schukostecker gesteckt (1), Gilt nicht für die Wallbox easy connect!  R"),
+					array('varName' => "Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8: ukostecker verriegelt (1), Gilt nicht für die Wallbox easy connect!    R"),
+					array('varName' => "16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9: Relais an, 16A 1 Phase, Schukosteckdose, Gilt nicht für die Wallbox easy connect! R"),
 					array('varName' => "16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10: Relais an, 16A 3 Phasen, Typ 2  R"),
 					array('varName' => "32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11: Relais an, 32A 3 Phasen, Typ 2  R"),
 					array('varName' => "1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12: Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
@@ -797,74 +797,74 @@ Bit 13  Nicht belegt";
 
 				if($readWallbox0)
 				{
-					$inverterModelRegister_array[] = array(40088, 1, 3, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40088, 1, 6, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40088, 1, 3, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40088, 1, 6, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				if($readWallbox1)
 				{
-					$inverterModelRegister_array[] = array(40089, 1, 3, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40089, 1, 6, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40089, 1, 3, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40089, 1, 6, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				if($readWallbox2)
 				{
-					$inverterModelRegister_array[] = array(40090, 1, 3, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40090, 1, 6, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40090, 1, 3, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40090, 1, 6, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				if($readWallbox3)
 				{
-					$inverterModelRegister_array[] = array(40091, 1, 3, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40091, 1, 6, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40091, 1, 3, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40091, 1, 6, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				if($readWallbox4)
 				{
-					$inverterModelRegister_array[] = array(40092, 1, 3, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40092, 1, 6, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40092, 1, 3, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40092, 1, 6, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				if($readWallbox5)
 				{
-					$inverterModelRegister_array[] = array(40093, 1, 3, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40093, 1, 6, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40093, 1, 3, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40093, 1, 6, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				if($readWallbox6)
 				{
-					$inverterModelRegister_array[] = array(40094, 1, 3, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40094, 1, 6, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40094, 1, 3, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40094, 1, 6, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				if($readWallbox7)
 				{
-					$inverterModelRegister_array[] = array(40095, 1, 3, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegister_array[] = array(40095, 1, 6, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
 				}
 				else
 				{
-					$inverterModelRegisterDel_array[] = array(40095, 1, 3, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
+					$inverterModelRegisterDel_array[] = array(40095, 1, 6, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
@@ -1352,27 +1352,40 @@ $this->EnableAction("Status");
 										$applyChanges = true;
 									}
 					 */
+
+					// Read-Settings
 					if ($inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET != IPS_GetProperty($instanceId, "ReadAddress"))
 					{
 						IPS_SetProperty($instanceId, "ReadAddress", $inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET);
-						$applyChanges = true;
 					}
-					if ($inverterModelRegister[IMR_FUNCTION_CODE] != IPS_GetProperty($instanceId, "ReadFunctionCode"))
+					if(6 == $inverterModelRegister[IMR_FUNCTION_CODE])
 					{
-						IPS_SetProperty($instanceId, "ReadFunctionCode", $inverterModelRegister[IMR_FUNCTION_CODE]);
-						$applyChanges = true;
+						$ReadFunctionCode = 3;
 					}
-					/*
-									if( != IPS_GetProperty($instanceId, "WriteAddress"))
-									{
-										IPS_SetProperty($instanceId, "WriteAddress", );
-										$applyChanges = true;
-									}
-					 */
+					else
+					{
+						$ReadFunctionCode = $inverterModelRegister[IMR_FUNCTION_CODE];
+					}
+
+					if ($ReadFunctionCode != IPS_GetProperty($instanceId, "ReadFunctionCode"))
+					{
+						IPS_SetProperty($instanceId, "ReadFunctionCode", $ReadFunctionCode);
+					}
+
+					// Write-Settings
+					if (4 < $inverterModelRegister[IMR_FUNCTION_CODE] && $inverterModelRegister[IMR_FUNCTION_CODE] != IPS_GetProperty($instanceId, "WriteFunctionCode"))
+					{
+						IPS_SetProperty($instanceId, "WriteFunctionCode", $inverterModelRegister[IMR_FUNCTION_CODE]);
+					}
+
+					if (4 < $inverterModelRegister[IMR_FUNCTION_CODE] && $inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET != IPS_GetProperty($instanceId, "WriteAddress"))
+					{
+						IPS_SetProperty($instanceId, "WriteAddress", $inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET);
+					}
+
 					if (0 != IPS_GetProperty($instanceId, "WriteFunctionCode"))
 					{
 						IPS_SetProperty($instanceId, "WriteFunctionCode", 0);
-						$applyChanges = true;
 					}
 
 					if ($applyChanges)
@@ -2022,5 +2035,161 @@ ErrorMessage
 			"32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11  Relais an, 32A 3 Phasen, Typ 2  R"),
 			"1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12  Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
 		}
+
+		/* *** Write Functions *** */
+		public function SetWallboxSolarmode($wallboxId, $setValue)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitSet   = 0b0000000000000010;
+			$bitUnset = 0b1111111111111101;
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+	
+			if(false !== $instanceId)
+			{
+				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+				$varValue = GetValue($varId);
+
+				// Unset Bit
+				if (0 == (int)$setValue)
+				{
+					$targetValue = $varValue & $bitUnset;
+				}
+				// Set Bit
+				else
+				{
+					$targetValue = $varValue | $bitSet;
+				}
+
+				$returnValue = ModBus_WriteRegisterWord($instanceId, $targetValue);
+			}
+			else
+			{
+				$returnValue = false;
+			}
+
+			return $returnValue;
+		}
+/*
+		public function SetWallboxChargingLocked($wallboxId, $setValue)
+		{
+			// ! ! ! ACHTUNG ! ! !
+			// Implementierung laut E3DC-Support fehlerhaft!
+			// Einzige Antwort, die ich hierzu nach fast 3 Monaten erhalten habe:
+			// "Wenn ein einzelnes Bit gesetzt werden soll, dann ist der Vorgang: Lesen des Registers, ändern des Bits in dem Wert des Registers, dann zurückschreiben des Registers."
+			// Frage meinerseits: Weshalb soll es hier nicht funktionieren und bei den anderen beiden Wallbox WriteFunctions schon ?!?!
+			// --> nie mehr eine Rückmeldung erhalten...
+			// Der E3DC Support ist aus meinen Erfahrungen mehr als mangelhaft.
+			//
+			// Würde mich freuen, wenn jemand den Fehler in meiner Implementierung finden würde!
+
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitSet   = 0b0000000000000100;
+			$bitUnset = 0b1111111111111011;
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+	
+			if(false !== $instanceId)
+			{
+				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+				$varValue = GetValue($varId);
+
+				// Unset Bit
+				if (0 == (int)$setValue)
+				{
+					$targetValue = $varValue & $bitUnset;
+				}
+				// Set Bit
+				else
+				{
+					$targetValue = $varValue | $bitSet;
+				}
+
+				$returnValue = ModBus_WriteRegisterWord($instanceId, $targetValue);
+			}
+			else
+			{
+				$returnValue = false;
+			}
+
+			return $returnValue;
+		}
+
+		public function SetWallboxSchukoActivated($wallboxId, $setValue)
+		{
+			// ! ! ! ACHTUNG ! ! !
+			// Implementierung laut E3DC-Support fehlerhaft!
+			// Einzige Antwort, die ich hierzu nach fast 3 Monaten erhalten habe:
+			// "Wenn ein einzelnes Bit gesetzt werden soll, dann ist der Vorgang: Lesen des Registers, ändern des Bits in dem Wert des Registers, dann zurückschreiben des Registers."
+			// Frage meinerseits: Weshalb soll es hier nicht funktionieren und bei den anderen beiden Wallbox WriteFunctions schon ?!?!
+			// --> nie mehr eine Rückmeldung erhalten...
+			// Der E3DC Support ist aus meinen Erfahrungen mehr als mangelhaft.
+			//
+			// Würde mich freuen, wenn jemand den Fehler in meiner Implementierung finden würde!
+
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitSet   = 0b0000000001000000;
+			$bitUnset = 0b1111111110111111;
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+	
+			if(false !== $instanceId)
+			{
+				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+				$varValue = GetValue($varId);
+
+				// Unset Bit
+				if (0 == (int)$setValue)
+				{
+					$targetValue = $varValue & $bitUnset;
+				}
+				// Set Bit
+				else
+				{
+					$targetValue = $varValue | $bitSet;
+				}
+
+				$returnValue = ModBus_WriteRegisterWord($instanceId, $targetValue);
+			}
+			else
+			{
+				$returnValue = false;
+			}
+
+			return $returnValue;
+		}
 */
+		public function SetWallbox1Phase($wallboxId, $setValue)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitSet   = 0b0001000000000000;
+			$bitUnset = 0b1110111111111111;
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+	
+			if(false !== $instanceId)
+			{
+				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+				$varValue = GetValue($varId);
+
+				// Unset Bit
+				if (0 == (int)$setValue)
+				{
+					$targetValue = $varValue & $bitUnset;
+				}
+				// Set Bit
+				else
+				{
+					$targetValue = $varValue | $bitSet;
+				}
+
+				$returnValue = ModBus_WriteRegisterWord($instanceId, $targetValue);
+			}
+			else
+			{
+				$returnValue = false;
+			}
+
+			return $returnValue;
+		}
 	}
