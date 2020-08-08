@@ -2216,25 +2216,265 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function Wallbox...($wallboxId)
+		/* *** Wallbox Status-Bits *** */
+		public function GetWallboxAvailable($wallboxId)
 		{
-				IsWallboxAvailable
-				IsWallboxLocked
-				IsWallboxCharging
-				...
-			"Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0   Wallbox vorhanden und verfügbar (1) R"),
-			"Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1   Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
-			"Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2   Laden abgebrochen (1) Laden freigegeben (0) RW"),
-			"Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3   Auto lädt (1) Auto lädt nicht (0)  R"),
-			"Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4   Typ-2-Stecker verriegelt (1)    R"),
-			"Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5   Typ-2-Stecker gesteckt (1)  R"),
-			"Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6   Schukosteckdose an (1)  RW"),
-			"Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7   Schukostecker gesteckt (1)  R"),
-			"Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8   Schukostecker verriegelt (1)    R"),
-			"16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9   Relais an, 16A 1 Phase, Schukosteckdose R"),
-			"16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10  Relais an, 16A 3 Phasen, Typ 2  R"),
-			"32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11  Relais an, 32A 3 Phasen, Typ 2  R"),
-			"1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12  Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Wallbox";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxSolarmode($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Solarbetrieb";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxChargingLocked($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Laden sperren";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxCharging($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Ladevorgang";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxType2Locked($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Typ-2-Stecker verriegelt";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxType2Connected($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Typ-2-Stecker gesteckt";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxSchukoActivated($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Schukosteckdose";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxSchukoConnected($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Schukostecker gesteckt";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallboxSchukoLocked($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "Schukostecker verriegelt";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallbox16A1Phase($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "16A 1 Phase";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallbox16A3Phase($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "16A 3 Phasen";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallbox32A3Phase($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "32A 3 Phasen";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
+		}
+
+		public function GetWallbox1Phase($wallboxId)
+		{
+			$modbusAddress = 40088 + (int)$wallboxId;
+			$bitName = "1 Phase";
+
+			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+			
+			if(false !== $instanceId)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
+				$bitValue = GetValue($bitId);
+			}
+			else
+			{
+				$bitValue = false;
+			}
+
+			return $bitValue;
 		}
 
 		/* *** Write Functions *** */
