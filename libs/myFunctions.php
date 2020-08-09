@@ -498,4 +498,102 @@ trait myFunctions
         return $archiveId;
     }
 
+    // Reduce LogSize by keeping the newest value and removing all older values per Intervall $aggregation (=minute, hour, day)
+    function RecordReducing($ID, $MStartDate, $MEndDate, $aggregation = "i")
+    {
+/* !!! ACHTUNG: Aktuell noch Fehlerhaft ! ! !
+        $ah_ID = $this->getArchiveId();
+        if(false === $ah_ID)
+        {
+            return false;
+        }
+
+        if("i" != $aggregation // Minute
+            && "G" != $aggregation // Stunde
+            && "j" != $aggregation // Tag
+        )
+        {
+            return false;
+        }
+
+        // Definition "Reducing-Zeitraum"
+        $p_ts = $MStartDate;  // Angabe Startzeitpunkt Reducing-Periode
+        $p_te = $MEndDate;  // Angabe Startzeitpunkt Reducing-Periode
+    
+        $i_max = (int)round(($p_te - $p_ts)/(60*60*24), 0);
+    
+        // Tagesschleife
+        for($i=0; $i<$i_max; $i++)
+        {
+            // Datensätze für einen Tag aus AC holen
+            $ts = mktime(0,0,0,date("m", $p_ts),date("d", $p_ts) + $i,date("Y", $p_ts));
+            $te = mktime(23,59,59,date("m", $p_ts),date("d", $p_ts) + $i,date("Y", $p_ts));
+//    echo "#$ID i=$i, i_max=$i_max,  ts: ".date("d.m.Y H:i:s", $ts)."\n";
+            $Data = AC_GetLoggedValues($ah_ID,$ID,$ts,$te,5000);
+    
+            // human Date in Datenarray einfügen
+            foreach($Data as $key=>$v)
+            {
+               $Data[$key]['TimeStamp_humanDate'] = date("d.m.Y H:i:s", $v['TimeStamp']);
+            }
+            $Raw = array_reverse($Data);
+            //print_r($Raw);
+    
+            // Datensätze für einen Tag zwischen den Intervallen löschen
+            $RawCount = count($Raw)-1;
+            foreach($Raw as $key=>$v)
+            {
+                //echo "Key = ".$key;
+                if(0 == $key)
+                {
+                    // bei erstem Durchlauf Startwerte setzen
+                    $Count = 0;
+                    $i_Flag = date($aggregation, $v['TimeStamp']);
+                    $i_TimeStart = $v['TimeStamp'] + 1;
+                    $i_TimeEnd = $v['TimeStamp'];
+                    //echo " --> init ".$i_Flag."\n";
+                }
+    
+                // ab 2. Durchlauf Werte vergleichen und Endzeitpunkt setzen
+                if(0 < $key)
+                {
+                    //echo " --> ".$i_Flag." == ".date($aggregation, $v['TimeStamp'])."\n";
+                   // wenn gleiche Minute, $i_TimeEnd erhöhen
+                   if($i_Flag == date($aggregation, $v['TimeStamp']))
+                   {
+                      $Count++;
+                      $i_TimeEnd = $v['TimeStamp'];
+                   }
+                   else
+                   {
+                        // wenn nächte Minute erreicht, Datensätze des vorangegangenen Intervalls löschen
+                        if(0 < $Count)
+                        {
+                            AC_DeleteVariableData($ah_ID,$ID, $i_TimeStart, $i_TimeEnd);
+                            //IPS_LogMessage("RecordReducer", "ID $ID: Tag $i, #$Count Werte zwischen ".date("d.m.Y, H:i:s", $i_TimeStart)." und ".date("d.m.Y, H:i:s", $i_TimeEnd)." gelöscht\n");
+//echo "Tag $i, #$Count Werte zwischen ".date("d.m.Y, H:i:s", $i_TimeStart)." und ".date("d.m.Y, H:i:s", $i_TimeEnd)." gelöscht\n";
+                        }
+    
+                        // Startwerte für neues Intervall setzen
+                        $Count = 0;
+                        $i_Flag	= date($aggregation, $v['TimeStamp']);
+                        $i_TimeStart = $v['TimeStamp'] + 1;
+                        $i_TimeEnd = $v['TimeStamp'];
+    
+                    }
+    
+                    // letztes Intervall im Array löschen
+                    if(($Count > 0) && ($RawCount == $key))
+                    {
+                        $i_TimeEnd = $v['TimeStamp'];
+                        AC_DeleteVariableData($ah_ID,$ID, $i_TimeStart, $i_TimeEnd);
+// IPS_LogMessage("RS Record Reducer", "ID $ID: #$Count Werte letztes Intervall zwischen ".date("d.m.Y, H:i:s", $i_TimeStart)." und ".date("d.m.Y, H:i:s", $i_TimeEnd)." gelöscht\n");
+//echo "#$Count Werte letztes Intervall zwischen ".date("d.m.Y, H:i:s", $i_TimeStart)." und ".date("d.m.Y, H:i:s", $i_TimeEnd)." gelöscht\n";
+                    }
+                }
+            }
+        }
+*/
+        return true;
+    }
 }
