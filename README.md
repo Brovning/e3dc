@@ -5,7 +5,7 @@ IP-Symcon (IPS) Modul für E3DC Stromspeicher mit Modbus TCP Unterstützung (bsp
 ### Inhaltsverzeichnis
 
 1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
+2. [Voraussetzungen](#2-vorraussetzungen)
 3. [Software-Installation](#3-software-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
@@ -118,20 +118,6 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 
 
 ##### optional: Leistungsmesser/Powermeter 0 - 6
-Je Leistungsmesser X (wobei X von 0 bis 6) wird der Leistungsmessertyp in Powermeter_X wie folgt angegeben:
-Typ | Bezeichnung | Hinweise
-1 | Wurzelleistungsmesser | Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt.
-2 | Externe Produktion | externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...
-3 | Zweirichtungszähler
-4 | Externer Verbrauch
-5 | Farm
-6 | - | Wird nicht verwendet
-7 | Wallbox
-8 | Externer Leistungsmesser Farm
-9 | Datenanzeige | Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals.
-10 | Regelungsbypass | Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen.
-
-
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
 40105 | 1 | 3 | Powermeter_0 | Uint16 | Powermeter | Leistungsmessertyp
@@ -162,6 +148,20 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40130 | 1 | 3 | Powermeter_6_L1 | Int16 | W | Phasenleistung in Watt L1
 40131 | 1 | 3 | Powermeter_6_L2 | Int16 | W | Phasenleistung in Watt L2
 40132 | 1 | 3 | Powermeter_6_L3 | Int16 | W | Phasenleistung in Watt L3
+
+Je Leistungsmesser X (wobei X von 0 bis 6) wird der Leistungsmessertyp in Powermeter_X wie folgt angegeben:
+Typ | Bezeichnung | Hinweise
+--- | ----------- | --------
+1 | Wurzelleistungsmesser | Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt.
+2 | Externe Produktion | externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...
+3 | Zweirichtungszähler
+4 | Externer Verbrauch
+5 | Farm
+6 | - | Wird nicht verwendet
+7 | Wallbox
+8 | Externer Leistungsmesser Farm
+9 | Datenanzeige | Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals.
+10 | Regelungsbypass | Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen.
 
 
 ##### optional: DC-String Informationen
