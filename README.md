@@ -63,6 +63,7 @@ Geräte Id | Modbus Geräte ID, welche im E3DC Menü gesetzt werden kann. Defaul
 Batteriekapazität | Welche Batteriekapazität in Kilo-Watt-Stunden (kWh) ist im E3DC installiert (bspw. 6.5, 10, 13, 15, 19.5). Diese Angabe wird optional benötigt, um die Reichweite der Batterie berechnen zu können. Default: 0
 externer Einspeiser | Schalter, um die Variable für einen zusätzlichen Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) einzulesen. Default: aus
 Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen. Default: aus
+Leistungsmesser 0 - 6 | 7 Schalter zum Aktivieren und Deaktivieren der Leistungsmesser/Powermeter Variablen. Default: aus
 Notstromversorgung | Schalter, um angeben zu können, ob eine Notstromversorgung im E3DC verbaut ist. Default: aus
 Notstrom-Reserve | Bei vorhandener Notstromversorgung kann am E3DC unter dem Menüpunkt Notstrom > Einstellungen eine Reserve angegeben werden, bis zu welcher die Batterie maximal entladen werden soll. Diese Angabe wird optional benötigt, um die Reichweite der Batterie korrekt berechnen zu können. Default: 0
 DC String Informationen | Schalter, um die Variablen für V, A und W der DC-Strings einzulesen (erst ab Release S10_2017_02 verfügbar). Default: aus
@@ -106,14 +107,62 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
 40078 | 2 | 3 | Wallbox-Leistung | Int32 | W | Leistung der Wallbox in Watt
 40080 | 2 | 3 | Wallbox-Solarleistung | Int32 | W | Solarleistung, die von der Wallbox genutzt wird in Watt
-40088 | 1 | 3 | WallBox_0_CTRL | Uint16 | Bitfield | Bits der WallBox 0 (werden einzeln ausgewertet)
-40089 | 1 | 3 | WallBox_1_CTRL | Uint16 | Bitfield | Bits der WallBox 1 (werden einzeln ausgewertet)
-40089 | 1 | 3 | WallBox_2_CTRL | Uint16 | Bitfield | Bits der WallBox 2 (werden einzeln ausgewertet)
-40089 | 1 | 3 | WallBox_3_CTRL | Uint16 | Bitfield | Bits der WallBox 3 (werden einzeln ausgewertet)
-40089 | 1 | 3 | WallBox_4_CTRL | Uint16 | Bitfield | Bits der WallBox 4 (werden einzeln ausgewertet)
-40089 | 1 | 3 | WallBox_5_CTRL | Uint16 | Bitfield | Bits der WallBox 5 (werden einzeln ausgewertet)
-40089 | 1 | 3 | WallBox_6_CTRL | Uint16 | Bitfield | Bits der WallBox 6 (werden einzeln ausgewertet)
-40089 | 1 | 3 | WallBox_7_CTRL | Uint16 | Bitfield | Bits der WallBox 7 (werden einzeln ausgewertet)
+40088 | 1 | 6 | WallBox_0_CTRL | Uint16 | Bitfield | Bits der WallBox 0 (werden einzeln ausgewertet)
+40089 | 1 | 6 | WallBox_1_CTRL | Uint16 | Bitfield | Bits der WallBox 1 (werden einzeln ausgewertet)
+40089 | 1 | 6 | WallBox_2_CTRL | Uint16 | Bitfield | Bits der WallBox 2 (werden einzeln ausgewertet)
+40089 | 1 | 6 | WallBox_3_CTRL | Uint16 | Bitfield | Bits der WallBox 3 (werden einzeln ausgewertet)
+40089 | 1 | 6 | WallBox_4_CTRL | Uint16 | Bitfield | Bits der WallBox 4 (werden einzeln ausgewertet)
+40089 | 1 | 6 | WallBox_5_CTRL | Uint16 | Bitfield | Bits der WallBox 5 (werden einzeln ausgewertet)
+40089 | 1 | 6 | WallBox_6_CTRL | Uint16 | Bitfield | Bits der WallBox 6 (werden einzeln ausgewertet)
+40089 | 1 | 6 | WallBox_7_CTRL | Uint16 | Bitfield | Bits der WallBox 7 (werden einzeln ausgewertet)
+
+
+##### optional: Leistungsmesser/Powermeter 0 - 6
+Je Leistungsmesser X (wobei X von 0 bis 6) wird der Leistungsmessertyp in Powermeter_X wie folgt angegeben:
+Typ | Bezeichnung | Hinweise
+1 | Wurzelleistungsmesser | Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt.
+2 | Externe Produktion | externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...
+3 | Zweirichtungszähler
+4 | Externer Verbrauch
+5 | Farm
+6 | - | Wird nicht verwendet
+7 | Wallbox
+8 | Externer Leistungsmesser Farm
+9 | Datenanzeige | Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals.
+10 | Regelungsbypass | Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen.
+
+
+StartRegister | Size | FunctionCode | Name | Type | Units | Description
+------------- | ---- | ------------ | ---- | ---- | ----- | -----------
+40105 | 1 | 3 | Powermeter_0 | Uint16 | Powermeter | Leistungsmessertyp
+40106 | 1 | 3 | Powermeter_0_L1 | Int16 | W | Phasenleistung in Watt L1
+40107 | 1 | 3 | Powermeter_0_L2 | Int16 | W | Phasenleistung in Watt L2
+40108 | 1 | 3 | Powermeter_0_L3 | Int16 | W | Phasenleistung in Watt L3
+40109 | 1 | 3 | Powermeter_1 | Uint16 | Powermeter | Leistungsmessertyp
+40110 | 1 | 3 | Powermeter_1_L1 | Int16 | W | Phasenleistung in Watt L1
+40111 | 1 | 3 | Powermeter_1_L2 | Int16 | W | Phasenleistung in Watt L2
+40112 | 1 | 3 | Powermeter_1_L3 | Int16 | W | Phasenleistung in Watt L3
+40113 | 1 | 3 | Powermeter_2 | Uint16 | Powermeter | Leistungsmessertyp
+40114 | 1 | 3 | Powermeter_2_L1 | Int16 | W | Phasenleistung in Watt L1
+40115 | 1 | 3 | Powermeter_2_L2 | Int16 | W | Phasenleistung in Watt L2
+40116 | 1 | 3 | Powermeter_2_L3 | Int16 | W | Phasenleistung in Watt L3
+40117 | 1 | 3 | Powermeter_3 | Uint16 | Powermeter | Leistungsmessertyp
+40118 | 1 | 3 | Powermeter_3_L1 | Int16 | W | Phasenleistung in Watt L1
+40119 | 1 | 3 | Powermeter_3_L2 | Int16 | W | Phasenleistung in Watt L2
+40120 | 1 | 3 | Powermeter_3_L3 | Int16 | W | Phasenleistung in Watt L3
+40121 | 1 | 3 | Powermeter_4 | Uint16 | Powermeter | Leistungsmessertyp
+40122 | 1 | 3 | Powermeter_4_L1 | Int16 | W | Phasenleistung in Watt L1
+40123 | 1 | 3 | Powermeter_4_L2 | Int16 | W | Phasenleistung in Watt L2
+40124 | 1 | 3 | Powermeter_4_L3 | Int16 | W | Phasenleistung in Watt L3
+40125 | 1 | 3 | Powermeter_5 | Uint16 | Powermeter | Leistungsmessertyp
+40126 | 1 | 3 | Powermeter_5_L1 | Int16 | W | Phasenleistung in Watt L1
+40127 | 1 | 3 | Powermeter_5_L2 | Int16 | W | Phasenleistung in Watt L2
+40128 | 1 | 3 | Powermeter_5_L3 | Int16 | W | Phasenleistung in Watt L3
+40129 | 1 | 3 | Powermeter_6 | Uint16 | Powermeter | Leistungsmessertyp
+40130 | 1 | 3 | Powermeter_6_L1 | Int16 | W | Phasenleistung in Watt L1
+40131 | 1 | 3 | Powermeter_6_L2 | Int16 | W | Phasenleistung in Watt L2
+40132 | 1 | 3 | Powermeter_6_L3 | Int16 | W | Phasenleistung in Watt L3
+
 
 ##### optional: DC-String Informationen
 Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!
@@ -162,11 +211,12 @@ Wallbox-Wirkarbeit_kWh | Float | kWh | Wallbox-Energie des aktuellen Tages in Ki
 
 Name   | Typ
 ------ | -------
-E3DC.Emergency-Power.Int | Integer
-E3DC.Watt.Int | Integer
 E3DC.Ampere.Int | Integer
 E3DC.Electricity.Int | Integer
+E3DC.Emergency-Power.Int | Integer
+E3DC.Powermeter.Int | Integer
 E3DC.Volt.Int | Integer
+E3DC.Watt.Int | Integer
 
 
 ### 6. WebFront
@@ -194,6 +244,11 @@ Gibt den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer in Proz
 `int E3DC_GetSelfConsumption(int $InstanzID)`
 
 Gibt den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück.
+
+
+`bool E3DC_IsDerating(int $InstanzID)`
+
+Gibt den aktuellen Abregelungs-Status der E3DC-Instanz $InstanzID als Bool zurück.
 
 
 ##### Batterie
@@ -226,6 +281,16 @@ Gibt die Batterie-Entlade-Energie der E3DC-Instanz $InstanzID über den Zeitraum
 `int E3DC_GetBatteryRangeWh(int $InstanzID)` bzw. `float E3DC_GetBatteryRangeKwh(int $InstanzID)`
 
 Gibt die aktuelle Batterie-Reichweite der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert wird berechnet aus dem SOC, der in der Instanz angegebenen Batterie-Kapazität und der maximal nutzbaren Entladetiefe. Sofern eine Notstrom-Funktion installiert ist, wird auch die in der Instanz angegebene Notstromreserve berücksichtigt.
+
+
+`bool E3DC_IsChargingLocked(int $InstanzID)`
+
+Gibt den aktuellen Batterie-Lade-Status der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true, wird das Batterieladen bspw. durch die standortbezogene Wetterprognose oder durch eine manuelle Vorgabe gesperrt.
+
+
+`bool E3DC_IsDischargingLocked(int $InstanzID)`
+
+Gibt den aktuellen Batterie-Entlade-Status der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true, wird das Batterieentladen bspw. durch eine manuelle Vorgabe gesperrt.
 
 
 
@@ -343,8 +408,109 @@ Gibt die Wallbox-Energie (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID 
 Gibt die Wallbox-Solar-Energie (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
+`bool E3DC_GetWallboxAvailable(int $InstanzID, int $WallboxId)`
+
+Gibt die Verfügbarkeit der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist die Wallbox verfübar.
+
+
+`bool E3DC_GetWallboxSolarmode(int $InstanzID, int $WallboxId)`
+
+Gibt den Status des Solarbetriebs der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Solarbetrieb aktiviert.
+
+
+`bool E3DC_GetWallboxChargingLocked(int $InstanzID, int $WallboxId)`
+
+Gibt den Ladesperr-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist das Laden gesperrt.
+
+
+`bool E3DC_GetWallboxCharging(int $InstanzID, int $WallboxId)`
+
+Gibt den Lade-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true wird gerade geladen.
+
+
+`bool E3DC_GetWallboxType2Locked(int $InstanzID, int $WallboxId)`
+
+Gibt den Typ2-Verriegelungs-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Typ2-Stecker verriegelt.
+
+
+`bool E3DC_GetWallboxType2Connected(int $InstanzID, int $WallboxId)`
+
+Gibt den Typ2-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist ein Typ2-Stecker angesteckt.
+
+
+`bool E3DC_GetWallboxSchukoActivated(int $InstanzID, int $WallboxId)`
+
+Gibt den Schuko-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Schuko-Anschluss aktiviert.
+
+
+`bool E3DC_GetWallboxSchukoConnected(int $InstanzID, int $WallboxId)`
+
+Gibt den Schuko-Stecker-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist ein Schuko-Stecker am Anschluss eingesteckt und es wird Strom bezogen.
+
+
+`bool E3DC_GetWallboxSchukoLocked(int $InstanzID, int $WallboxId)`
+
+Gibt den Schuko-Sperr-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Schuko-Anschluss gesperrt.
+
+
+`bool E3DC_GetWallbox16A1Phase(int $InstanzID, int $WallboxId)`
+
+Gibt den 1-phasigen 16 A Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 1-phasige Lademodus mit 16A aktiviert (3,5 kW Ladeleistung).
+
+
+`bool E3DC_GetWallbox16A3Phase(int $InstanzID, int $WallboxId)`
+
+Gibt den 3-phasigen 16 A Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 3-phasige Lademodus mit 16A aktiviert (11 kW Ladeleistung).
+
+
+`bool E3DC_GetWallbox32A3Phase(int $InstanzID, int $WallboxId)`
+
+Gibt den 3-phasigen 32 A Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 3-phasige Lademodus mit 32A aktiviert (22 kW Ladeleistung).
+
+
+`bool E3DC_GetWallbox1Phase(int $InstanzID, int $WallboxId)`
+
+Gibt den Phasen Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 1-phasige Lademodus aktiviert und bei false ist der 3-phasige Lademodus aktiviert.
+
+
+`bool E3DC_SetWallboxSolarmode(int $InstanzID, int $WallboxId, bool $SetValue)`
+
+Setzt den Solar-Modus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der Solar-Lade-Modus aktiviert. Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+
+
+`bool E3DC_SetWallbox1Phase(int $InstanzID, int $WallboxId, bool $SetValue)`
+
+Setzt den 1-phasigen Lademodus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der 1-phasige Lademodus aktiviert (bspw. zum Herunterregeln der Ladeleistung). Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+
+! ! ! ACHTUNG ! ! !
+E3DC_SetWallboxChargingLocked() und E3DC_SetWallboxSchukoActivated() funktionieren leider nicht!
+Implementierung laut E3DC-Support fehlerhaft. Einzige Antwort, die ich hierzu nach fast 3 Monaten erhalten habe:
+"Wenn ein einzelnes Bit gesetzt werden soll, dann ist der Vorgang: Lesen des Registers, ändern des Bits in dem Wert des Registers, dann zurückschreiben des Registers."
+Frage meinerseits: Weshalb soll es hier nicht funktionieren und bei den anderen beiden Wallbox WriteFunctions schon ?!?!
+--> nie mehr eine Rückmeldung erhalten...
+Der E3DC Support ist aus meinen Erfahrungen mehr als mangelhaft.
+Würde mich freuen, wenn jemand den Fehler in meiner Implementierung finden würde!
+
+Deaktiviert: `bool E3DC_SetWallboxChargingLocked(int $InstanzID, int $WallboxId, bool $SetValue)`
+
+Sperrt das Laden der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird das Laden gesperrt. Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+
+
+Deaktiviert: `bool E3DC_SetWallboxSchukoActivated(int $InstanzID, int $WallboxId, bool $SetValue)`
+
+Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird die Schuko-Steckdose aktiviert. Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+
+
 
 ### 8. Versionshistorie
+
+#### v1.1
+- Quattroporte hinzugefügt
+- Powermeter (Leistungsmesser) hinzugefügt
+- Variablenprofil für Leistungsmesser hinzugefügt
+- Public Funktionen hinzugefügt: Wallbox Statusfunktionen hinzugefügt (E3DC_GetWallboxAvailable(), E3DC_GetWallboxSolarmode(), E3DC_GetWallboxChargingLocked(), E3DC_GetWallboxCharging(), E3DC_GetWallboxType2Locked(), E3DC_GetWallboxType2Connected(), E3DC_GetWallboxSchukoActivated(), E3DC_GetWallboxSchukoConnected(), E3DC_GetWallboxSchukoLocked(), E3DC_GetWallbox16A1Phase(), E3DC_GetWallbox16A3Phase(), E3DC_GetWallbox32A3Phase(), E3DC_GetWallbox1Phase()), E3DC Statusfunktionen hinzugefügt (E3DC_IsDerating(), E3DC_IsChargingLocked(), E3DC_IsDischargingLocked()), Wallbox Schreib-Funktionen hinzugefügt (E3DC_SetWallboxSolarmode(), E3DC_SetWallbox1Phase())
+- E3DC_SetWallboxChargingLocked() und E3DC_SetWallboxSchukoActivated() funktionieren leider nicht! Ob Fehler bei E3DC oder in meiner Implementierung ist noch unklar...
+- intern umstrukturiert, interne Funktionen hinzugefügt,...
 
 #### v1.0
 - Feature Requests: #4 Tageswerte loggen
