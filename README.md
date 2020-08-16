@@ -55,7 +55,7 @@ Anschließend steht das Modul zur Verfügung und eine E3DC Instanz kann hinzugef
 
 #### Variante 2: Module Control
 
-Über das in der IP Symcon Console enthaltene Module Control die URL https://github.com/Brovning/e3dc manuell hinzufügen.
+Über das in der IP Symcon Console (unter Core Instances/Kerninstanzen) enthaltene Module Control die URL https://github.com/Brovning/e3dc manuell hinzufügen.
 
 ![alt text](./docs/symcon_module-control.jpg?raw=true "Symcon Console > Module Control > URL hinzufuegen")
 
