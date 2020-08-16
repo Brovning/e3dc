@@ -44,8 +44,22 @@ und beim Quattroporte unter Hauptmenü > Smart-Funktionen > Smart Home > Funktio
 
 ### 3. Software-Installation
 
-* Über den Module Store das 'E3DC'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen: https://github.com/Brovning/e3dc
+#### Variante 1 (empfohlen): Module Store
+
+Über den in der IP Symcon Console integrierten Module Store das 'E3DC'-Modul installieren:
+
+![alt text](./docs/symcon_module-store.jpg?raw=true "Symcon > Module Store > 'E3DC'-Modul")
+
+Anschließend steht das Modul zur Verfügung und eine E3DC Instanz kann hinzugefügt werden.
+
+
+#### Variante 2: Module Control
+
+Über das in der IP Symcon Console enthaltene Module Control die URL https://github.com/Brovning/e3dc manuell hinzufügen.
+
+![alt text](./docs/symcon_module-control.jpg?raw=true "Symcon Console > Module Control > URL hinzufuegen")
+
+Anschließend steht das Modul zur Verfügung und eine E3DC Instanz kann hinzugefügt werden.
 
 
 ### 4. Einrichten der Instanzen in IP-Symcon
