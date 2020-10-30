@@ -2551,7 +2551,7 @@ ErrorMessage
 
 			return $returnValue;
 		}
-/*
+
 		public function SetWallboxChargingLocked($wallboxId, $setValue)
 		{
 			// ! ! ! ACHTUNG ! ! !
@@ -2563,6 +2563,7 @@ ErrorMessage
 			// Der E3DC Support ist aus meinen Erfahrungen mehr als mangelhaft.
 			//
 			// Würde mich freuen, wenn jemand den Fehler in meiner Implementierung finden würde!
+			// Ansonsten bleibe ich dabei, dass doch E3DC bitte den Fehler beheben sollte...
 
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitSet   = 0b0000000000000100;
@@ -2607,6 +2608,7 @@ ErrorMessage
 			// Der E3DC Support ist aus meinen Erfahrungen mehr als mangelhaft.
 			//
 			// Würde mich freuen, wenn jemand den Fehler in meiner Implementierung finden würde!
+			// Ansonsten bleibe ich dabei, dass doch E3DC bitte den Fehler beheben sollte...
 
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitSet   = 0b0000000001000000;
@@ -2639,7 +2641,7 @@ ErrorMessage
 
 			return $returnValue;
 		}
-*/
+
 		public function SetWallbox1Phase($wallboxId, $setValue)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
