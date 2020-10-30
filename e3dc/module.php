@@ -393,16 +393,54 @@ if(false !== \$varId)
 				$this->SetStatus(201);
 			}
 
-/* Verursacht scheinbar an dieser Stelle Probleme. Manchmal wird Modbus-Instanz nicht mehr aktualisiert...
 			// Workaround für "InstanceInterface not available" Fehlermeldung beim Server-Start...
 			if (KR_READY != IPS_GetKernelRunlevel())
 			{
 				// --> do nothing
+				// Verursacht scheinbar an dieser Stelle Probleme. Manchmal werden die Timer nicht mehr ausgeführt, daher explizit aktivieren...
+
+				if($loggingPowerKw || $readExtLeistung)
+				{
+					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
+					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
+				}
+				else
+				{
+					// Deaktiviert einen Timer
+					$this->SetTimerInterval("Update-ValuesKw", 0);
+				}
+
+				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
+				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
+
+				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
+				$this->SetTimerInterval("Update-EMS-Status", 5000);
+
+				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
+				if($calcWh || $calcKwh)
+				{
+					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
+				}
+			
+				// Erstellt einen Timer mit einem Intervall von 6 Stunden
+				if($loggingWirkarbeit)
+				{
+					$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
+				}
+
+				if($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
+				{
+					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
+					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
+				}
+				else
+				{
+					// deaktiviert einen Timer
+					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
+				}			
 			}
 			// Instanzen nur mit Konfigurierter IP erstellen
-			else 
-*/
-			if("" != $hostIp)
+			else if("" != $hostIp)
 			{
 				$this->checkProfiles();
 				list($gatewayId_Old, $interfaceId_Old) = $this->readOldModbusGateway();
@@ -1116,12 +1154,14 @@ Bit 13  Nicht belegt";
 					}
 					
 					// Timer deaktivieren
+/*
 					$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
 					$this->SetTimerInterval("Update-EMS-Status", 0);
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
 					$this->SetTimerInterval("Update-ValuesKw", 0);
 					$this->SetTimerInterval("Wh-Berechnung", 0);
-		
+					$this->SetTimerInterval("HistoryCleanUp", 0);
+*/		
 					// inaktiv
 					$this->SetStatus(104);
 				}

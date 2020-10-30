@@ -115,7 +115,7 @@ trait myFunctions
         {
             $modbusAddressInstanceId = @IPS_GetInstance($childId);
 
-            if(MODBUS_ADDRESSES == $modbusAddressInstanceId['ModuleInfo']['ModuleID'])
+            if(isset($modbusAddressInstanceId['ModuleInfo']['ModuleID']) && MODBUS_ADDRESSES == $modbusAddressInstanceId['ModuleInfo']['ModuleID'])
             {
                 $modbusGatewayId_Old = $modbusAddressInstanceId['ConnectionID'];
                 $clientSocketId_Old = @IPS_GetInstance($modbusGatewayId_Old)['ConnectionID'];
