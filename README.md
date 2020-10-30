@@ -518,6 +518,10 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 
 ### 8. Versionshistorie
 
+#### v1.2
+- Fix für #7: Fehlermeldungem mit IPS 5.5 - Trying to access array offset on value of type bool
+- E3DC_SetWallboxChargingLocked() und E3DC_SetWallboxSchukoActivated() funktionieren leider nicht! Ob Fehler bei E3DC oder in meiner Implementierung ist noch unklar. Trotzdem aktiviert für Tests.
+
 #### v1.1
 - Quattroporte hinzugefügt
 - Powermeter (Leistungsmesser) hinzugefügt
