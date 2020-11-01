@@ -54,8 +54,10 @@ trait myFunctions
 		}
 
 		// Lese Logwerte der TimeRange Minuten beginnend ab StartZeit
-		$buffer = AC_GetLoggedValues($archiveId, $logId, ($startZeit - ($timeRange * 60)), $startZeit, 0);
-		//print_r($buffer);
+//		$buffer = AC_GetLoggedValues($archiveId, $logId, ($startZeit - ($timeRange * 60)), $startZeit, 0);    // --> Limit von 10.000 schnell erreicht, sofern der E3DC bspw. im 1 Sekundenraster abgefragt wird!!!
+        $buffer = AC_GetAggregatedValues($archiveId, $logId, 6, ($startZeit - ($timeRange * 60)), $startZeit, 0);
+        $targetIndex = 'Avg'; // 'Value';
+        //print_r($buffer);
 
 		// Keine Logwerte in der TimeRange vorhanden
 		if (0 == count($buffer))
@@ -80,7 +82,7 @@ trait myFunctions
 			for ($i = 0; $i < count($buffer); $i++)
 			{
 				// Wert mit Gewichtung Multiplizieren
-				$bufferValues[$i] = $buffer[$i]['Value'] * $buffer[$i]['Duration'];
+				$bufferValues[$i] = $buffer[$i][$targetIndex] * $buffer[$i]['Duration'];
 
 				// Summe der Gewichtungen ermitteln
 				$bufferDuration += $buffer[$i]['Duration'];
@@ -429,7 +431,9 @@ trait myFunctions
         $bufferSum = 0;
 
         // Lese Logwerte der TimeRange Minuten beginnend ab StartZeit
-        $buffer = AC_GetLoggedValues($archiveId, $logId, $startTime, $endTime, 0);
+//        $buffer = AC_GetLoggedValues($archiveId, $logId, $startTime, $endTime, 0);    // --> Laufzeitprobleme, sofern der E3DC bspw. im 1 Sekundenraster abgefragt wird!!!
+        $buffer = AC_GetAggregatedValues($archiveId, $logId, 6, $startTime, $endTime, 0);
+        $targetIndex = 'Avg'; // 'Value';
 
         // Keine Logwerte in der TimeRange vorhanden
         if(0 == count($buffer))
@@ -460,17 +464,17 @@ trait myFunctions
                 if(0 == $mode)
                 {
                     // --> alle Werte aufsummieren
-                    $bufferSum += ($buffer[$i]['Value'] * $buffer[$i]['Duration'] / 3600);
+                    $bufferSum += ($buffer[$i][$targetIndex] * $buffer[$i]['Duration'] / 3600);
                 }
-                else if(1 == $mode && 0 <= $buffer[$i]['Value'])
+                else if(1 == $mode && 0 <= $buffer[$i][$targetIndex])
                 {
                     // --> nur positive Werte aufsummieren
-                    $bufferSum += ($buffer[$i]['Value'] * $buffer[$i]['Duration'] / 3600);
+                    $bufferSum += ($buffer[$i][$targetIndex] * $buffer[$i]['Duration'] / 3600);
                 }
-                else if(2 == $mode && 0 > $buffer[$i]['Value'])
+                else if(2 == $mode && 0 > $buffer[$i][$targetIndex])
                 {
                     // --> nur negative Werte aufsummieren
-                    $bufferSum += ($buffer[$i]['Value'] * $buffer[$i]['Duration'] / 3600);
+                    $bufferSum += ($buffer[$i][$targetIndex] * $buffer[$i]['Duration'] / 3600);
                 }
                 else if(2 < $mode)
                 {
