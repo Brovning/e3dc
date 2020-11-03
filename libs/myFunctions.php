@@ -55,7 +55,7 @@ trait myFunctions
 
 		// Lese Logwerte der TimeRange Minuten beginnend ab StartZeit
 //		$buffer = AC_GetLoggedValues($archiveId, $logId, ($startZeit - ($timeRange * 60)), $startZeit, 0);    // --> Limit von 10.000 schnell erreicht, sofern der E3DC bspw. im 1 Sekundenraster abgefragt wird!!!
-        $buffer = AC_GetAggregatedValues($archiveId, $logId, 6, ($startZeit - ($timeRange * 60)), $startZeit, 10000);
+        $buffer = AC_GetAggregatedValues($archiveId, $logId, 6, ($startZeit - ($timeRange * 60)), $startZeit, 0);
         $targetIndex = 'Avg'; // 'Value';
         //print_r($buffer);
 
@@ -432,7 +432,7 @@ trait myFunctions
 
         // Lese Logwerte der TimeRange Minuten beginnend ab StartZeit
 //        $buffer = AC_GetLoggedValues($archiveId, $logId, $startTime, $endTime, 0);    // --> Laufzeitprobleme, sofern der E3DC bspw. im 1 Sekundenraster abgefragt wird!!!
-        $buffer = AC_GetAggregatedValues($archiveId, $logId, 6, $startTime, $endTime, 10000);
+        $buffer = AC_GetAggregatedValues($archiveId, $logId, 6, $startTime, $endTime, 0);
         $targetIndex = 'Avg'; // 'Value';
 
         // Keine Logwerte in der TimeRange vorhanden
