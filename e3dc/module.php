@@ -2,11 +2,6 @@
 
 require_once __DIR__ . '/../libs/myFunctions.php';  // globale Funktionen
 
-if (!defined('DEBUG'))
-{
-	define("DEBUG", false);
-}
-
 // Modul Prefix
 if (!defined('MODUL_PREFIX'))
 {
@@ -441,8 +436,16 @@ if(false !== \$varId)
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
 				}			
 			}
+			// IP-Adresse nicht konfiguriert
+			else if("" == $hostIp)
+			{
+				// keine IP --> inaktiv
+				$this->SetStatus(104);
+
+				$this->SendDebug("Module-Status", "ERROR: ".MODUL_PREFIX." IP not set!", 0);
+			}
 			// Instanzen nur mit Konfigurierter IP erstellen
-			else if("" != $hostIp)
+			else
 			{
 				$this->checkProfiles();
 				list($gatewayId_Old, $interfaceId_Old) = $this->readOldModbusGateway();
@@ -450,7 +453,10 @@ if(false !== \$varId)
 
 				$parentId = $this->InstanceID;
 
-				// Quelle: Modbus/TCP-Schnittstelle der E3/DC GmbH 10.04.2017, v1.6
+				/**********************************************************************
+					Quelle: Modbus/TCP-Schnittstelle der E3/DC GmbH (HagerEnergy GmbH) 
+					07.07.2021 Version: V1.80
+				***********************************************************************/
 
 				$categoryId = $parentId;
 
@@ -1154,11 +1160,15 @@ Bit 13  Nicht belegt";
 						
 						// aktiv
 						$this->SetStatus(102);
+
+						$this->SendDebug("Module-Status", MODUL_PREFIX."-module activated", 0);
 					}
 					else
 					{
 						// IP oder Port nicht erreichbar
 						$this->SetStatus(200);
+
+						$this->SendDebug("Module-Status", "ERROR: ".MODUL_PREFIX." with IP=".$hostIp." and Port=".$hostPort." cannot be reached!", 0);
 					}
 				}
 				else
@@ -1182,6 +1192,8 @@ Bit 13  Nicht belegt";
 */		
 					// inaktiv
 					$this->SetStatus(104);
+
+					$this->SendDebug("Module-Status", MODUL_PREFIX."-module deactivated", 0);
 				}
 
 
@@ -1196,11 +1208,6 @@ Bit 13  Nicht belegt";
 				{
 					$this->deleteInstanceNotInUse($interfaceId_Old, MODBUS_INSTANCES);
 				}
-			}
-			else
-			{
-				// keine IP --> inaktiv
-				$this->SetStatus(104);
 			}
 		}
 /*
@@ -1236,11 +1243,6 @@ $this->EnableAction("Status");
 				// Erstelle Modbus Instancen
 				foreach ($inverterModelRegister_array as $inverterModelRegister)
 				{
-					if (DEBUG)
-					{
-						echo "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME]."\n";
-					}
-
 					$datenTyp = $this->getModbusDatatype($inverterModelRegister[IMR_TYPE]);
 					if("continue" == $datenTyp)
 					{
@@ -1255,6 +1257,8 @@ $this->EnableAction("Status");
 					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
 					if (false === $instanceId)
 					{
+						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME], 0);
+
 						$instanceId = IPS_CreateInstance(MODBUS_ADDRESSES);
 
 						IPS_SetParent($instanceId, $parentId);
@@ -1268,6 +1272,8 @@ $this->EnableAction("Status");
 					// Gateway setzen
 					if (IPS_GetInstance($instanceId)['ConnectionID'] != $gatewayId)
 					{
+						$this->SendDebug("set Modbus Gateway", "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME]." --> GatewayID ".$gatewayId, 0);
+
 						// sofern bereits eine Gateway verbunden ist, dieses trennen
 						if (0 != IPS_GetInstance($instanceId)['ConnectionID'])
 						{
@@ -1385,18 +1391,24 @@ $this->EnableAction("Status");
 			{
 				$datenTyp = 7;
 			}
+			elseif ("uint64" == strtolower($type))
+			{
+				$datenTyp = 8;
+			}
 			elseif ("string32" == strtolower($type)
 				|| "string16" == strtolower($type)
 				|| "string8" == strtolower($type)
 				|| "string" == strtolower($type)
 			)
 			{
-				echo "Datentyp '".$type."' wird von Modbus in IPS nicht unterstützt! --> skip\n";
+				$this->SendDebug("getModbusDatatype()", "Datentyp '".$type."' wird von Modbus in IPS nicht unterstützt! --> skip", 0);
+
 				return "continue";
 			}
 			else
 			{
-				echo "Fehler: Unbekannter Datentyp '".$type."'! --> skip\n";
+				$this->SendDebug("getModbusDatatype()", "Unbekannter Datentyp '".$type."'! --> skip", 0);
+
 				return "continue";
 			}	
 
@@ -1479,7 +1491,7 @@ $this->EnableAction("Status");
 			{
 				$profile = "~Valve";
 			}
-			elseif ("wh" == strtolower($unit) && 7 == $datenTyp)
+			elseif ("wh" == strtolower($unit) && (7 == $datenTyp || 8 == $datenTyp))
 			{
 				$profile = MODUL_PREFIX.".Electricity.Float";
 			}
@@ -1555,7 +1567,7 @@ $this->EnableAction("Status");
 				$profile = false;
 				if ("" != $unit)
 				{
-					echo "Profil '".$unit."' unbekannt.\n";
+					$this->SendDebug("getProfile()", "ERROR: Profil '".$unit."' unbekannt!", 0);
 				}
 			}
 
@@ -1698,7 +1710,6 @@ $this->EnableAction("Status");
 
 				// no archive found
 				$this->SetStatus(201);
-				echo MODUL_PREFIX."_GetBatteryPowerW(): Archive not found!";
 
 				$returnValue = GetValue($id);
 			}
