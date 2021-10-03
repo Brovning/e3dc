@@ -177,6 +177,11 @@
             "name": "readPowermeter6"
         },
         {
+            "type": "CheckBox",
+            "caption": "Leistungsmesser 7",
+            "name": "readPowermeter7"
+        },
+        {
             "type": "Label",
             "label": " "
         },
@@ -205,7 +210,7 @@
         },
         {
             "type": "Label",
-            "label": "Sollen V, A und W der DC-Strings ausgelesen werden? (erst ab Release S10_2017_02 verfügbar)"
+            "label": "Sollen V, A und W der DC-Strings ausgelesen werden? (verfügbar ab Release S10_2017_02)"
         },
         {
             "type": "CheckBox",

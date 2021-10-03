@@ -66,6 +66,7 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 			$this->RegisterPropertyBoolean('readPowermeter4', 'false');
 			$this->RegisterPropertyBoolean('readPowermeter5', 'false');
 			$this->RegisterPropertyBoolean('readPowermeter6', 'false');
+			$this->RegisterPropertyBoolean('readPowermeter7', 'false');
 			$this->RegisterPropertyBoolean('readEmergencyPower', 'false');
 			$this->RegisterPropertyFloat('emergencyPowerBuffer', '0');
 			$this->RegisterPropertyBoolean('readDcString', 'false');
@@ -373,6 +374,7 @@ if(false !== \$varId)
 			$readPowermeter4 = $this->ReadPropertyBoolean('readPowermeter4');
 			$readPowermeter5 = $this->ReadPropertyBoolean('readPowermeter5');
 			$readPowermeter6 = $this->ReadPropertyBoolean('readPowermeter6');
+			$readPowermeter7 = $this->ReadPropertyBoolean('readPowermeter7');
 			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
 			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
 			$readDcString = $this->ReadPropertyBoolean('readDcString');
@@ -545,6 +547,7 @@ Bit 5    1 = Ladesperrzeit aktiv: Den Zeitraum für die Ladesperrzeit geben Sie 
 Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Entladesperrzeit    R"),
 					array(40086, 1, 3, "EMS Remote Control", "int16", "", "EMS Remote Control"),
 					array(40087, 1, 3, "EMS CTRL", "Uint16", "", "EMS CTRL"),
+					array(40137, 1, 3, "SG Ready-Status", "Uint16", "", "SG Ready-Status"),
 				);
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
@@ -936,7 +939,7 @@ Bit 13  Nicht belegt";
 				/* ********** Spezifische Abfragen der Leistungsmesser **************************************
 					Hinweis: Die im Folgenden gelisteten Leistungsmesser (Register 40105 bis 40132) werden im Kapitel „Typen von Leistungsmessern“
 				 ************************************************************************************************** */
-				if($readPowermeter0 || $readPowermeter1 || $readPowermeter2 || $readPowermeter3 || $readPowermeter4 || $readPowermeter5 || $readPowermeter6)
+				if($readPowermeter0 || $readPowermeter1 || $readPowermeter2 || $readPowermeter3 || $readPowermeter4 || $readPowermeter5 || $readPowermeter6 || $readPowermeter7)
 				{
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 //					$this->SetTimerInterval("Update-Powermeter", 5000);
@@ -1065,6 +1068,21 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40130, 1, 3, "Powermeter_6_L1", "Int16", "W", "Phasenleistung in Watt L1");
 					$inverterModelRegisterDel_array[] = array(40131, 1, 3, "Powermeter_6_L2", "Int16", "W", "Phasenleistung in Watt L2");
 					$inverterModelRegisterDel_array[] = array(40132, 1, 3, "Powermeter_6_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+
+				if($readPowermeter7)
+				{
+					$inverterModelRegister_array[] = array(40133, 1, 3, "Powermeter_7", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegister_array[] = array(40134, 1, 3, "Powermeter_7_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegister_array[] = array(40135, 1, 3, "Powermeter_7_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegister_array[] = array(40136, 1, 3, "Powermeter_7_L3", "Int16", "W", "Phasenleistung in Watt L3");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40133, 1, 3, "Powermeter_7", "Uint16", "Powermeter", $powermeterTypBeschreibung);
+					$inverterModelRegisterDel_array[] = array(40134, 1, 3, "Powermeter_7_L1", "Int16", "W", "Phasenleistung in Watt L1");
+					$inverterModelRegisterDel_array[] = array(40135, 1, 3, "Powermeter_7_L2", "Int16", "W", "Phasenleistung in Watt L2");
+					$inverterModelRegisterDel_array[] = array(40136, 1, 3, "Powermeter_7_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
