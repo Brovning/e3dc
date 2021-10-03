@@ -71,20 +71,20 @@ __Konfigurationsseite__:
 Name     | Beschreibung
 -------- | ------------------
 Open | Schalter zum aktivieren und deaktivieren der Instanz. Default: aus
-IP | IP-Adresse des E3DC-Stromspeichers im lokalen Netzwerk
+IP | IP-Adresse des E3DC-Stromspeichers im lokalen Netzwerk (IPv4)
 Port | Port, welcher im E3DC unter dem Menüpunkt Modbus angegeben wurde. Default: 502
 Geräte Id | Modbus Geräte ID, welche im E3DC Menü gesetzt werden kann. Default: 1
+Abfrage-Intervall	| Intervall (in Sekunden) in welchem die Modbus-Adressen abgefragt werden sollen. Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird. Jedoch je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei Logging! Default: 60 Sekunden
 Batteriekapazität | Welche Batteriekapazität in Kilo-Watt-Stunden (kWh) ist im E3DC installiert (bspw. 6.5, 10, 13, 15, 19.5). Diese Angabe wird optional benötigt, um die Reichweite der Batterie berechnen zu können. Default: 0
 externer Einspeiser | Schalter, um die Variable für einen zusätzlichen Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) einzulesen. Default: aus
-Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen. Default: aus
-Leistungsmesser 0 - 6 | 7 Schalter zum Aktivieren und Deaktivieren der Leistungsmesser/Powermeter Variablen. Default: aus
+Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen und je ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Fertiggarage). Default: aus
+Leistungsmesser 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Leistungsmesser/Powermeter Variablen und je ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. extWechselrichter). Default: aus
 Notstromversorgung | Schalter, um angeben zu können, ob eine Notstromversorgung im E3DC verbaut ist. Default: aus
 Notstrom-Reserve | Bei vorhandener Notstromversorgung kann am E3DC unter dem Menüpunkt Notstrom > Einstellungen eine Reserve angegeben werden, bis zu welcher die Batterie maximal entladen werden soll. Diese Angabe wird optional benötigt, um die Reichweite der Batterie korrekt berechnen zu können. Default: 0
-DC String Informationen | Schalter, um die Variablen für V, A und W der DC-Strings einzulesen (erst ab Release S10_2017_02 verfügbar). Default: aus
+DC String Informationen | Schalter, um die Variablen für V, A und W der 3 DC-Strings einzulesen und je String ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Sued) (verfügbar ab Release S10_2017_02). Default: aus
 Variablen-Logging | Für welche Variablen soll das Logging aktiviert werden? Zur Auswahl stehen Leistungsvariablen in W, Leistungsvariablen in kW (bei Auswahl werden zusätzliche Variablen in kW erstellt), Batterie SOC (Ladezustand) in %, Autarkie in %, Eigenverbrauch in %
 Tageswerte der Wirkarbeit | Sollen die Tageswerte in Wh oder kWh berechnet werden? Bei Auswahl werden zusätzliche Variablen in Wh oder kWh erstellt.
 Wirkarbeit loggen | Sollen für die Tageswerte in Wh oder kWh das Logging aktiviert werden? Nur möglich, sofern zuvor die Tageswerte-Berechnung auch aktiviert wurde!
-Abfrage-Intervall	| Intervall (in Sekunden) in welchem die Modbus-Adressen abgefragt werden sollen. Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird. Jedoch je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei Logging! Default: 60 Sekunden
 
 
 ### 5. Statusvariablen und Profile
@@ -106,6 +106,7 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40085 | 1 | 3 | EMS-Status | Uint16 | Bitfield | EMS-Status Bits (werden einzeln ausgewertet)
 40086 | 1 | 3 | EMS Remote Control | int16 |  | EMS Remote Control
 40087 | 1 | 3 | EMS CTRL | Uint16 |  | EMS CTRL
+40137 | 1 | 3 | SG Ready-Status | Uint16 |  | SG Ready-Status
 
 
 ##### optional: externer Einspeiser
@@ -131,7 +132,7 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40089 | 1 | 6 | WallBox_7_CTRL | Uint16 | Bitfield | Bits der WallBox 7 (werden einzeln ausgewertet)
 
 
-##### optional: Leistungsmesser/Powermeter 0 - 6
+##### optional: Leistungsmesser/Powermeter 0 - 7
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
 40105 | 1 | 3 | Powermeter_0 | Uint16 | Powermeter | Leistungsmessertyp
@@ -162,6 +163,10 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40130 | 1 | 3 | Powermeter_6_L1 | Int16 | W | Phasenleistung in Watt L1
 40131 | 1 | 3 | Powermeter_6_L2 | Int16 | W | Phasenleistung in Watt L2
 40132 | 1 | 3 | Powermeter_6_L3 | Int16 | W | Phasenleistung in Watt L3
+40133 | 1 | 3 | Powermeter_7 | Uint16 | Powermeter | Leistungsmessertyp
+40134 | 1 | 3 | Powermeter_7_L1 | Int16 | W | Phasenleistung in Watt L1
+40135 | 1 | 3 | Powermeter_7_L2 | Int16 | W | Phasenleistung in Watt L2
+40136 | 1 | 3 | Powermeter_7_L3 | Int16 | W | Phasenleistung in Watt L3
 
 Je Leistungsmesser X (wobei X von 0 bis 6) wird der Leistungsmessertyp in Powermeter_X wie folgt angegeben:
 Typ | Bezeichnung | Hinweise
@@ -517,6 +522,13 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 
 
 ### 8. Versionshistorie
+
+#### v1.3
+- Feature Request #10: Individuelle benennung von DC Strings, Wallboxen und Leistungsmesser
+- Leistungsmesser 7 und SG Ready entsprechend Modbus-Doku v1.8 hinzugefügt
+- Debug-Ausgaben für Modul-Debugging hinzugefügt
+- Eingabefelder werden nun auf Plausibilität überprüft (bspw. IP, Geräte ID,...)
+- Nutzbare Batteriekapazität von 90% auf 80% reduziert, da dies mehr der Realität entspricht
 
 #### v1.2
 - Fix für #7: Fehlermeldungem mit IPS 5.5 - Trying to access array offset on value of type bool
