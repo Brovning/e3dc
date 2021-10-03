@@ -19,7 +19,7 @@ Dieses Modul erstellt anhand der Konfiguration der E3DC Instanz den nötigen Cli
 Unterhalb der E3DC Instanz werden die Modbus Adressen für den E3/DC-Simple Mode erstellt.
 
 
-### 2. Vorraussetzungen
+### 2. Voraussetzungen
 
 * IP-Symcon ab Version 5.0
 * Der E3DC Stromspeicher muss Modbus TCP unterstützen!
@@ -29,7 +29,7 @@ entweder unter Hauptmenü > Funktionen > Funktion Modbus > Modbus und Modbus TCP
 
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20Funktionen%20-%20Funktion%20Modbus.png?raw=true "E3DC > Hauptmenü > Funktionen > Funktion Modbus")
 
-oder unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus erst Modbus aktivieren, dann auf den Pfeil nach Rechts klicken und Modbus TCP mit Protokoll 'E3/DC' aktivieren
+oder unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus erst Modbus aktivieren, dann auf den Pfeil nach rechts klicken und Modbus TCP mit Protokoll 'E3/DC' aktivieren
 
 ![alt text](./docs/E3DC%20-%20Hauptmenue%20-%20%20Smart-Funktionen%20%20-%20Smart%20Home%20%20-%20Modbus%20-%20Modbus.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Modbus > Modbus")
 
@@ -70,11 +70,11 @@ __Konfigurationsseite__:
 
 Name     | Beschreibung
 -------- | ------------------
-Open | Schalter zum aktivieren und deaktivieren der Instanz. Default: aus
+Open | Schalter zum Aktivieren und Deaktivieren der Instanz. Default: aus
 IP | IP-Adresse des E3DC-Stromspeichers im lokalen Netzwerk (IPv4)
 Port | Port, welcher im E3DC unter dem Menüpunkt Modbus angegeben wurde. Default: 502
 Geräte Id | Modbus Geräte ID, welche im E3DC Menü gesetzt werden kann. Default: 1
-Abfrage-Intervall	| Intervall (in Sekunden) in welchem die Modbus-Adressen abgefragt werden sollen. Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird. Jedoch je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei Logging! Default: 60 Sekunden
+Abfrage-Intervall	| Intervall (in Sekunden) in welchem die Modbus-Adressen abgefragt werden sollen. Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfrage-Intervall gewählt wird. Jedoch je kleiner der Abfrage-Intervall, umso höher die Systemlast und auch die Archiv-Größe bei Logging! Default: 60 Sekunden
 Batteriekapazität | Welche Batteriekapazität in Kilo-Watt-Stunden (kWh) ist im E3DC installiert (bspw. 6.5, 10, 13, 15, 19.5). Diese Angabe wird optional benötigt, um die Reichweite der Batterie berechnen zu können. Default: 0
 externer Einspeiser | Schalter, um die Variable für einen zusätzlichen Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) einzulesen. Default: aus
 Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen und je ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Fertiggarage). Default: aus
@@ -102,7 +102,7 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 40074 | 2 | 3 | Netz-Leistung | Int32 | W | Leistung am Netzübergabepunkt in Watt (negative Werte = Einspeisung)
 40082 | 1 | 3 | Autarkie-Eigenverbrauch | Uint8+Uint8 |  | Autarkie und Eigenverbrauch in Prozent
 40083 | 1 | 3 | Batterie-SOC | Uint16 | % | Batterie-SOC in Prozent
-40084 | 1 | 3 | Emergency-Power | Uint16 |  | Emergency-Power Status (seaparates Profil vorhanden)
+40084 | 1 | 3 | Emergency-Power | Uint16 |  | Emergency-Power Status (separates Profil vorhanden)
 40085 | 1 | 3 | EMS-Status | Uint16 | Bitfield | EMS-Status Bits (werden einzeln ausgewertet)
 40086 | 1 | 3 | EMS Remote Control | int16 |  | EMS Remote Control
 40087 | 1 | 3 | EMS CTRL | Uint16 |  | EMS CTRL
@@ -284,7 +284,7 @@ Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Integer in W
 
 `int E3DC_GetBatteryPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetBatteryPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Batterie-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+Gibt die gemittelte Batterie-Leistung der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int GetBatteryChargeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetBatteryChargeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
@@ -322,7 +322,7 @@ Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Integer in Watt 
 
 `int E3DC_GetGridPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetGridPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Netz-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+Gibt die gemittelte Netz-Leistung der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int GetGridConsumptionEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetGridConsumptionEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
@@ -342,7 +342,7 @@ Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzI
 
 `int E3DC_GetHomePowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetHomePowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+Gibt die gemittelte Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int GetHomeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetHomeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
@@ -357,7 +357,7 @@ Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W
 
 `int E3DC_GetPvPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetPvPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte PV-Leistung der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+Gibt die gemittelte PV-Leistung der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int GetPvEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetPvEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
@@ -372,7 +372,7 @@ Gibt die aktuelle Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselric
 
 `int E3DC_GetExtPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetExtPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert ist nur verfügbar, wenn eine externe Generatorquelle angeschlossen ist.
+Gibt die gemittelte Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert ist nur verfügbar, wenn eine externe Generatorquelle angeschlossen ist.
 
 
 `int GetExtEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetExtEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
@@ -387,7 +387,7 @@ Gibt die aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E
 
 `int E3DC_GetProductionPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetProductionPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von E3DC_GetPVPowerW() bzw. E3DC_GetPVPowerKw().
+Gibt die gemittelte Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von E3DC_GetPVPowerW() bzw. E3DC_GetPVPowerKw().
 
 
 `int GetProductionEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetProductionEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
@@ -404,7 +404,7 @@ Gibt die aktuelle Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $
 
 `int E3DC_GetWallboxPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetWallboxPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+Gibt die gemittelte Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int E3DC_GetWallboxPowerSolarW(int $InstanzID)` bzw. `float E3DC_GetWallboxPowerSolarKw(int $InstanzID)`
@@ -414,7 +414,7 @@ Gibt die aktuelle Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Ins
 
 `int E3DC_GetWallboxPowerSolarIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetWallboxPowerSolarIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
 
-Gibt die gemittelte Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzen $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
+Gibt die gemittelte Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
 `int GetWallboxEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetWallboxEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
@@ -429,7 +429,7 @@ Gibt die Wallbox-Solar-Energie (aller Wallboxen in Summe) der E3DC-Instanz $Inst
 
 `bool E3DC_GetWallboxAvailable(int $InstanzID, int $WallboxId)`
 
-Gibt die Verfügbarkeit der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist die Wallbox verfübar.
+Gibt die Verfügbarkeit der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist die Wallbox verfügbar.
 
 
 `bool E3DC_GetWallboxSolarmode(int $InstanzID, int $WallboxId)`
@@ -494,12 +494,12 @@ Gibt den Phasen Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $In
 
 `bool E3DC_SetWallboxSolarmode(int $InstanzID, int $WallboxId, bool $SetValue)`
 
-Setzt den Solar-Modus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der Solar-Lade-Modus aktiviert. Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+Setzt den Solar-Modus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der Solar-Lade-Modus aktiviert. Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
 
 `bool E3DC_SetWallbox1Phase(int $InstanzID, int $WallboxId, bool $SetValue)`
 
-Setzt den 1-phasigen Lademodus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der 1-phasige Lademodus aktiviert (bspw. zum Herunterregeln der Ladeleistung). Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+Setzt den 1-phasigen Lademodus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der 1-phasige Lademodus aktiviert (bspw. zum Herunterregeln der Ladeleistung). Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
 ! ! ! ACHTUNG ! ! !
 E3DC_SetWallboxChargingLocked() und E3DC_SetWallboxSchukoActivated() funktionieren leider nicht!
@@ -512,26 +512,26 @@ Würde mich freuen, wenn jemand den Fehler in meiner Implementierung finden wür
 
 Deaktiviert: `bool E3DC_SetWallboxChargingLocked(int $InstanzID, int $WallboxId, bool $SetValue)`
 
-Sperrt das Laden der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird das Laden gesperrt. Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+Sperrt das Laden der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird das Laden gesperrt. Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
 
 Deaktiviert: `bool E3DC_SetWallboxSchukoActivated(int $InstanzID, int $WallboxId, bool $SetValue)`
 
-Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird die Schuko-Steckdose aktiviert. Zurückgegeben wird der Rückgabewert des ModBus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
+Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird die Schuko-Steckdose aktiviert. Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
 
 
 ### 8. Versionshistorie
 
 #### v1.3
-- Feature Request #10: Individuelle benennung von DC Strings, Wallboxen und Leistungsmesser
+- Feature Request #10: Individuelle Benennung von DC Strings, Wallboxen und Leistungsmesser
 - Leistungsmesser 7 und SG Ready entsprechend Modbus-Doku v1.8 hinzugefügt
 - Debug-Ausgaben für Modul-Debugging hinzugefügt
 - Eingabefelder werden nun auf Plausibilität überprüft (bspw. IP, Geräte ID,...)
 - Nutzbare Batteriekapazität von 90% auf 80% reduziert, da dies mehr der Realität entspricht
 
 #### v1.2
-- Fix für #7: Fehlermeldungem mit IPS 5.5 - Trying to access array offset on value of type bool
+- Fix für #7: Fehlermeldungen mit IPS 5.5 - Trying to access array offset on value of type bool
 - E3DC_SetWallboxChargingLocked() und E3DC_SetWallboxSchukoActivated() funktionieren leider nicht! Ob Fehler bei E3DC oder in meiner Implementierung ist noch unklar. Trotzdem aktiviert für Tests.
 
 #### v1.1
@@ -570,7 +570,7 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 - Rechtschreibfehler ClientSocket behoben
 - Swap LSW/MSW for 32Bit/64Bit aktiviert
 - Modbus Geräte ID zum Konfigurationsformular hinzugefügt
-- alte ClientSockets und Modbus-Gateways werden beim ändern der IP oder Port gelöscht
+- alte ClientSockets und Modbus-Gateways werden beim Ändern der IP oder Port gelöscht
 - Performance-Optimierungen
 - Postfix zu allen Variablen-Profilen hinzugefügt
 - Public Funktionen hinzugefügt: E3DC_GetAutarkie(), E3DC_GetEigenverbrauch(), E3DC_GetEigenverbrauch(), E3DC_GetBatterieLeistungW(), E3DC_GetBatterieLeistungKW(), E3DC_GetBatterieSOC(), E3DC_GetNetzLeistungW(), E3DC_GetNetzLeistungKW(), E3DC_GetPvLeistungW(), E3DC_GetPvLeistungKW(), E3DC_GetVerbrauchsLeistungW(), E3DC_GetVerbrauchsLeistungKW()
