@@ -2,11 +2,11 @@
     "elements": [
         {
             "type": "Label",
-            "label": "Der E3DC Stromspeicher muss Modbus TCP unterstützen!"
+            "label": "Im E3DC Stromspeicher muss Modbus TCP aktiviert sein!"
         },
         {
             "type": "Label",
-            "label": "Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version \nunter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode' oder \nunter Hauptmenü > Smart-Funktionen > Smart Home > Modbus aktiviert werden."
+            "label": "Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version \n- unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode'\n- ODER: unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus\naktiviert werden."
         },
         {
             "type": "Label",
@@ -20,19 +20,43 @@
         {
             "type": "ValidationTextBox",
             "caption": "IP",
-            "name": "hostIp"
+            "name": "hostIp",
+            "validate": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
         },
         {
             "type": "NumberSpinner",
-            "caption": "Port",
+            "caption": "Port (Standard: 502)",
             "name": "hostPort",
-            "digits": 0
+            "digits": 0,
+            "minimum": 1,
+            "maximum": 65535
         },
         {
             "type": "NumberSpinner",
-            "caption": "Geräte ID",
+            "caption": "Geräte ID (Standard: 1)",
             "name": "hostmodbusDevice",
-            "digits": 0
+            "digits": 0,
+            "minimum": 1,
+            "maximum": 255
+        },
+        {
+            "type": "Label",
+            "label": " "
+        },
+        {
+            "type": "Label",
+            "label": "In welchem Zeitintervall sollen die Modbus-Werte abgefragt werden (Empfehlung: 10 Sekunden)?"
+        },
+		{
+            "type": "ValidationTextBox",
+            "caption": "Abfrage-Intervall (in Sekunden)",
+            "name": "pollCycle",
+            "minimum": 1,
+            "maximum": 3600
+        },
+        {
+            "type": "Label",
+            "label": "Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird.\nABER: Je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei aktiviertem Logging!"
         },
         {
             "type": "Label",
@@ -44,7 +68,7 @@
         },
         {
             "type": "NumberSpinner",
-            "caption": "Batteriekapazität (bspw. 6.5, 10, 13, 15, 19.5)",
+            "caption": "Batteriekapazität (bspw. 6.5, 10, 13, 15, 19.5,...)",
             "name": "batterySize",
             "digits": 1
         },
@@ -255,51 +279,9 @@
             "type": "CheckBox",
             "caption": "Logging von Wh/kWh",
             "name": "loggingWirkarbeit"
-        },
-        {
-            "type": "Label",
-            "label": " "
-        },
-        {
-            "type": "Label",
-            "label": "In welchem Zeitintervall sollen die Modbus-Werte abgefragt werden (Empfehlung: 10 Sekunden)?"
-        },
-		{
-            "type": "ValidationTextBox",
-            "caption": "Abfrage-Intervall (in Sekunden)",
-            "name": "pollCycle"
-        },
-        {
-            "type": "Label",
-            "label": "Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird. Jedoch je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei Logging!"
         }
     ],
     "status": [
-        {
-            "code": 101,
-            "icon": "inactive",
-            "caption": "Instanz wird erstellt"
-        },
-        {
-            "code": 102,
-            "icon": "active",
-            "caption": "Instanz ist aktiv"
-        },
-        {
-            "code": 103,
-            "icon": "inactive",
-            "caption": "Instanz wird gelöscht"
-        },
-        {
-            "code": 104,
-            "icon": "inactive",
-            "caption": "Instanz ist inaktiv"
-        },
-        {
-            "code": 105,
-            "icon": "error",
-            "caption": "Instanz wurde nicht erstellt"
-        },
         {
             "code": 200,
             "icon": "error",
