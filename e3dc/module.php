@@ -54,6 +54,14 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 			$this->RegisterPropertyBoolean('readWallbox5', 'false');
 			$this->RegisterPropertyBoolean('readWallbox6', 'false');
 			$this->RegisterPropertyBoolean('readWallbox7', 'false');
+			$this->RegisterPropertyString('wallbox0name', '0');
+			$this->RegisterPropertyString('wallbox1name', '1');
+			$this->RegisterPropertyString('wallbox2name', '2');
+			$this->RegisterPropertyString('wallbox3name', '3');
+			$this->RegisterPropertyString('wallbox4name', '4');
+			$this->RegisterPropertyString('wallbox5name', '5');
+			$this->RegisterPropertyString('wallbox6name', '6');
+			$this->RegisterPropertyString('wallbox7name', '7');
 			$this->RegisterPropertyBoolean('readPowermeter0', 'false');
 			$this->RegisterPropertyBoolean('readPowermeter1', 'false');
 			$this->RegisterPropertyBoolean('readPowermeter2', 'false');
@@ -62,9 +70,20 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 			$this->RegisterPropertyBoolean('readPowermeter5', 'false');
 			$this->RegisterPropertyBoolean('readPowermeter6', 'false');
 			$this->RegisterPropertyBoolean('readPowermeter7', 'false');
+			$this->RegisterPropertyString('powermeter0name', '0');
+			$this->RegisterPropertyString('powermeter1name', '1');
+			$this->RegisterPropertyString('powermeter2name', '2');
+			$this->RegisterPropertyString('powermeter3name', '3');
+			$this->RegisterPropertyString('powermeter4name', '4');
+			$this->RegisterPropertyString('powermeter5name', '5');
+			$this->RegisterPropertyString('powermeter6name', '6');
+			$this->RegisterPropertyString('powermeter7name', '7');
 			$this->RegisterPropertyBoolean('readEmergencyPower', 'false');
 			$this->RegisterPropertyFloat('emergencyPowerBuffer', '0');
 			$this->RegisterPropertyBoolean('readDcString', 'false');
+			$this->RegisterPropertyString('string1name', '1');
+			$this->RegisterPropertyString('string2name', '2');
+			$this->RegisterPropertyString('string3name', '3');
 			$this->RegisterPropertyBoolean("loggingPowerW", 'true');
 			$this->RegisterPropertyBoolean("loggingPowerKw", 'false');
 			$this->RegisterPropertyBoolean("loggingBatterySoc", 'true');
@@ -362,6 +381,14 @@ if(false !== \$varId)
 			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			$wallbox0name = $this->ReadPropertyString('wallbox0name');
+			$wallbox1name = $this->ReadPropertyString('wallbox1name');
+			$wallbox2name = $this->ReadPropertyString('wallbox2name');
+			$wallbox3name = $this->ReadPropertyString('wallbox3name');
+			$wallbox4name = $this->ReadPropertyString('wallbox4name');
+			$wallbox5name = $this->ReadPropertyString('wallbox5name');
+			$wallbox6name = $this->ReadPropertyString('wallbox6name');
+			$wallbox7name = $this->ReadPropertyString('wallbox7name');
 			$readPowermeter0 = $this->ReadPropertyBoolean('readPowermeter0');
 			$readPowermeter1 = $this->ReadPropertyBoolean('readPowermeter1');
 			$readPowermeter2 = $this->ReadPropertyBoolean('readPowermeter2');
@@ -370,9 +397,20 @@ if(false !== \$varId)
 			$readPowermeter5 = $this->ReadPropertyBoolean('readPowermeter5');
 			$readPowermeter6 = $this->ReadPropertyBoolean('readPowermeter6');
 			$readPowermeter7 = $this->ReadPropertyBoolean('readPowermeter7');
+			$powermeter0name = $this->ReadPropertyString('powermeter0name');
+			$powermeter1name = $this->ReadPropertyString('powermeter1name');
+			$powermeter2name = $this->ReadPropertyString('powermeter2name');
+			$powermeter3name = $this->ReadPropertyString('powermeter3name');
+			$powermeter4name = $this->ReadPropertyString('powermeter4name');
+			$powermeter5name = $this->ReadPropertyString('powermeter5name');
+			$powermeter6name = $this->ReadPropertyString('powermeter6name');
+			$powermeter7name = $this->ReadPropertyString('powermeter7name');
 			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
 			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
 			$readDcString = $this->ReadPropertyBoolean('readDcString');
+			$string1name = $this->ReadPropertyString('string1name');
+			$string2name = $this->ReadPropertyString('string2name');
+			$string3name = $this->ReadPropertyString('string3name');
 			$loggingPowerW = $this->ReadPropertyBoolean("loggingPowerW");
 			$loggingPowerKw = $this->ReadPropertyBoolean("loggingPowerKw");
 			$loggingBatterySoc = $this->ReadPropertyBoolean("loggingBatterySoc");
@@ -923,7 +961,26 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40095, 1, 6, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
+				// Variablen umbenennen, sofern ein Wallbox Name angegeben wurde
+				for($i=0; $i < count($inverterModelRegister_array); $i++)
+				{
+					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("WallBox_0_", "WallBox_1_", "WallBox_2_", "WallBox_3_", "WallBox_4_", "WallBox_5_", "WallBox_6_", "WallBox_7_"), array("WallBox_".$wallbox0name."_", "WallBox_".$wallbox1name."_", "WallBox_".$wallbox2name."_", "WallBox_".$wallbox3name."_", "WallBox_".$wallbox4name."_", "WallBox_".$wallbox5name."_", "WallBox_".$wallbox6name."_", "WallBox_".$wallbox7name."_", ), $inverterModelRegister_array[$i][IMR_NAME]);
+				}
+
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+				// Entsprechend Wallbox Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+				foreach ($inverterModelRegister_array as $inverterModelRegister)
+				{
+					$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+
+					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+					if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+					{
+						IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
+						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+					}
+				}
 
 				foreach($inverterModelRegister_array AS $register)
 				{
@@ -1091,9 +1148,27 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40136, 1, 3, "Powermeter_7_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
+				// Variablen umbenennen, sofern ein Powermeter/Leistungsmesser Name angegeben wurde
+				for($i=0; $i < count($inverterModelRegister_array); $i++)
+				{
+					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("Powermeter_0", "Powermeter_1", "Powermeter_2", "Powermeter_3", "Powermeter_4", "Powermeter_5", "Powermeter_6", "Powermeter_7"), array("Powermeter_".$powermeter0name, "Powermeter_".$powermeter1name, "Powermeter_".$powermeter2name, "Powermeter_".$powermeter3name, "Powermeter_".$powermeter4name, "Powermeter_".$powermeter5name, "Powermeter_".$powermeter6name, "Powermeter_".$powermeter7name, ), $inverterModelRegister_array[$i][IMR_NAME]);
+				}
+
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
 
+				// Entsprechend Powermeter/Leistungsmesser Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+				foreach ($inverterModelRegister_array as $inverterModelRegister)
+				{
+					$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+
+					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+					if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+					{
+						IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
+						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+					}
+				}
 
 
 				/* ********** DC-String **************************************************************************
@@ -1115,6 +1190,12 @@ Bit 13  Nicht belegt";
 						array(40104, 1, 3, "DC_STRING_3_Power", "UInt16", "W", "DC_STRING_3_Power"),
 					);
 
+					// Variablen umbenennen, sofern ein DC-String Name angegeben wurde
+					for($i=0; $i < count($inverterModelRegister_array); $i++)
+					{
+						$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("STRING_1_", "STRING_2_", "STRING_3_"), array("STRING_".$string1name."_", "STRING_".$string2name."_", "STRING_".$string3name."_"), $inverterModelRegister_array[$i][IMR_NAME]);
+					}
+					
 					if(false === $categoryId)
 					{
 						$categoryId = IPS_CreateCategory();
@@ -1125,6 +1206,19 @@ Bit 13  Nicht belegt";
 					}
 
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+					// Entsprechend String Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+					foreach ($inverterModelRegister_array as $inverterModelRegister)
+					{
+						$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+	
+						// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+						if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+						{
+							IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
+							$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+						}
+					}
 				}
 				else
 				{

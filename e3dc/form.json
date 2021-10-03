@@ -99,9 +99,21 @@
             "name": "readWallbox0"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 0 (Standard: 0)",
+            "name": "wallbox0name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Wallbox 1",
             "name": "readWallbox1"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 1 (Standard: 1)",
+            "name": "wallbox1name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "CheckBox",
@@ -109,9 +121,21 @@
             "name": "readWallbox2"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 2 (Standard: 2)",
+            "name": "wallbox2name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Wallbox 3",
             "name": "readWallbox3"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 3 (Standard: 3)",
+            "name": "wallbox3name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "CheckBox",
@@ -119,9 +143,21 @@
             "name": "readWallbox4"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 4 (Standard: 4)",
+            "name": "wallbox4name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Wallbox 5",
             "name": "readWallbox5"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 5 (Standard: 5)",
+            "name": "wallbox5name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "CheckBox",
@@ -129,9 +165,21 @@
             "name": "readWallbox6"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 6 (Standard: 6)",
+            "name": "wallbox6name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Wallbox 7",
             "name": "readWallbox7"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Wallbox 7 (Standard: 7)",
+            "name": "wallbox7name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "Label",
@@ -147,9 +195,21 @@
             "name": "readPowermeter0"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 0 (Standard: 0)",
+            "name": "powermeter0name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Leistungsmesser 1",
             "name": "readPowermeter1"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 1 (Standard: 1)",
+            "name": "powermeter1name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "CheckBox",
@@ -157,9 +217,21 @@
             "name": "readPowermeter2"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 2 (Standard: 2)",
+            "name": "powermeter2name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Leistungsmesser 3",
             "name": "readPowermeter3"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 3 (Standard: 3)",
+            "name": "powermeter3name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "CheckBox",
@@ -167,9 +239,21 @@
             "name": "readPowermeter4"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 4 (Standard: 4)",
+            "name": "powermeter4name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Leistungsmesser 5",
             "name": "readPowermeter5"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 5 (Standard: 5)",
+            "name": "powermeter5name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "CheckBox",
@@ -177,9 +261,21 @@
             "name": "readPowermeter6"
         },
         {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 6 (Standard: 6)",
+            "name": "powermeter6name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
             "type": "CheckBox",
             "caption": "Leistungsmesser 7",
             "name": "readPowermeter7"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von Leistungsmesser 7 (Standard: 7)",
+            "name": "powermeter7name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "Label",
@@ -216,6 +312,24 @@
             "type": "CheckBox",
             "caption": "DC String Informationen",
             "name": "readDcString"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von String 1 (Standard: 1)",
+            "name": "string1name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von String 2 (Standard: 2)",
+            "name": "string2name",
+            "validate": "^[a-zA-Z0-9_-]+$"
+        },
+        {
+            "type": "ValidationTextBox",
+            "caption": "Name von String 3 (Standard: 3)",
+            "name": "string3name",
+            "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "Label",
