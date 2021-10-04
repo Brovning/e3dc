@@ -48,7 +48,7 @@
             "label": "In welchem Zeitintervall sollen die Modbus-Werte abgefragt werden (Empfehlung: 10 Sekunden)?"
         },
 		{
-            "type": "ValidationTextBox",
+            "type": "NumberSpinner",
             "caption": "Abfrage-Intervall (in Sekunden)",
             "name": "pollCycle",
             "minimum": 1,
