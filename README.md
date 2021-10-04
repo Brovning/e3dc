@@ -1,3 +1,8 @@
+[![Version](https://img.shields.io/badge/Symcon-PHPModul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
+[![Version](https://img.shields.io/badge/Symcon%20Version-6.0%20%3E-green.svg)](https://www.symcon.de/forum/threads/https://community.symcon.de/t/ip-symcon-6-0-ist-ab-jetzt-verfuegbar/125851)
+![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
+
+
 # E3DC
 IP-Symcon (IPS) Modul für E3DC Stromspeicher mit Modbus TCP Unterstützung (bspw. S10 mini, S10 E, S10 E Pro und Quattroporte).
 
