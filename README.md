@@ -529,6 +529,9 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 
 ### 8. Versionshistorie
 
+#### v1.4
+- Bugfix #9: "Die Instanz hat noch ungespeicherte Änderungen" auch wenn nichts geändert wurde
+
 #### v1.3
 - Feature Request #10: Individuelle Benennung von DC Strings, Wallboxen und Leistungsmesser
 - Leistungsmesser 7 und SG Ready entsprechend Modbus-Doku v1.8 hinzugefügt
