@@ -255,66 +255,112 @@ Aktuell kein WebFront umgesetzt.
 #### Empfehlung
 Sofern nur eine Instanz des E3DC-Moduls im Einsatz ist, sollte die $InstanzID wie folgt dynamisch ermittelt werden und nicht statisch gesetzt werden, da somit ein Löschen und Neuinstallieren der E3DC-Instanz keine Auswirkung auf andere Skripte hat:
 
-`$InstanzID = IPS_GetInstanceListByModuleID("{C9508720-B23D-B37A-B5C2-97B607221CE1}")[0];`
+```PHP
+$InstanzID = IPS_GetInstanceListByModuleID("{C9508720-B23D-B37A-B5C2-97B607221CE1}")[0];
+```
 
 
 #### Funktionen
 
 ##### Allgemeines
 
-`int E3DC_GetAutarky(int $InstanzID)`
+```PHP
+int E3DC_GetAutarky(int $InstanzID)
+```
 
 Gibt den aktuellen Autarkie-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück.
 
 
-`int E3DC_GetSelfConsumption(int $InstanzID)`
+```PHP
+int E3DC_GetSelfConsumption(int $InstanzID)
+```
 
 Gibt den aktuellen Eigenverbrauch-Wert der E3DC-Instanz $InstanzID als Integer in Prozent zurück.
 
 
-`bool E3DC_IsDerating(int $InstanzID)`
+```PHP
+bool E3DC_IsDerating(int $InstanzID)
+```
 
 Gibt den aktuellen Abregelungs-Status der E3DC-Instanz $InstanzID als Bool zurück.
 
 
 ##### Batterie
 
-`int E3DC_GetBatterySoc(int $InstanzID)`
+```PHP
+int E3DC_GetBatterySoc(int $InstanzID)
+```
 
 Gibt den aktuelle Batterie-State-Of-Charge (SOC) der E3DC-Instanz $InstanzID als Integer in Prozent (%) zurück.
 
 
-`int E3DC_GetBatteryPowerW(int $InstanzID)` bzw. `float E3DC_GetBatteryPowerKw(int $InstanzID)`
+```PHP
+int E3DC_GetBatteryPowerW(int $InstanzID)
+```
+bzw.
+```PHP
+float E3DC_GetBatteryPowerKw(int $InstanzID)
+```
 
 Gibt die aktuelle Batterie-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int E3DC_GetBatteryPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetBatteryPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetBatteryPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+```
+bzw.
+
+```PHP
+float E3DC_GetBatteryPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte Batterie-Leistung der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int GetBatteryChargeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetBatteryChargeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetBatteryChargeEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetBatteryChargeEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Batterie-Lade-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int GetBatteryDischargeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetBatteryDischargeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetBatteryDischargeEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetBatteryDischargeEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Batterie-Entlade-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int E3DC_GetBatteryRangeWh(int $InstanzID)` bzw. `float E3DC_GetBatteryRangeKwh(int $InstanzID)`
+```PHP
+int E3DC_GetBatteryRangeWh(int $InstanzID)
+```
+bzw.
+
+```PHP
+float E3DC_GetBatteryRangeKwh(int $InstanzID)
+```
 
 Gibt die aktuelle Batterie-Reichweite der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert wird berechnet aus dem SOC, der in der Instanz angegebenen Batterie-Kapazität und der maximal nutzbaren Entladetiefe. Sofern eine Notstrom-Funktion installiert ist, wird auch die in der Instanz angegebene Notstromreserve berücksichtigt.
 
 
-`bool E3DC_IsChargingLocked(int $InstanzID)`
+```PHP
+bool E3DC_IsChargingLocked(int $InstanzID)
+```
 
 Gibt den aktuellen Batterie-Lade-Status der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true, wird das Batterieladen bspw. durch die standortbezogene Wetterprognose oder durch eine manuelle Vorgabe gesperrt.
 
 
-`bool E3DC_IsDischargingLocked(int $InstanzID)`
+```PHP
+bool E3DC_IsDischargingLocked(int $InstanzID)
+```
 
 Gibt den aktuellen Batterie-Entlade-Status der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true, wird das Batterieentladen bspw. durch eine manuelle Vorgabe gesperrt.
 
@@ -322,189 +368,352 @@ Gibt den aktuellen Batterie-Entlade-Status der E3DC-Instanz $InstanzID als Bool 
 
 ##### PV, ExtGen und Haus
 
-`int E3DC_GetGridPowerW(int $InstanzID)` bzw. `float E3DC_GetGridPowerKw(int $InstanzID)`
+```PHP
+int E3DC_GetGridPowerW(int $InstanzID)
+```
+bzw.
+
+```PHP
+float E3DC_GetGridPowerKw(int $InstanzID)
+```
 
 Gibt die aktuelle Netz-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int E3DC_GetGridPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetGridPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetGridPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+```
+bzw. 
+```PHP
+float E3DC_GetGridPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte Netz-Leistung der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int GetGridConsumptionEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetGridConsumptionEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetGridConsumptionEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetGridConsumptionEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Netz-Bezugs-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int GetGridFeedEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetGridFeedEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetGridFeedEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetGridFeedEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Netz-Einspeise-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int E3DC_GetHomePowerW(int $InstanzID)` bzw. `float E3DC_GetHomePowerKw(int $InstanzID)`
+```PHP
+int E3DC_GetHomePowerW(int $InstanzID)
+```
+bzw. 
+```PHP
+float E3DC_GetHomePowerKw(int $InstanzID)
+```
 
 Gibt die aktuelle Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int E3DC_GetHomePowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetHomePowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetHomePowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+```
+bzw. 
+```PHP
+float E3DC_GetHomePowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte Verbrauchs-Leistung (Hausverbrauch) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int GetHomeEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetHomeEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetHomeEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetHomeEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Haus-Verbrauchs-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int E3DC_GetPvPowerW(int $InstanzID)` bzw. `float E3DC_GetPvPowerKw(int $InstanzID)`
+```PHP
+int E3DC_GetPvPowerW(int $InstanzID)
+```
+bzw. 
+```PHP
+float E3DC_GetPvPowerKw(int $InstanzID)
+```
 
 Gibt die aktuelle PV-Leistung der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int E3DC_GetPvPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetPvPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetPvPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+``` 
+bzw. 
+```PHP
+float E3DC_GetPvPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte PV-Leistung der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int GetPvEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetPvEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetPvEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetPvEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die PV-Energie der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int E3DC_GetExtPowerW(int $InstanzID)` bzw. `float E3DC_GetExtPowerKw(int $InstanzID)`
+```PHP
+int E3DC_GetExtPowerW(int $InstanzID)
+```
+bzw. 
+```PHP
+float E3DC_GetExtPowerKw(int $InstanzID)
+```
 
 Gibt die aktuelle Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert ist nur verfügbar, wenn eine externe Generatorquelle angeschlossen ist.
 
 
-`int E3DC_GetExtPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetExtPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetExtPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+```
+bzw. 
+```PHP
+float E3DC_GetExtPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte Ext-Leistung (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Dieser Wert ist nur verfügbar, wenn eine externe Generatorquelle angeschlossen ist.
 
 
-`int GetExtEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetExtEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetExtEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetExtEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Ext-Energie (externe Generatorquelle bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int E3DC_GetProductionPowerW(int $InstanzID)` bzw. `float E3DC_GetProductionPowerKw(int $InstanzID)`
+```PHP
+int E3DC_GetProductionPowerW(int $InstanzID)
+```
+bzw. 
+```PHP
+float E3DC_GetProductionPowerKw(int $InstanzID)
+```
 
 Gibt die aktuelle Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von E3DC_GetPVPowerW() bzw. E3DC_GetPVPowerKw().
 
 
-`int E3DC_GetProductionPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetProductionPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetProductionPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+```
+bzw. 
+```PHP
+float E3DC_GetProductionPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte Gesamt-Produktions-Leistung (Ext-Leistung + PV-Leistung) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von E3DC_GetPVPowerW() bzw. E3DC_GetPVPowerKw().
 
 
-`int GetProductionEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetProductionEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetProductionEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetProductionEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Gesamt-Produktions-Energie (Ext-Energie + PV-Energie) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück. Sofern keine externe Generatorquelle angeschlossen ist, entspricht dieser Rückgabewert dem Rückgabewert von GetPvEnergyWh() bzw. GetPvEnergyKwh().
 
 
 ##### Wallbox
 
-`int E3DC_GetWallboxPowerW(int $InstanzID)` bzw. `float E3DC_GetWallboxPowerKw(int $InstanzID)`
+```PHP
+int E3DC_GetWallboxPowerW(int $InstanzID)
+```
+bzw. 
+```PHP
+float E3DC_GetWallboxPowerKw(int $InstanzID)
+```
 
 Gibt die aktuelle Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int E3DC_GetWallboxPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetWallboxPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetWallboxPowerIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+``` 
+bzw. 
+```PHP
+float E3DC_GetWallboxPowerIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte Wallbox-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int E3DC_GetWallboxPowerSolarW(int $InstanzID)` bzw. `float E3DC_GetWallboxPowerSolarKw(int $InstanzID)`
+```PHP
+int E3DC_GetWallboxPowerSolarW(int $InstanzID)
+```
+bzw. 
+```PHP
+float E3DC_GetWallboxPowerSolarKw(int $InstanzID)
+```
 
 Gibt die aktuelle Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int E3DC_GetWallboxPowerSolarIntervalW(int $InstanzID, int $timeIntervalInMinutes)` bzw. `float E3DC_GetWallboxPowerSolarIntervalKw(int $InstanzID, int $timeIntervalInMinutes)`
+```PHP
+int E3DC_GetWallboxPowerSolarIntervalW(int $InstanzID, int $timeIntervalInMinutes)
+```
+bzw. 
+```PHP
+float E3DC_GetWallboxPowerSolarIntervalKw(int $InstanzID, int $timeIntervalInMinutes)
+```
 
 Gibt die gemittelte Wallbox-Solar-Leistung (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über die letzten $timeIntervalInMinutes Minuten als Integer in Watt (W) bzw. als Float in Kilo-Watt (kW) zurück.
 
 
-`int GetWallboxEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetWallboxEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetWallboxEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetWallboxEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Wallbox-Energie (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`int GetWallboxSolarEnergyWh(int $InstanzID, int $startTime, int $endTime)` bzw. `float GetWallboxSolarEnergyKwh(int $InstanzID, int $startTime, int $endTime)`
+```PHP
+int GetWallboxSolarEnergyWh(int $InstanzID, int $startTime, int $endTime)
+```
+bzw. 
+```PHP
+float GetWallboxSolarEnergyKwh(int $InstanzID, int $startTime, int $endTime)
+```
 
 Gibt die Wallbox-Solar-Energie (aller Wallboxen in Summe) der E3DC-Instanz $InstanzID über den Zeitraum von $startTime bis $endTime (Unix-Time) als Integer in Watt-Stunden (Wh) bzw. als Float in Kilo-Watt-Stunden (kWh) zurück.
 
 
-`bool E3DC_GetWallboxAvailable(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxAvailable(int $InstanzID, int $WallboxId)
+```
 
 Gibt die Verfügbarkeit der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist die Wallbox verfügbar.
 
 
-`bool E3DC_GetWallboxSolarmode(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxSolarmode(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Status des Solarbetriebs der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Solarbetrieb aktiviert.
 
 
-`bool E3DC_GetWallboxChargingLocked(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxChargingLocked(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Ladesperr-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist das Laden gesperrt.
 
 
-`bool E3DC_GetWallboxCharging(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxCharging(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Lade-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true wird gerade geladen.
 
 
-`bool E3DC_GetWallboxType2Locked(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxType2Locked(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Typ2-Verriegelungs-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Typ2-Stecker verriegelt.
 
 
-`bool E3DC_GetWallboxType2Connected(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxType2Connected(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Typ2-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist ein Typ2-Stecker angesteckt.
 
 
-`bool E3DC_GetWallboxSchukoActivated(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxSchukoActivated(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Schuko-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Schuko-Anschluss aktiviert.
 
 
-`bool E3DC_GetWallboxSchukoConnected(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxSchukoConnected(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Schuko-Stecker-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist ein Schuko-Stecker am Anschluss eingesteckt und es wird Strom bezogen.
 
 
-`bool E3DC_GetWallboxSchukoLocked(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallboxSchukoLocked(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Schuko-Sperr-Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der Schuko-Anschluss gesperrt.
 
 
-`bool E3DC_GetWallbox16A1Phase(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallbox16A1Phase(int $InstanzID, int $WallboxId)
+```
 
 Gibt den 1-phasigen 16 A Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 1-phasige Lademodus mit 16A aktiviert (3,5 kW Ladeleistung).
 
 
-`bool E3DC_GetWallbox16A3Phase(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallbox16A3Phase(int $InstanzID, int $WallboxId)
+```
 
 Gibt den 3-phasigen 16 A Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 3-phasige Lademodus mit 16A aktiviert (11 kW Ladeleistung).
 
 
-`bool E3DC_GetWallbox32A3Phase(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallbox32A3Phase(int $InstanzID, int $WallboxId)
+```
 
 Gibt den 3-phasigen 32 A Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 3-phasige Lademodus mit 32A aktiviert (22 kW Ladeleistung).
 
 
-`bool E3DC_GetWallbox1Phase(int $InstanzID, int $WallboxId)`
+```PHP
+bool E3DC_GetWallbox1Phase(int $InstanzID, int $WallboxId)
+```
 
 Gibt den Phasen Status der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als Bool zurück. Ist der Wert true ist der 1-phasige Lademodus aktiviert und bei false ist der 3-phasige Lademodus aktiviert.
 
 
-`bool E3DC_SetWallboxSolarmode(int $InstanzID, int $WallboxId, bool $SetValue)`
+```PHP
+bool E3DC_SetWallboxSolarmode(int $InstanzID, int $WallboxId, bool $SetValue)
+```
 
 Setzt den Solar-Modus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der Solar-Lade-Modus aktiviert. Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
 
-`bool E3DC_SetWallbox1Phase(int $InstanzID, int $WallboxId, bool $SetValue)`
+```PHP
+bool E3DC_SetWallbox1Phase(int $InstanzID, int $WallboxId, bool $SetValue)
+```
 
 Setzt den 1-phasigen Lademodus der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird der 1-phasige Lademodus aktiviert (bspw. zum Herunterregeln der Ladeleistung). Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
@@ -517,12 +726,21 @@ Frage meinerseits: Weshalb soll es hier nicht funktionieren und bei den anderen 
 Der E3DC Support ist aus meinen Erfahrungen mehr als mangelhaft.
 Würde mich freuen, wenn jemand den Fehler in meiner Implementierung finden würde!
 
-Deaktiviert: `bool E3DC_SetWallboxChargingLocked(int $InstanzID, int $WallboxId, bool $SetValue)`
+
+```PHP
+bool E3DC_SetWallboxChargingLocked(int $InstanzID, int $WallboxId, bool $SetValue)
+```
+
+Deaktiviert!
 
 Sperrt das Laden der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird das Laden gesperrt. Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
 
-Deaktiviert: `bool E3DC_SetWallboxSchukoActivated(int $InstanzID, int $WallboxId, bool $SetValue)`
+```PHP
+bool E3DC_SetWallboxSchukoActivated(int $InstanzID, int $WallboxId, bool $SetValue)
+```
+
+Deaktiviert!
 
 Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Instanz $InstanzID als $SetValue Bool. Wird der Wert true gesetzt, wird die Schuko-Steckdose aktiviert. Zurückgegeben wird der Rückgabewert des Modbus-Befehls als Bool. Ist der Wert true war das Schreiben erfolgreich.
 
