@@ -1848,7 +1848,7 @@ $this->EnableAction("Status");
 			return $this->GetBatteryPowerIntervalW(0);
 		}
 
-		public function GetBatteryPowerIntervalW($timeIntervalInMinutes)
+		public function GetBatteryPowerIntervalW(int $timeIntervalInMinutes)
 		{
 			$varIdent = 40070;
 
@@ -1869,12 +1869,12 @@ $this->EnableAction("Status");
 			return $this->GetBatteryPowerIntervalKw(0);
 		}
 
-		public function GetBatteryPowerIntervalKw($timeIntervalInMinutes)
+		public function GetBatteryPowerIntervalKw(int $timeIntervalInMinutes)
 		{
 			return ($this->GetBatteryPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetBatteryChargeEnergyWh($startTime, $endTime)
+		public function GetBatteryChargeEnergyWh(int $startTime, int $endTime)
 		{
 			$varIdent = 40070;
 
@@ -1883,12 +1883,12 @@ $this->EnableAction("Status");
 			return round($returnValue);
 		}
 
-		public function GetBatteryChargeEnergyKwh($startTime, $endTime)
+		public function GetBatteryChargeEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetBatteryChargeEnergyWh($startTime, $endTime) / 1000;
 		}
 
-		public function GetBatteryDischargeEnergyWh($startTime, $endTime)
+		public function GetBatteryDischargeEnergyWh(int $startTime, int $endTime)
 		{
 			$varIdent = 40070;
 
@@ -1897,7 +1897,7 @@ $this->EnableAction("Status");
 			return abs(round($returnValue));
 		}
 
-		public function GetBatteryDischargeEnergyKwh($startTime, $endTime)
+		public function GetBatteryDischargeEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetBatteryDischargeEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -1934,7 +1934,7 @@ $this->EnableAction("Status");
 			return $this->GetExtPowerIntervalW(0);
 		}
 
-		public function GetExtPowerIntervalW($timeIntervalInMinutes)
+		public function GetExtPowerIntervalW(int $timeIntervalInMinutes)
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
@@ -1966,7 +1966,7 @@ $this->EnableAction("Status");
 			return ($this->GetExtPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetExtEnergyWh($startTime, $endTime)
+		public function GetExtEnergyWh(int $startTime, int $endTime)
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
@@ -1984,7 +1984,7 @@ $this->EnableAction("Status");
 			return abs(round($returnValue));
 		}
 
-		public function GetExtEnergyKwh($startTime, $endTime)
+		public function GetExtEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetExtEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -1994,7 +1994,7 @@ $this->EnableAction("Status");
 			return $this->GetProductionPowerIntervalW(0);
 		}
 
-		public function GetProductionPowerIntervalW($timeIntervalInMinutes)
+		public function GetProductionPowerIntervalW(int $timeIntervalInMinutes)
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
@@ -2006,12 +2006,12 @@ $this->EnableAction("Status");
 			return $this->GetProductionPowerIntervalKw(0);
 		}
 
-		public function GetProductionPowerIntervalKw($timeIntervalInMinutes)
+		public function GetProductionPowerIntervalKw(int $timeIntervalInMinutes)
 		{
 			return ($this->GetProductionPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetProductionEnergyWh($startTime, $endTime)
+		public function GetProductionEnergyWh(int $startTime, int $endTime)
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
@@ -2027,7 +2027,7 @@ $this->EnableAction("Status");
 			return round($returnValue);
 		}
 
-		public function GetProductionEnergyKwh($startTime, $endTime)
+		public function GetProductionEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetProductionEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -2037,7 +2037,7 @@ $this->EnableAction("Status");
 			return $this->GetGridPowerIntervalW(0);
 		}
 
-		public function GetGridPowerIntervalW($timeIntervalInMinutes)
+		public function GetGridPowerIntervalW(int $timeIntervalInMinutes)
 		{
 			$varIdent = 40074;
 
@@ -2058,12 +2058,12 @@ $this->EnableAction("Status");
 			return $this->GetGridPowerIntervalKw(0);
 		}
 
-		public function GetGridPowerIntervalKw($timeIntervalInMinutes)
+		public function GetGridPowerIntervalKw(int $timeIntervalInMinutes)
 		{
 			return ($this->GetGridPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetGridConsumptionEnergyWh($startTime, $endTime)
+		public function GetGridConsumptionEnergyWh(int $startTime, int $endTime)
 		{
 			$varIdent = 40074;
 
@@ -2072,12 +2072,12 @@ $this->EnableAction("Status");
 			return round($returnValue);
 		}
 
-		public function GetGridConsumptionEnergyKwh($startTime, $endTime)
+		public function GetGridConsumptionEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetGridConsumptionEnergyWh($startTime, $endTime) / 1000;
 		}
 
-		public function GetGridFeedEnergyWh($startTime, $endTime)
+		public function GetGridFeedEnergyWh(int $startTime, int $endTime)
 		{
 			$varIdent = 40074;
 
@@ -2086,7 +2086,7 @@ $this->EnableAction("Status");
 			return abs(round($returnValue));
 		}
 
-		public function GetGridFeedEnergyKwh($startTime, $endTime)
+		public function GetGridFeedEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetGridFeedEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -2096,7 +2096,7 @@ $this->EnableAction("Status");
 			return $this->GetPvPowerIntervalW(0);
 		}
 
-		public function GetPvPowerIntervalW($timeIntervalInMinutes)
+		public function GetPvPowerIntervalW(int $timeIntervalInMinutes)
 		{
 			$varIdent = 40068;
 
@@ -2117,12 +2117,12 @@ $this->EnableAction("Status");
 			return $this->GetPvPowerIntervalKw(0);
 		}
 
-		public function GetPvPowerIntervalKw($timeIntervalInMinutes)
+		public function GetPvPowerIntervalKw(int $timeIntervalInMinutes)
 		{
 			return ($this->GetPvPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetPvEnergyWh($startTime, $endTime)
+		public function GetPvEnergyWh(int $startTime, int $endTime)
 		{
 			$varIdent = 40068;
 
@@ -2131,7 +2131,7 @@ $this->EnableAction("Status");
 			return abs(round($returnValue));
 		}
 
-		public function GetPvEnergyKwh($startTime, $endTime)
+		public function GetPvEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetPvEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -2141,7 +2141,7 @@ $this->EnableAction("Status");
 			return $this->GetHomePowerIntervalW(0);
 		}
 
-		public function GetHomePowerIntervalW($timeIntervalInMinutes)
+		public function GetHomePowerIntervalW(int $timeIntervalInMinutes)
 		{
 			$varIdent = 40072;
 
@@ -2162,12 +2162,12 @@ $this->EnableAction("Status");
 			return $this->GetHomePowerIntervalKw(0);
 		}
 
-		public function GetHomePowerIntervalKw($timeIntervalInMinutes)
+		public function GetHomePowerIntervalKw(int $timeIntervalInMinutes)
 		{
 			return ($this->GetHomePowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetHomeEnergyWh($startTime, $endTime)
+		public function GetHomeEnergyWh(int $startTime, int $endTime)
 		{
 			$varIdent = 40072;
 
@@ -2176,7 +2176,7 @@ $this->EnableAction("Status");
 			return round($returnValue);
 		}
 
-		public function GetHomeEnergyKwh($startTime, $endTime)
+		public function GetHomeEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetHomeEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -2186,7 +2186,7 @@ $this->EnableAction("Status");
 			return $this->GetWallboxPowerIntervalW(0);
 		}
 
-		public function GetWallboxPowerIntervalW($timeIntervalInMinutes)
+		public function GetWallboxPowerIntervalW(int $timeIntervalInMinutes)
 		{
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -2220,12 +2220,12 @@ $this->EnableAction("Status");
 			return $this->GetWallboxPowerIntervalKw(0);
 		}
 
-		public function GetWallboxPowerIntervalKw($timeIntervalInMinutes)
+		public function GetWallboxPowerIntervalKw(int $timeIntervalInMinutes)
 		{
 			return ($this->GetWallboxPowerIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetWallboxEnergyWh($startTime, $endTime)
+		public function GetWallboxEnergyWh(int $startTime, int $endTime)
 		{
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -2250,7 +2250,7 @@ $this->EnableAction("Status");
 			return round($returnValue);
 		}
 
-		public function GetWallboxEnergyKwh($startTime, $endTime)
+		public function GetWallboxEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetWallboxEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -2260,7 +2260,7 @@ $this->EnableAction("Status");
 			return $this->GetWallboxPowerSolarIntervalW(0);
 		}
 
-		public function GetWallboxPowerSolarIntervalW($timeIntervalInMinutes)
+		public function GetWallboxPowerSolarIntervalW(int $timeIntervalInMinutes)
 		{
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -2294,12 +2294,12 @@ $this->EnableAction("Status");
 			return $this->GetWallboxPowerSolarIntervalKw(0);
 		}
 
-		public function GetWallboxPowerSolarIntervalKw($timeIntervalInMinutes)
+		public function GetWallboxPowerSolarIntervalKw(int $timeIntervalInMinutes)
 		{
 			return ($this->GetWallboxPowerSolarIntervalW($timeIntervalInMinutes) / 1000);
 		}
 
-		public function GetWallboxSolarEnergyWh($startTime, $endTime)
+		public function GetWallboxSolarEnergyWh(int $startTime, int $endTime)
 		{
 			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
 			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
@@ -2324,7 +2324,7 @@ $this->EnableAction("Status");
 			return abs(round($returnValue));
 		}
 
-		public function GetWallboxSolarEnergyKwh($startTime, $endTime)
+		public function GetWallboxSolarEnergyKwh(int $startTime, int $endTime)
 		{
 			return $this->GetWallboxSolarEnergyWh($startTime, $endTime) / 1000;
 		}
@@ -2398,7 +2398,7 @@ ErrorMessage
 		}
 
 		/* *** Wallbox Status-Bits *** */
-		public function GetWallboxAvailable($wallboxId)
+		public function GetWallboxAvailable(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Wallbox";
@@ -2418,7 +2418,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxSolarmode($wallboxId)
+		public function GetWallboxSolarmode(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Solarbetrieb";
@@ -2438,7 +2438,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxChargingLocked($wallboxId)
+		public function GetWallboxChargingLocked(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Laden sperren";
@@ -2458,7 +2458,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxCharging($wallboxId)
+		public function GetWallboxCharging(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Ladevorgang";
@@ -2478,7 +2478,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxType2Locked($wallboxId)
+		public function GetWallboxType2Locked(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Typ-2-Stecker verriegelt";
@@ -2498,7 +2498,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxType2Connected($wallboxId)
+		public function GetWallboxType2Connected(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Typ-2-Stecker gesteckt";
@@ -2518,7 +2518,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxSchukoActivated($wallboxId)
+		public function GetWallboxSchukoActivated(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Schukosteckdose";
@@ -2538,7 +2538,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxSchukoConnected($wallboxId)
+		public function GetWallboxSchukoConnected(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Schukostecker gesteckt";
@@ -2558,7 +2558,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallboxSchukoLocked($wallboxId)
+		public function GetWallboxSchukoLocked(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "Schukostecker verriegelt";
@@ -2578,7 +2578,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallbox16A1Phase($wallboxId)
+		public function GetWallbox16A1Phase(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "16A 1 Phase";
@@ -2598,7 +2598,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallbox16A3Phase($wallboxId)
+		public function GetWallbox16A3Phase(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "16A 3 Phasen";
@@ -2618,7 +2618,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallbox32A3Phase($wallboxId)
+		public function GetWallbox32A3Phase(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "32A 3 Phasen";
@@ -2638,7 +2638,7 @@ ErrorMessage
 			return $bitValue;
 		}
 
-		public function GetWallbox1Phase($wallboxId)
+		public function GetWallbox1Phase(int $wallboxId)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitName = "1 Phase";
@@ -2659,7 +2659,7 @@ ErrorMessage
 		}
 
 		/* *** Write Functions *** */
-		public function SetWallboxSolarmode($wallboxId, $setValue)
+		public function SetWallboxSolarmode(int $wallboxId, int $setValue)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitSet   = 0b0000000000000010;
@@ -2693,7 +2693,7 @@ ErrorMessage
 			return $returnValue;
 		}
 
-		public function SetWallboxChargingLocked($wallboxId, $setValue)
+		public function SetWallboxChargingLocked(int $wallboxId, int $setValue)
 		{
 			// ! ! ! ACHTUNG ! ! !
 			// Implementierung laut E3DC-Support fehlerhaft!
@@ -2738,7 +2738,7 @@ ErrorMessage
 			return $returnValue;
 		}
 
-		public function SetWallboxSchukoActivated($wallboxId, $setValue)
+		public function SetWallboxSchukoActivated(int $wallboxId, int $setValue)
 		{
 			// ! ! ! ACHTUNG ! ! !
 			// Implementierung laut E3DC-Support fehlerhaft!
@@ -2783,7 +2783,7 @@ ErrorMessage
 			return $returnValue;
 		}
 
-		public function SetWallbox1Phase($wallboxId, $setValue)
+		public function SetWallbox1Phase(int $wallboxId, int $setValue)
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
 			$bitSet   = 0b0001000000000000;
