@@ -1428,6 +1428,14 @@ $this->EnableAction("Status");
 					{
 						$ReadFunctionCode = 3;
 					}
+					else if("R" == $inverterModelRegister[IMR_FUNCTION_CODE])
+					{
+						$ReadFunctionCode = 3;
+					}
+					else if("RW" == $inverterModelRegister[IMR_FUNCTION_CODE])
+					{
+						$ReadFunctionCode = 3;
+					}
 					else
 					{
 						$ReadFunctionCode = $inverterModelRegister[IMR_FUNCTION_CODE];
