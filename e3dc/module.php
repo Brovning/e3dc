@@ -1493,14 +1493,24 @@ $this->EnableAction("Status");
 		private function getModbusDatatype($type)
 		{
 			// Datentyp ermitteln
-			// 0=Bit, 1=Byte, 2=Word, 3=DWord, 4=ShortInt, 5=SmallInt, 6=Integer, 7=Real
-			if ("uint16" == strtolower($type)
+			// 0=Bit (1 bit)
+			// 1=Byte (8 bit unsigned)
+			if ("uint8" == strtolower($type)
+				|| "enum8" == strtolower($type)
+				|| "int8" == strtolower($type)
+			)
+			{
+				$datenTyp = 1;
+			}
+			// 2=Word (16 bit unsigned)
+			else if ("uint16" == strtolower($type)
 				|| "enum16" == strtolower($type)
 				|| "uint8+uint8" == strtolower($type)
 			)
 			{
 				$datenTyp = 2;
 			}
+			// 3=DWord (32 bit unsigned)
 			elseif ("uint32" == strtolower($type)
 				|| "acc32" == strtolower($type)
 				|| "acc64" == strtolower($type)
@@ -1508,24 +1518,33 @@ $this->EnableAction("Status");
 			{
 				$datenTyp = 3;
 			}
-			elseif ("int16" == strtolower($type)
-				|| "sunssf" == strtolower($type)
-			)
+			// 4=Char / ShortInt (8 bit signed)
+			elseif ("sunssf" == strtolower($type))
 			{
 				$datenTyp = 4;
 			}
+			// 5=Short / SmallInt (16 bit signed)
+			elseif ("int16" == strtolower($type))
+			{
+				$datenTyp = 5;
+			}
+			// 6=Integer (32 bit signed)
 			elseif ("int32" == strtolower($type))
 			{
 				$datenTyp = 6;
 			}
+			// 7=Real (32 bit signed)
 			elseif ("float32" == strtolower($type))
 			{
 				$datenTyp = 7;
 			}
+			// 8=Int64
 			elseif ("uint64" == strtolower($type))
 			{
 				$datenTyp = 8;
 			}
+			// 9=Real64 (32 bit signed)
+			// 10=String
 			elseif ("string32" == strtolower($type)
 				|| "string16" == strtolower($type)
 				|| "string8" == strtolower($type)
