@@ -2,10 +2,18 @@
 
 require_once __DIR__ . '/../libs/myFunctions.php';  // globale Funktionen
 
+define("DEVELOPMENT", false);
+
 // Modul Prefix
 if (!defined('MODUL_PREFIX'))
 {
 	define("MODUL_PREFIX", "E3DC");
+}
+
+// Offset von Register (erster Wert 1) zu Adresse (erster Wert 0) ist -1
+if (!defined('MODBUS_REGISTER_TO_ADDRESS_OFFSET'))
+{
+	define("MODBUS_REGISTER_TO_ADDRESS_OFFSET", -1);
 }
 
 // ArrayOffsets
