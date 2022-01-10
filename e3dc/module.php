@@ -509,14 +509,15 @@ if(false !== \$varId)
 
 				$inverterModelRegister_array = array(
 				// ********** Identifikationsblock **************************************************************************
-/*					array(40001, 1, 3, "Magicbyte", "UInt16", "", "Magicbyte - S10 ModBus ID (Immer 0xE3DC)"),
-					array(40002, 1, 3, "ModBus-Firmware", "UInt8+UInt8", "", "S10 ModBus-Firmware-Version"),
+//					array(40001, 1, 3, "Magicbyte", "UInt16", "", "Magicbyte - S10 ModBus ID (Immer 0xE3DC)"),
+//					array(40002, 1, 3, "ModBus-Firmware", "UInt8+UInt8", "", "S10 ModBus-Firmware-Version"),
 					array(40003, 1, 3, "Register", "UInt16", "", "Anzahl unterstützter Register"),
-//					array(40004, 16, 3, "Hersteller", "String", "", "Hersteller: 'E3/DC GmbH'"),
-//					array(40020, 16, 3, "Modell", "String", "", "Modell, z. B.: 'S10 E AIO'"),
-//					array(40036, 16, 3, "Seriennummer", "String", "", "Seriennummer, z. B.: 'S10-12345678912'"),
-//					array(40052, 16, 3, "Firmware", "String", "", "S10 Firmware Release, z. B.: 'S10-2015_08'"),
-*/				);
+					array(40004, 16, 3, "Hersteller", "String", "", "Hersteller: 'E3/DC GmbH'"),
+					array(40020, 16, 3, "Modell", "String", "", "Modell, z. B.: 'S10 E AIO'"),
+					array(40036, 16, 3, "Seriennummer", "String", "", "Seriennummer, z. B.: 'S10-12345678912'"),
+					array(40052, 16, 3, "Firmware", "String", "", "S10 Firmware Release, z. B.: 'S10-2015_08'"),
+				);
+				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 
 				$inverterModelRegister_array = array(
@@ -1338,13 +1339,13 @@ $this->EnableAction("Status");
 		 
 		}
 */
-		private function createModbusInstances($inverterModelRegister_array, $parentId, $gatewayId, $pollCycle, $uniqueIdent = "")
+		private function createModbusInstances($modelRegister_array, $parentId, $gatewayId, $pollCycle, $uniqueIdent = "")
 		{
 			// Workaround für "InstanceInterface not available" Fehlermeldung beim Server-Start...
 			if (KR_READY == IPS_GetKernelRunlevel())
 			{
 				// Erstelle Modbus Instancen
-				foreach ($inverterModelRegister_array as $inverterModelRegister)
+				foreach ($modelRegister_array as $inverterModelRegister)
 				{
 					$datenTyp = $this->getModbusDatatype($inverterModelRegister[IMR_TYPE]);
 					if("continue" == $datenTyp)
@@ -1352,7 +1353,13 @@ $this->EnableAction("Status");
 						continue;
 					}
 
-					$profile = $this->getProfile($inverterModelRegister[IMR_UNITS], $datenTyp);
+                    if (isset($inverterModelRegister[IMR_UNITS])) {
+                        $profile = $this->getProfile($inverterModelRegister[IMR_UNITS], $datenTyp);
+                    }
+					else
+					{
+						$profile = false;
+					}
 
 					$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER].$uniqueIdent, $parentId);
 					$initialCreation = false;
@@ -1360,7 +1367,7 @@ $this->EnableAction("Status");
 					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
 					if (false === $instanceId)
 					{
-						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME], 0);
+						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME]." (datatype=".$datenTyp.", profile=".$profile.")", 0);
 
 						$instanceId = IPS_CreateInstance(MODBUS_ADDRESSES);
 
@@ -1400,6 +1407,10 @@ $this->EnableAction("Status");
 					if ($pollCycle != IPS_GetProperty($instanceId, "Poller"))
 					{
 						IPS_SetProperty($instanceId, "Poller", $pollCycle);
+					}
+					if (10 == $datenTyp && $inverterModelRegister[IMR_SIZE] != IPS_GetProperty($instanceId, "Length")) // if string --> set length accordingly
+					{
+						IPS_SetProperty($instanceId, "Length", $inverterModelRegister[IMR_SIZE]);
 					}
 /*
 					if(0 != IPS_GetProperty($instanceId, "Factor"))
@@ -1504,9 +1515,7 @@ $this->EnableAction("Status");
 				|| "string" == strtolower($type)
 			)
 			{
-				$this->SendDebug("getModbusDatatype()", "Datentyp '".$type."' wird von Modbus in IPS nicht unterstützt! --> skip", 0);
-
-				return "continue";
+				$datenTyp = 10;
 			}
 			else
 			{
