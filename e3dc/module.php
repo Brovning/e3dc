@@ -1463,7 +1463,11 @@ $this->EnableAction("Status");
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 
 					// Profil der Statusvariable initial einmal zuweisen
-					if ($initialCreation && false != $profile)
+					if(false != $profile && !IPS_VariableProfileExists($profile))
+					{
+						$this->SendDebug("Variable-Profile", "Profile ".$profile." does not exist!", 0);
+					}	
+					else if ($initialCreation && false != $profile)
 					{
 						// Justification Rule 11: es ist die Funktion RegisterVariable...() in diesem Fall nicht nutzbar, da die Variable durch die Modbus-Instanz bereits erstellt wurde
 						// --> Custo Profil wird initial einmal beim Instanz-erstellen gesetzt
