@@ -1248,11 +1248,10 @@ Bit 13  Nicht belegt";
 					// Erreichbarkeit von IP und Port pruefen
 					$portOpen = false;
 					$waitTimeoutInSeconds = 1; 
-					if($fp = @fsockopen($hostIp, $hostPort, $errCode, $errStr, $waitTimeoutInSeconds))
+					if(/*Sys_Ping($hostIp, $waitTimeoutInSeconds*1000)*/ $fp = @fsockopen($hostIp, $hostPort, $errCode, $errStr, $waitTimeoutInSeconds))
 					{   
 						// It worked
 						$portOpen = true;
-						fclose($fp);
 
 						// Client Soket aktivieren
 						if (false == IPS_GetProperty($interfaceId, "Open"))
@@ -1273,6 +1272,12 @@ Bit 13  Nicht belegt";
 						$this->SetStatus(200);
 
 						$this->SendDebug("Module-Status", "ERROR: ".MODUL_PREFIX." with IP=".$hostIp." and Port=".$hostPort." cannot be reached!", 0);
+					}
+
+					// Close fsockopen
+					if(isset($fp))
+					{
+						fclose($fp); // nötig für fsockopen!
 					}
 				}
 				else
