@@ -1253,12 +1253,14 @@ Bit 13  Nicht belegt";
 						// It worked
 						$portOpen = true;
 
-						// Client Soket aktivieren
+                        // Client Socket aktivieren
 						if (false == IPS_GetProperty($interfaceId, "Open"))
 						{
 							IPS_SetProperty($interfaceId, "Open", true);
 							IPS_ApplyChanges($interfaceId);
 							//IPS_Sleep(100);
+
+							$this->SendDebug("ClientSocket-Status", "ClientSocket activated (".$interfaceId.")", 0);
 						}
 						
 						// aktiv
@@ -1288,6 +1290,8 @@ Bit 13  Nicht belegt";
 						IPS_SetProperty($interfaceId, "Open", false);
 						IPS_ApplyChanges($interfaceId);
 						//IPS_Sleep(100);
+
+						$this->SendDebug("ClientSocket-Status", "ClientSocket deactivated (".$interfaceId.")", 0);
 					}
 					
 					// Timer deaktivieren
@@ -1310,12 +1314,16 @@ Bit 13  Nicht belegt";
 				if(0 != $gatewayId_Old && $gatewayId != $gatewayId_Old)
 				{
 					$this->deleteInstanceNotInUse($gatewayId_Old, MODBUS_ADDRESSES);
+
+					$this->SendDebug("ModbusGateway-Status", "ModbusGateway deleted (".$gatewayId_Old.")", 0);
 				}
 
 				// pruefen, ob sich ClientSocket Interface geaendert hat
 				if(0 != $interfaceId_Old && $interfaceId != $interfaceId_Old)
 				{
 					$this->deleteInstanceNotInUse($interfaceId_Old, MODBUS_INSTANCES);
+
+					$this->SendDebug("ClientSocket-Status", "ClientSocket deleted (".$interfaceId_Old.")", 0);
 				}
 			}
 		}
@@ -1413,6 +1421,7 @@ $this->EnableAction("Status");
 					{
 						IPS_SetProperty($instanceId, "Poller", $pollCycle);
 					}
+					// set length for modbus datatype string
 					if (10 == $datenTyp && $inverterModelRegister[IMR_SIZE] != IPS_GetProperty($instanceId, "Length")) // if string --> set length accordingly
 					{
 						IPS_SetProperty($instanceId, "Length", $inverterModelRegister[IMR_SIZE]);
