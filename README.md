@@ -13,7 +13,7 @@ IP-Symcon (IPS) Modul für E3DC Stromspeicher mit Modbus TCP Unterstützung (bsp
 
 1. [Funktionsumfang](#1-funktionsumfang)
 2. [Voraussetzungen](#2-voraussetzungen)
-3. [Software-Installation](#3-software-installation)
+3. [Modul-Installation](#3-modul-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
 6. [WebFront](#6-webfront)
@@ -49,22 +49,24 @@ und beim Quattroporte unter Hauptmenü > Smart-Funktionen > Smart Home > Funktio
 ![alt text](./docs/E3DC_Quattroporte_-_Modbus_TCP.jpg?raw=true "E3DC > Hauptmenü > Smart-Funktionen > Smart Home > Funktion Modbus TCP")
 
 
-### 3. Software-Installation
+### 3. Modul-Installation
 
-#### Variante 1 (empfohlen): Module Store
-
-Über den in der IP Symcon Console integrierten Module Store das 'E3DC'-Modul installieren:
-
-![alt text](./docs/symcon_module-store.jpg?raw=true "Symcon > Module Store > 'E3DC'-Modul")
-
-Anschließend steht das Modul zur Verfügung und eine E3DC Instanz kann hinzugefügt werden.
-
-
-#### Variante 2: Module Control
+#### Variante 1 (empfohlen): Module Control
 
 Über das in der IP Symcon Console (unter Core Instances/Kerninstanzen) enthaltene Module Control die URL https://github.com/Brovning/e3dc manuell hinzufügen.
 
 ![alt text](./docs/symcon_module-control.jpg?raw=true "Symcon Console > Module Control > URL hinzufuegen")
+
+Anschließend steht das Modul zur Verfügung und eine E3DC Instanz kann hinzugefügt werden.
+
+Anmerkung: Per Klick auf das Zahnradsymbol kann in der Modulverwaltung ganz einfach für Tests zwischen "main" (stabile und getestete Versionen) und "beta" (enthält neuste Funktionen, welche teils getest und ggf. fehlerbehaftet sind) hin- und hergewechselt werden.
+
+
+#### Variante 2: Module Store
+
+Über den in der IP Symcon Console integrierten Module Store das 'E3DC'-Modul installieren:
+
+![alt text](./docs/symcon_module-store.jpg?raw=true "Symcon > Module Store > 'E3DC'-Modul")
 
 Anschließend steht das Modul zur Verfügung und eine E3DC Instanz kann hinzugefügt werden.
 
