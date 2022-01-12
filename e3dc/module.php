@@ -1513,7 +1513,10 @@ $this->EnableAction("Status");
 					{
 						// Justification Rule 11: es ist die Funktion RegisterVariable...() in diesem Fall nicht nutzbar, da die Variable durch die Modbus-Instanz bereits erstellt wurde
 						// --> Custo Profil wird initial einmal beim Instanz-erstellen gesetzt
-						IPS_SetVariableCustomProfile($varId, $profile);
+						if(!IPS_SetVariableCustomProfile($varId, $profile))
+						{
+							$this->SendDebug("Variable-Profile", "Error setting profile ".$profile." for VarID ".$varId."!", 0);
+						}
 					}
 				}
 			}
