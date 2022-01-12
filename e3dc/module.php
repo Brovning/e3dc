@@ -34,8 +34,7 @@ if (!defined('IMR_START_REGISTER'))
 if (!defined('BATTERY_DISCHARGE_MAX'))
 {
 	// Aktuelle E3DC-Modelle können maximal 90% der angegebenen Batterykapazität nutzen
-	// Leider scheint 90% nicht der realität zu entsprechen, daher wurde hier 80% angenommen...
-	define("BATTERY_DISCHARGE_MAX", 80);
+	define("BATTERY_DISCHARGE_MAX", 90);
 }
 
 	class E3DC extends IPSModule
