@@ -241,6 +241,7 @@ E3DC.Ampere.Int | Integer
 E3DC.Electricity.Int | Integer
 E3DC.Emergency-Power.Int | Integer
 E3DC.Powermeter.Int | Integer
+E3DC.SG-Ready-Status.Int | Integer
 E3DC.Volt.Int | Integer
 E3DC.Watt.Int | Integer
 
