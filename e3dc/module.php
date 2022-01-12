@@ -28,6 +28,7 @@ if (!defined('IMR_START_REGISTER'))
 	define("IMR_TYPE", 4);
 	define("IMR_UNITS", 5);
 	define("IMR_DESCRIPTION", 6);
+	define("IMR_SF", 7);
 }
 
 // E3DC settings
@@ -1195,9 +1196,9 @@ Bit 13  Nicht belegt";
 						array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage"),
 						array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage"),
 						array(40098, 1, 3, "DC_STRING_3_Voltage", "UInt16", "V", "DC_STRING_3_Voltage"),
-						array(40099, 1, 3, "DC_STRING_1_Current", "UInt16", "A", "DC_STRING_1_Current"),
-						array(40100, 1, 3, "DC_STRING_2_Current", "UInt16", "A", "DC_STRING_2_Current"),
-						array(40101, 1, 3, "DC_STRING_3_Current", "UInt16", "A", "DC_STRING_3_Current"),
+						array(40099, 1, 3, "DC_STRING_1_Current", "UInt16", "A", "DC_STRING_1_Current", 0.01),
+						array(40100, 1, 3, "DC_STRING_2_Current", "UInt16", "A", "DC_STRING_2_Current", 0.01),
+						array(40101, 1, 3, "DC_STRING_3_Current", "UInt16", "A", "DC_STRING_3_Current", 0.01),
 						array(40102, 1, 3, "DC_STRING_1_Power", "UInt16", "W", "DC_STRING_1_Power"),
 						array(40103, 1, 3, "DC_STRING_2_Power", "UInt16", "W", "DC_STRING_2_Power"),
 						array(40104, 1, 3, "DC_STRING_3_Power", "UInt16", "W", "DC_STRING_3_Power"),
@@ -1363,14 +1364,26 @@ $this->EnableAction("Status");
 				// Erstelle Modbus Instancen
 				foreach ($modelRegister_array as $inverterModelRegister)
 				{
+					// get datatype
 					$datenTyp = $this->getModbusDatatype($inverterModelRegister[IMR_TYPE]);
 					if("continue" == $datenTyp)
 					{
 						continue;
 					}
 
+					// if scale factor is given, variable will be of type float
+					if(isset($inverterModelRegister[IMR_SF]) && 10000 >= $inverterModelRegister[IMR_SF])
+					{
+						$varDataType = MODBUSDATATYPE_REAL;
+					}
+					else
+					{
+						$varDataType = $datenTyp;
+					}
+
+					// get profile
                     if (isset($inverterModelRegister[IMR_UNITS])) {
-                        $profile = $this->getProfile($inverterModelRegister[IMR_UNITS], $datenTyp);
+                        $profile = $this->getProfile($inverterModelRegister[IMR_UNITS], $varDataType);
                     }
 					else
 					{
@@ -1383,7 +1396,7 @@ $this->EnableAction("Status");
 					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
 					if (false === $instanceId)
 					{
-						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME]." (datatype=".$datenTyp.", profile=".$profile.")", 0);
+						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." - ".$inverterModelRegister[IMR_NAME]." (modbusDataType=".$datenTyp.", varDataType=".$varDataType.", profile=".$profile.")", 0);
 
 						$instanceId = IPS_CreateInstance(MODBUS_ADDRESSES);
 
@@ -1411,15 +1424,20 @@ $this->EnableAction("Status");
 					}
 
 
-					// Modbus-Instanz konfigurieren
+					// ************************
+					// config Modbus-Instance
+					// ************************
+					// set data type
 					if ($datenTyp != IPS_GetProperty($instanceId, "DataType"))
 					{
 						IPS_SetProperty($instanceId, "DataType", $datenTyp);
 					}
+					// set emulation state
 					if (false != IPS_GetProperty($instanceId, "EmulateStatus"))
 					{
 						IPS_SetProperty($instanceId, "EmulateStatus", false);
 					}
+					// set poll cycle
 					if ($pollCycle != IPS_GetProperty($instanceId, "Poller"))
 					{
 						IPS_SetProperty($instanceId, "Poller", $pollCycle);
@@ -1429,12 +1447,11 @@ $this->EnableAction("Status");
 					{
 						IPS_SetProperty($instanceId, "Length", $inverterModelRegister[IMR_SIZE]);
 					}
-/*
-					if(0 != IPS_GetProperty($instanceId, "Factor"))
+					// set scale factor
+					if(isset($inverterModelRegister[IMR_SF]) && 10000 >= $inverterModelRegister[IMR_SF] && $inverterModelRegister[IMR_SF] != IPS_GetProperty($instanceId, "Factor"))
 					{
-						IPS_SetProperty($instanceId, "Factor", 0);
+						IPS_SetProperty($instanceId, "Factor", $inverterModelRegister[IMR_SF]);
 					}
-*/
 
 					// Read-Settings
 					if ($inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET != IPS_GetProperty($instanceId, "ReadAddress"))
