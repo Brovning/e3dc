@@ -1443,7 +1443,7 @@ $this->EnableAction("Status");
 						IPS_SetProperty($instanceId, "Poller", $pollCycle);
 					}
 					// set length for modbus datatype string
-					if (10 == $datenTyp && $inverterModelRegister[IMR_SIZE] != IPS_GetProperty($instanceId, "Length")) // if string --> set length accordingly
+					if (MODBUSDATATYPE_STRING == $datenTyp && $inverterModelRegister[IMR_SIZE] != IPS_GetProperty($instanceId, "Length")) // if string --> set length accordingly
 					{
 						IPS_SetProperty($instanceId, "Length", $inverterModelRegister[IMR_SIZE]);
 					}
@@ -1532,7 +1532,7 @@ $this->EnableAction("Status");
 				|| "int8" == strtolower($type)
 			)
 			{
-				$datenTyp = 1;
+				$datenTyp = MODBUSDATATYPE_BIT;
 			}
 			// 2=Word (16 bit unsigned)
 			else if ("uint16" == strtolower($type)
@@ -1540,7 +1540,7 @@ $this->EnableAction("Status");
 				|| "uint8+uint8" == strtolower($type)
 			)
 			{
-				$datenTyp = 2;
+				$datenTyp = MODBUSDATATYPE_WORD;
 			}
 			// 3=DWord (32 bit unsigned)
 			elseif ("uint32" == strtolower($type)
@@ -1548,34 +1548,38 @@ $this->EnableAction("Status");
 				|| "acc64" == strtolower($type)
 			)
 			{
-				$datenTyp = 3;
+				$datenTyp = MODBUSDATATYPE_DWORD;
 			}
 			// 4=Char / ShortInt (8 bit signed)
 			elseif ("sunssf" == strtolower($type))
 			{
-				$datenTyp = 4;
+				$datenTyp = MODBUSDATATYPE_CHAR;
 			}
 			// 5=Short / SmallInt (16 bit signed)
 			elseif ("int16" == strtolower($type))
 			{
-				$datenTyp = 5;
+				$datenTyp = MODBUSDATATYPE_SHORT;
 			}
 			// 6=Integer (32 bit signed)
 			elseif ("int32" == strtolower($type))
 			{
-				$datenTyp = 6;
+				$datenTyp = MODBUSDATATYPE_INT;
 			}
 			// 7=Real (32 bit signed)
 			elseif ("float32" == strtolower($type))
 			{
-				$datenTyp = 7;
+				$datenTyp = MODBUSDATATYPE_REAL;
 			}
 			// 8=Int64
 			elseif ("uint64" == strtolower($type))
 			{
-				$datenTyp = 8;
+				$datenTyp = MODBUSDATATYPE_INT64;
 			}
-			// 9=Real64 (32 bit signed)
+			/* 9=Real64 (32 bit signed)
+			elseif ("???" == strtolower($type))
+			{
+				$datenTyp = MODBUSDATATYPE_REAL64;
+			}*/
 			// 10=String
 			elseif ("string32" == strtolower($type)
 				|| "string16" == strtolower($type)
@@ -1583,7 +1587,7 @@ $this->EnableAction("Status");
 				|| "string" == strtolower($type)
 			)
 			{
-				$datenTyp = 10;
+				$datenTyp = MODBUSDATATYPE_STRING;
 			}
 			else
 			{
@@ -1598,7 +1602,7 @@ $this->EnableAction("Status");
 		private function getProfile($unit, $datenTyp = -1)
 		{
 			// Profil ermitteln
-			if ("a" == strtolower($unit) && 7 == $datenTyp)
+			if ("a" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = "~Ampere";
 			}
@@ -1612,7 +1616,7 @@ $this->EnableAction("Status");
 			}
 			elseif (("ah" == strtolower($unit)
 					|| "vah" == strtolower($unit))
-				&& 7 == $datenTyp
+				&& MODBUSDATATYPE_REAL == $datenTyp
 			)
 			{
 						$profile = MODUL_PREFIX.".AmpereHour.Float";
@@ -1623,7 +1627,7 @@ $this->EnableAction("Status");
 			{
 						$profile = MODUL_PREFIX.".AmpereHour.Int";
 			}
-			elseif ("v" == strtolower($unit) && 7 == $datenTyp)
+			elseif ("v" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = "~Volt";
 			}
@@ -1631,7 +1635,7 @@ $this->EnableAction("Status");
 			{
 				$profile = MODUL_PREFIX.".Volt.Int";
 			}
-			elseif ("w" == strtolower($unit) && 7 == $datenTyp)
+			elseif ("w" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = "~Watt.14490";
 			}
@@ -1643,7 +1647,7 @@ $this->EnableAction("Status");
 			{
 				$profile = MODUL_PREFIX.".Hours.Int";
 			}
-			elseif ("hz" == strtolower($unit) && 7 == $datenTyp)
+			elseif ("hz" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = "~Hertz";
 			}
@@ -1656,7 +1660,7 @@ $this->EnableAction("Status");
 				$profile = MODUL_PREFIX.".Volumenstrom.Int";
 			}
 			// Voltampere fuer elektrische Scheinleistung
-			elseif ("va" == strtolower($unit) && 7 == $datenTyp)
+			elseif ("va" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = MODUL_PREFIX.".Scheinleistung.Float";
 			}
@@ -1666,7 +1670,7 @@ $this->EnableAction("Status");
 				$profile = MODUL_PREFIX.".Scheinleistung.Int";
 			}
 			// Var fuer elektrische Blindleistung
-			elseif ("var" == strtolower($unit) && 7 == $datenTyp)
+			elseif ("var" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = MODUL_PREFIX.".Blindleistung.Float";
 			}
@@ -1675,7 +1679,7 @@ $this->EnableAction("Status");
 			{
 				$profile = MODUL_PREFIX.".Blindleistung.Int";
 			}
-			elseif ("%" == $unit && 7 == $datenTyp)
+			elseif ("%" == $unit && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = "~Valve.F";
 			}
@@ -1683,7 +1687,7 @@ $this->EnableAction("Status");
 			{
 				$profile = "~Valve";
 			}
-			elseif ("wh" == strtolower($unit) && (7 == $datenTyp || 8 == $datenTyp))
+			elseif ("wh" == strtolower($unit) && (MODBUSDATATYPE_REAL == $datenTyp || MODBUSDATATYPE_INT64 == $datenTyp))
 			{
 				$profile = MODUL_PREFIX.".Electricity.Float";
 			}
@@ -1694,7 +1698,7 @@ $this->EnableAction("Status");
 			elseif (("° C" == $unit
 					|| "°C" == $unit
 					|| "C" == $unit
-				) && 7 == $datenTyp
+				) && MODBUSDATATYPE_REAL == $datenTyp
 			)
 			{
 				$profile = "~Temperature";
@@ -1706,7 +1710,7 @@ $this->EnableAction("Status");
 			{
 				$profile = MODUL_PREFIX.".Temperature.Int";
 			}
-			elseif ("cos()" == strtolower($unit) && 7 == $datenTyp)
+			elseif ("cos()" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = MODUL_PREFIX.".Angle.Float";
 			}
