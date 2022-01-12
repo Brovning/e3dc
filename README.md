@@ -51,7 +51,7 @@ und beim Quattroporte unter Hauptmenü > Smart-Funktionen > Smart Home > Funktio
 
 ### 3. Modul-Installation
 
-#### Variante 1 (empfohlen): Module Control
+#### Variante 1 (empfohlen): Modulverwaltung (Module Control)
 
 Über das in der IP Symcon Console (unter Core Instances/Kerninstanzen) enthaltene Module Control die URL https://github.com/Brovning/e3dc manuell hinzufügen.
 
