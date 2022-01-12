@@ -583,7 +583,7 @@ if(false !== \$varId)
 				}
 
 				$inverterModelRegister_array = array(
-					array(40084, 1, 3, "Emergency-Power", "Uint16", "emergency-power", "Emergency-Power Status:
+					array(40084, 1, 3, "Emergency-Power", "Uint16", "enumerated_emergency-power", "Emergency-Power Status:
 0 = Notstrom wird nicht von Ihrem Gerät unterstützt (bei Geräten der älteren Gerätegeneration, z. B. S10-SP40, S10-P5002).
 1 = Notstrom aktiv (Ausfall des Stromnetzes)
 2 = Notstrom nicht aktiv
@@ -600,7 +600,11 @@ Bit 5    1 = Ladesperrzeit aktiv: Den Zeitraum für die Ladesperrzeit geben Sie 
 Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Entladesperrzeit    R"),
 					array(40086, 1, 3, "EMS Remote Control", "int16", "", "EMS Remote Control"),
 					array(40087, 1, 3, "EMS CTRL", "Uint16", "", "EMS CTRL"),
-					array(40137, 1, 3, "SG Ready-Status", "Uint16", "", "SG Ready-Status"),
+					array(40137, 1, 3, "SG Ready-Status", "Uint16", "enumerated_sg-ready-status", "SG Ready-Status:
+- Betriebszustand 1 (Sperrbetrieb):Dieser Betriebszustand ist abwärtskompatibel zur häufig zufesten Uhrzeiten geschalteten EVU-Sperre und umfasstmaximal 2 Stunden „harte“ Sperrzeit.
+- Betriebszustand 2 (Normalbetrieb):In dieser Schaltung läuft die Wärmepumpe imenergieeffizienten Normalbetrieb mit anteiligerWärmespeicher-Füllung für die maximal zweistündige EVU-Sperre.
+- Betriebszustand 3 (PV-Überschussbetrieb): In diesem Betriebszustand läuft die Wärmepumpe innerhalb des Reglers im verstärkten Betrieb für Raumheizung und Warmwasserbereitung. Es handelt sich dabei nicht um einen definitiven Anlaufbefehl, sondern um eine Einschaltempfehlung entsprechend der heutigen Anhebung.
+- Betriebszustand 4 (Betrieb für Abregelung): Hierbei handelt es sich um einen definitiven Anlaufbefehl, insofern dieser im Rahmen der Regeleinstellungen möglich ist."),
 				);
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
@@ -1722,13 +1726,17 @@ $this->EnableAction("Status");
 			{
 				$profile = MODUL_PREFIX.".StatsHeizkreis.Int";
 			}
-			elseif ("emergency-power" == strtolower($unit))
+			elseif ("enumerated_emergency-power" == strtolower($unit))
 			{
 				$profile = MODUL_PREFIX.".Emergency-Power.Int";
 			}
-			elseif ("powermeter" == strtolower($unit))
+			elseif ("enumerated_powermeter" == strtolower($unit))
 			{
 				$profile = MODUL_PREFIX.".Powermeter.Int";
+			}
+			elseif ("enumerated_sg-ready-status" == strtolower($unit))
+			{
+				$profile = MODUL_PREFIX.".SG-Ready-Status.Int";
 			}
 			elseif ("secs" == strtolower($unit))
 			{
@@ -1877,7 +1885,15 @@ $this->EnableAction("Status");
 				array('Name' => "Regelungsbypass", 'Wert' => 10, "Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen."),
 				)
 			);
-
+			$this->createVarProfile(MODUL_PREFIX.".SG-Ready-Status.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+				array('Name' => "N/A", 'Wert' => 0),
+				array('Name' => "Sperrbetrieb", 'Wert' => 1, "Betriebszustand 1 (Sperrbetrieb):Dieser Betriebszustand ist abwärtskompatibel zur häufig zufesten Uhrzeiten geschalteten EVU-Sperre und umfasstmaximal 2 Stunden „harte“ Sperrzeit."),
+				array('Name' => "Normalbetrieb", 'Wert' => 2, "Betriebszustand 2 (Normalbetrieb):In dieser Schaltung läuft die Wärmepumpe imenergieeffizienten Normalbetrieb mit anteiligerWärmespeicher-Füllung für die maximal zweistündige EVU-Sperre."),
+				array('Name' => "PV-Überschussbetrieb", 'Wert' => 3, "Betriebszustand 3 (PV-Überschussbetrieb): In diesem Betriebszustand läuft die Wärmepumpe innerhalb des Reglers im verstärkten Betrieb für Raumheizung und Warmwasserbereitung. Es handelt sich dabei nicht um einen definitiven Anlaufbefehl, sondern um eine Einschaltempfehlung entsprechend der heutigen Anhebung."),
+				array('Name' => "Betrieb für Abregelung", 'Wert' => 4, "Betriebszustand 4 (Betrieb für Abregelung): Hierbei handelt es sich um einen definitiven Anlaufbefehl, insofern dieser im Rahmen der Regeleinstellungen möglich ist."),
+				array('Name' => "undefined", 'Wert' => 5),
+				)
+			);
 			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
 //			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Float", VARIABLETYPE_FLOAT, ' Ah');
 //			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Int", VARIABLETYPE_INTEGER, ' Ah');
