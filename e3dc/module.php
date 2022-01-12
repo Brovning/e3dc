@@ -1281,7 +1281,7 @@ Bit 13  Nicht belegt";
 					}
 
 					// Close fsockopen
-					if(isset($fp))
+					if(isset($fp) && false !== $fp)
 					{
 						fclose($fp); // nötig für fsockopen!
 					}
