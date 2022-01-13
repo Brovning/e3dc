@@ -1789,6 +1789,9 @@ $this->EnableAction("Status");
 
 		private function checkProfiles()
 		{
+			$deleteProfiles_array = array();
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".TempFehler.Int";
 /*
 			$this->createVarProfile(MODUL_PREFIX.".TempFehler.Int", VARIABLETYPE_INTEGER, '', 0, 2, 1, 0, 0, array(
 					array('Name' => "OK", 'Wert' => 0, "OK", 'Farbe' => $this->getRgbColor("green")),
@@ -1796,7 +1799,10 @@ $this->EnableAction("Status");
 					array('Name' => "Unterbrechung", 'Wert' => 2, "Unterbrechungsfehler", 'Farbe' => $this->getRgbColor("red")),
 				)
 			);
+*/
 
+			$deleteProfiles_array[] = MODUL_PREFIX.".Betriebsart.Int";
+/*
 			$this->createVarProfile(MODUL_PREFIX.".Betriebsart.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "Auto PWM", 'Wert' => 0, "Auto PWM", 'Farbe' => $this->getRgbColor("green")),
 					array('Name' => "Hand PWM", 'Wert' => 1, "Hand PWM", 'Farbe' => $this->getRgbColor("yellow")),
@@ -1805,7 +1811,10 @@ $this->EnableAction("Status");
 					array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
 				)
 			);
-
+*/
+			
+			$deleteProfiles_array[] = MODUL_PREFIX.".StatsHeizkreis.Int";
+/*
 			$this->createVarProfile(MODUL_PREFIX.".StatsHeizkreis.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "Aus", 'Wert' => 1, "Aus"),
 					array('Name' => "Automatik", 'Wert' => 2, "Automatik"),
@@ -1821,7 +1830,10 @@ $this->EnableAction("Status");
 					array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
 				)
 			);
+*/
 
+			$deleteProfiles_array[] = MODUL_PREFIX.".Zirkulation.Int";
+/*
 			$this->createVarProfile(MODUL_PREFIX.".Zirkulation.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "Aus", 'Wert' => 1, "Aus"),
 					array('Name' => "Puls", 'Wert' => 2, "Puls"),
@@ -1830,6 +1842,8 @@ $this->EnableAction("Status");
 					array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
 				)
 			);
+*/
+/*
 			$this->createVarProfile("SunSpec.ChaSt.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
 					array('Name' => "OFF", 'Wert' => 1, "OFF: Energiespeicher nicht verfügbar"),
@@ -1841,6 +1855,8 @@ $this->EnableAction("Status");
 					array('Name' => "TESTING", 'Wert' => 7, "TESTING: Energiespeicher wird getestet"),
 				)
 			);
+*/
+/*
 			$this->createVarProfile("SunSpec.ID.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "single phase Inv (i)", 'Wert' => 101, "101: single phase Inverter (int)"),
 					array('Name' => "split phase Inv (i)", 'Wert' => 102, "102: split phase Inverter (int)"),
@@ -1857,6 +1873,8 @@ $this->EnableAction("Status");
 					array('Name' => "string combiner (i)", 'Wert' => 403, "403: String Combiner (int)"),
 				)
 			);
+*/
+/*
 			$this->createVarProfile("SunSpec.StateCodes.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
 					array('Name' => "OFF", 'Wert' => 1, "Wechselrichter ist aus"),
@@ -1869,6 +1887,10 @@ $this->EnableAction("Status");
 					array('Name' => "STANDBY", 'Wert' => 8, "Standby"),
 				)
 			);
+*/
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".StateCodes.Int";
+/*
 			$this->createVarProfile(MODUL_PREFIX.".StateCodes.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 					array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
 					array('Name' => "OFF", 'Wert' => 1, "Wechselrichter ist aus"),
@@ -1895,6 +1917,7 @@ $this->EnableAction("Status");
 					array('Name' => "Fehler", 'Wert' => 4, "Der Motorschalter des S10 E befindet sich nicht in der richtigen Position, sondern wurde manuell abgeschaltet oder nicht eingeschaltet.", 'Farbe' => $this->getRgbColor("red")),
 				)
 			);
+
 			$this->createVarProfile(MODUL_PREFIX.".Powermeter.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 				array('Name' => "N/A", 'Wert' => 0),
 				array('Name' => "Wurzelleistungsmesser", 'Wert' => 1, "Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt."),
@@ -1909,6 +1932,7 @@ $this->EnableAction("Status");
 				array('Name' => "Regelungsbypass", 'Wert' => 10, "Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen."),
 				)
 			);
+
 			$this->createVarProfile(MODUL_PREFIX.".SG-Ready-Status.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
 				array('Name' => "N/A", 'Wert' => 0),
 				array('Name' => "Sperrbetrieb", 'Wert' => 1, "Betriebszustand 1 (Sperrbetrieb):Dieser Betriebszustand ist abwärtskompatibel zur häufig zufesten Uhrzeiten geschalteten EVU-Sperre und umfasstmaximal 2 Stunden „harte“ Sperrzeit."),
@@ -1918,27 +1942,73 @@ $this->EnableAction("Status");
 				array('Name' => "undefined", 'Wert' => 5),
 				)
 			);
-			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Ampere.Int";
+//			$this->createVarProfile(MODUL_PREFIX.".Ampere.Int", VARIABLETYPE_INTEGER, ' A');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".AmpereHour.Float";
 //			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Float", VARIABLETYPE_FLOAT, ' Ah');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".AmpereHour.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".AmpereHour.Int", VARIABLETYPE_INTEGER, ' Ah');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Angle.Float";
 //			$this->createVarProfile(MODUL_PREFIX.".Angle.Float", VARIABLETYPE_FLOAT, ' °');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Angle.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Angle.Int", VARIABLETYPE_INTEGER, ' °');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Blindleistung.Float";
 //			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Float", VARIABLETYPE_FLOAT, ' Var');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Blindleistung.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Blindleistung.Int", VARIABLETYPE_INTEGER, ' Var');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Electricity.Float";
 //			$this->createVarProfile(MODUL_PREFIX.".Electricity.Float", VARIABLETYPE_FLOAT, ' Wh');
+
 			$this->createVarProfile(MODUL_PREFIX.".Electricity.Int", VARIABLETYPE_INTEGER, ' Wh');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Hertz.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Hertz.Int", VARIABLETYPE_INTEGER, ' Hz');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Hours.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Hours.Int", VARIABLETYPE_INTEGER, ' h');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".MilliAmpere.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".MilliAmpere.Int", VARIABLETYPE_INTEGER, ' mA');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Ohm.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Ohm.Int", VARIABLETYPE_INTEGER, ' Ohm');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Scheinleistung.Float";
 //			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Float", VARIABLETYPE_FLOAT, ' VA');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Scheinleistung.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Scheinleistung.Int", VARIABLETYPE_INTEGER, ' VA');
+
 			// Temperature.Float: ~Temperature
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Temperature.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Temperature.Int", VARIABLETYPE_INTEGER, ' °C');
+
 			// Volt.Float: ~Volt
+
 			$this->createVarProfile(MODUL_PREFIX.".Volt.Int", VARIABLETYPE_INTEGER, ' V');
+
+			$deleteProfiles_array[] = MODUL_PREFIX.".Volumenstrom.Int";
 //			$this->createVarProfile(MODUL_PREFIX.".Volumenstrom.Int", VARIABLETYPE_INTEGER, ' l/min');
+
 			$this->createVarProfile(MODUL_PREFIX.".Watt.Int", VARIABLETYPE_INTEGER, ' W');
+
+			// delete not used profiles
+			foreach($deleteProfiles_array AS $profileName)
+			{
+				if(IPS_VariableProfileExists($profileName))
+				{
+					IPS_DeleteVariableProfile($profileName);
+				}
+			}
 		}
 
 		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
