@@ -239,7 +239,6 @@ Wallbox-Wirkarbeit_kWh | Float | kWh | Wallbox-Energie des aktuellen Tages in Ki
 
 Name   | Typ
 ------ | -------
-E3DC.Ampere.Int | Integer
 E3DC.Electricity.Int | Integer
 E3DC.Emergency-Power.Int | Integer
 E3DC.Powermeter.Int | Integer
