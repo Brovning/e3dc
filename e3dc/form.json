@@ -315,19 +315,19 @@
         },
         {
             "type": "ValidationTextBox",
-            "caption": "Name von String 1 (Standard: 1)",
+            "caption": "Name von MPP-Tracker 1, entspricht String 1.1+1.2 (Standard: 1)",
             "name": "string1name",
             "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "ValidationTextBox",
-            "caption": "Name von String 2 (Standard: 2)",
+            "caption": "Name von MPP-Tracker 2, entspricht String 2.1+2.2 (Standard: 2)",
             "name": "string2name",
             "validate": "^[a-zA-Z0-9_-]+$"
         },
         {
             "type": "ValidationTextBox",
-            "caption": "Name von String 3 (Standard: 3)",
+            "caption": "Name von MPP-Tracker 3, entspricht String 3.1+3.2 (Standard: 3)",
             "name": "string3name",
             "validate": "^[a-zA-Z0-9_-]+$"
         },
