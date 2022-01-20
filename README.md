@@ -90,7 +90,7 @@ Wallbox 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wallbox-Variablen
 Leistungsmesser 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Leistungsmesser/Powermeter Variablen und je ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. extWechselrichter). Default: aus
 Notstromversorgung | Schalter, um angeben zu können, ob eine Notstromversorgung im E3DC verbaut ist. Default: aus
 Notstrom-Reserve | Bei vorhandener Notstromversorgung kann am E3DC unter dem Menüpunkt Notstrom > Einstellungen eine Reserve angegeben werden, bis zu welcher die Batterie maximal entladen werden soll. Diese Angabe wird optional benötigt, um die Reichweite der Batterie korrekt berechnen zu können. Default: 0
-DC String Informationen | Schalter, um die Variablen für V, A und W der 3 DC-Strings einzulesen und je String ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Sued) (verfügbar ab Release S10_2017_02). Default: aus
+DC String Informationen | Schalter, um die Variablen für V, A und W der bis zu 3 MPP-Tracker (entspricht String 1.1+1.2, 2.1+2.2 und 3.1+3.2) einzulesen und je MPP-Tracker ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Sued) (verfügbar ab Release S10_2017_02). Default: aus
 Variablen-Logging | Für welche Variablen soll das Logging aktiviert werden? Zur Auswahl stehen Leistungsvariablen in W, Leistungsvariablen in kW (bei Auswahl werden zusätzliche Variablen in kW erstellt), Batterie SOC (Ladezustand) in %, Autarkie in %, Eigenverbrauch in %
 Tageswerte der Wirkarbeit | Sollen die Tageswerte in Wh oder kWh berechnet werden? Bei Auswahl werden zusätzliche Variablen in Wh oder kWh erstellt.
 Wirkarbeit loggen | Sollen für die Tageswerte in Wh oder kWh das Logging aktiviert werden? Nur möglich, sofern zuvor die Tageswerte-Berechnung auch aktiviert wurde!
@@ -105,6 +105,11 @@ Der E3/DC-Simple Mode ermöglicht den einfachen und schnellen Zugriff auf die wi
 
 StartRegister | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
+40003 | 1 | 3 | Register | UInt16 | | Anzahl unterstützter Register
+40004 | 16 | 3 | Hersteller | String | | Hersteller: 'E3/DC GmbH'
+40020 | 16 | 3 | Modell | String | | Modell | z. B.: 'S10 E AIO'
+40036 | 16 | 3 | Seriennummer | String | | Seriennummer | z. B.: 'S10-12345678912'
+40052 | 16 | 3 | Firmware | String | | S10 Firmware Release | z. B.: 'S10-2015_08'
 40068 | 2 | 3 | PV-Leistung | Int32 | W | Photovoltaik-Leistung in Watt
 40070 | 2 | 3 | Batterie-Leistung | Int32 | W | Batterie-Leistung in Watt (negative Werte = Entladung)
 40072 | 2 | 3 | Verbrauchs-Leistung | Int32 | W | Hausverbrauchs-Leistung in Watt
@@ -750,21 +755,31 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 
 ### 8. Versionshistorie
 
-#### v1.4
+#### v1.5, 20.01.2022
+- bugfix #12: Wrong Modbus datatype used for powermeter values in W
+- bugfix #13: Factor of 0.01 not considered for DC-String current
+- String Modbus instances added (Firmware, Hersteller, Modell)
+- added profile for SG-Ready-Status
+- renamed String 1,2,3 to MPP-Tracker 1,2,3
+- delete unused variable profiles: removed profile Ampere.Int
+- Revert "Nutzbare Batteriekapazität von 90% auf 80% reduziert"
+- added more debug output (e.g. if var profile cannot be set)
+
+#### v1.4, 04.10.2021
 - Bugfix #9: "Die Instanz hat noch ungespeicherte Änderungen" auch wenn nichts geändert wurde
 
-#### v1.3
+#### v1.3, 03.10.2021
 - Feature Request #10: Individuelle Benennung von DC Strings, Wallboxen und Leistungsmesser
 - Leistungsmesser 7 und SG Ready entsprechend Modbus-Doku v1.8 hinzugefügt
 - Debug-Ausgaben für Modul-Debugging hinzugefügt
 - Eingabefelder werden nun auf Plausibilität überprüft (bspw. IP, Geräte ID,...)
 - Nutzbare Batteriekapazität von 90% auf 80% reduziert, da dies mehr der Realität entspricht
 
-#### v1.2
+#### v1.2, 30.10.2020
 - Fix für #7: Fehlermeldungen mit IPS 5.5 - Trying to access array offset on value of type bool
 - E3DC_SetWallboxChargingLocked() und E3DC_SetWallboxSchukoActivated() funktionieren leider nicht! Ob Fehler bei E3DC oder in meiner Implementierung ist noch unklar. Trotzdem aktiviert für Tests.
 
-#### v1.1
+#### v1.1, 09.08.2020
 - Quattroporte hinzugefügt
 - Powermeter (Leistungsmesser) hinzugefügt
 - Variablenprofil für Leistungsmesser hinzugefügt
@@ -772,14 +787,14 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 - E3DC_SetWallboxChargingLocked() und E3DC_SetWallboxSchukoActivated() funktionieren leider nicht! Ob Fehler bei E3DC oder in meiner Implementierung ist noch unklar...
 - intern umstrukturiert, interne Funktionen hinzugefügt,...
 
-#### v1.0
+#### v1.0, 04.04.2020
 - Feature Requests: #4 Tageswerte loggen
 - pollCycle von ms auf Sekunden umgestellt
 - intern umstrukturiert, interne Variablen umbenannt, interne Funktionen hinzugefügt,...
 - Public Funktionen hinzugefügt: GetBatteryChargeEnergyWh(), GetBatteryChargeEnergyKwh(), GetBatteryDischargeEnergyWh(), GetBatteryDischargeEnergyKwh(), GetExtEnergyWh(), GetExtEnergyKwh(), GetProductionEnergyWh(), GetProductionEnergyKwh(), GetGridConsumptionEnergyWh(), GetGridConsumptionEnergyKwh(), GetGridFeedEnergyWh(), GetGridFeedEnergyKwh(), GetPvEnergyWh(), GetPvEnergyKwh(), GetHomeEnergyWh(), GetHomeEnergyKwh(), GetWallboxEnergyWh(), GetWallboxEnergyKwh(), GetWallboxSolarEnergyWh(), GetWallboxSolarEnergyKwh()
 - Behobene Fehler: #6
 
-#### v0.5
+#### v0.5, 20.11.2019
 - Veraltete Funktionen (deutsche Funktionsnamen) entfernt
 - Funktionen zur Mittelwertausgabe der Leistungen in W und kW für ein Zeit-Intervall in Minuten hinzugefügt für GetBatteryPower, GetExtPower, GetProductionPower, GetGridPower, GetPvPower, GetHomePower, GetWallboxPower und GetWallboxPowerSolar
 - Funktion GetBatteryRange in Wh und kWh hinzugefügt und hierfür nötige Konfigurationsfelder Batteriekapazität und Notstromversorgung
@@ -787,7 +802,7 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 - Fix für: GetExtPowerW(), GetProductionPowerW(), GetWallboxPowerSolarW() and GetWallboxPowerW()
 - Review-Findings für Stable Kanal eingearbeitet
 
-#### v0.4
+#### v0.4, 28.11.2019
 - Konfigurationsoption für Variablen-Logging hinzugefügt
 - Logging für Leistungswerte in kW hinzugefügt
 - Berechnung und Logging der Gesamt-Produktionsleistung mit Ext-Generator in W und kW hinzugefügt
@@ -796,7 +811,7 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 - Fix für: Postfix war nicht bei allen Variablen-Profilen hinzugefügt
 - Review-Findings für Stable Kanal eingearbeitet
 
-#### v0.3
+#### v0.3, 09.11.2019
 - Rechtschreibfehler ClientSocket behoben
 - Swap LSW/MSW for 32Bit/64Bit aktiviert
 - Modbus Geräte ID zum Konfigurationsformular hinzugefügt
@@ -805,3 +820,9 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 - Postfix zu allen Variablen-Profilen hinzugefügt
 - Public Funktionen hinzugefügt: E3DC_GetAutarkie(), E3DC_GetEigenverbrauch(), E3DC_GetEigenverbrauch(), E3DC_GetBatterieLeistungW(), E3DC_GetBatterieLeistungKW(), E3DC_GetBatterieSOC(), E3DC_GetNetzLeistungW(), E3DC_GetNetzLeistungKW(), E3DC_GetPvLeistungW(), E3DC_GetPvLeistungKW(), E3DC_GetVerbrauchsLeistungW(), E3DC_GetVerbrauchsLeistungKW()
 - Fix für Fehlerticket #1, #2
+
+#### v0.2, 02.11.2019
+- first release ready for public testing
+
+#### v0.1, 31.10.2019
+- initial release
