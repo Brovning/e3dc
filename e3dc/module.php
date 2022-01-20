@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../libs/myFunctions.php';  // globale Funktionen
+declare(strict_types=1);
+
+require_once __DIR__.'/../libs/myFunctions.php';  // globale Funktionen
 
 define("DEVELOPMENT", false);
 
@@ -443,7 +445,7 @@ if(false !== \$varId)
 				// --> do nothing
 				// Verursacht scheinbar an dieser Stelle Probleme. Manchmal werden die Timer nicht mehr ausgeführt, daher explizit aktivieren...
 
-				if($loggingPowerKw || $readExtLeistung)
+				if ($loggingPowerKw || $readExtLeistung)
 				{
 					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
 					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
@@ -461,18 +463,18 @@ if(false !== \$varId)
 				$this->SetTimerInterval("Update-EMS-Status", 5000);
 
 				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
-				if($calcWh || $calcKwh)
+				if ($calcWh || $calcKwh)
 				{
 					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
 				}
-			
+
 				// Erstellt einen Timer mit einem Intervall von 6 Stunden
-				if($loggingWirkarbeit)
+				if ($loggingWirkarbeit)
 				{
 					$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
 				}
 
-				if($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
+				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
 				{
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
@@ -481,10 +483,10 @@ if(false !== \$varId)
 				{
 					// deaktiviert einen Timer
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
-				}			
+				}
 			}
 			// IP-Adresse nicht konfiguriert
-			else if("" == $hostIp)
+			elseif ("" == $hostIp)
 			{
 				// keine IP --> inaktiv
 				$this->SetStatus(104);
@@ -500,17 +502,17 @@ if(false !== \$varId)
 
 				$parentId = $this->InstanceID;
 
-				/**********************************************************************
-					Quelle: Modbus/TCP-Schnittstelle der E3/DC GmbH (HagerEnergy GmbH) 
+				/*
+					Quelle: Modbus/TCP-Schnittstelle der E3/DC GmbH (HagerEnergy GmbH)
 					07.07.2021 Version: V1.80
-				***********************************************************************/
+				 */
 
 				$categoryId = $parentId;
 
 				$inverterModelRegister_array = array(
-				// ********** Identifikationsblock **************************************************************************
-//					array(40001, 1, 3, "Magicbyte", "UInt16", "", "Magicbyte - S10 ModBus ID (Immer 0xE3DC)"),
-//					array(40002, 1, 3, "ModBus-Firmware", "UInt8+UInt8", "", "S10 ModBus-Firmware-Version"),
+					// ********** Identifikationsblock **************************************************************************
+					//					array(40001, 1, 3, "Magicbyte", "UInt16", "", "Magicbyte - S10 ModBus ID (Immer 0xE3DC)"),
+					//					array(40002, 1, 3, "ModBus-Firmware", "UInt8+UInt8", "", "S10 ModBus-Firmware-Version"),
 					array(40003, 1, 3, "Register", "UInt16", "", "Anzahl unterstützter Register"),
 					array(40004, 16, 3, "Hersteller", "String", "", "Hersteller: 'E3/DC GmbH'"),
 					array(40020, 16, 3, "Modell", "String", "", "Modell, z. B.: 'S10 E AIO'"),
@@ -521,7 +523,7 @@ if(false !== \$varId)
 
 
 				$inverterModelRegister_array = array(
-				// ********** Leistungsdaten ************************************************************************
+					// ********** Leistungsdaten ************************************************************************
 					array(40068, 2, 3, "PV-Leistung", "Int32", "W", "Photovoltaik-Leistung in Watt"),
 					array(40070, 2, 3, "Batterie-Leistung", "Int32", "W", "Batterie-Leistung in Watt (negative Werte = Entladung)"),
 					array(40072, 2, 3, "Verbrauchs-Leistung", "Int32", "W", "Hausverbrauchs-Leistung in Watt"),
@@ -529,7 +531,7 @@ if(false !== \$varId)
 				);
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				// Logging setzen
-				foreach($inverterModelRegister_array AS $inverterModelRegister)
+				foreach ($inverterModelRegister_array as $inverterModelRegister)
 				{
 					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
@@ -539,20 +541,20 @@ if(false !== \$varId)
 					}
 				}
 
-				// Variablen für kW-Logging erstellen, sofern nötig                           
-				foreach($inverterModelRegister_array AS $inverterModelRegister)
+				// Variablen für kW-Logging erstellen, sofern nötig
+				foreach ($inverterModelRegister_array as $inverterModelRegister)
 				{
 					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-					
+
 					$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-					if(false !== $varId && false !== $archiveId)
+					if (false !== $varId && false !== $archiveId)
 					{
 						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 					}
 				}
 
-				if($loggingPowerKw || $readExtLeistung)
+				if ($loggingPowerKw || $readExtLeistung)
 				{
 					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
 					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
@@ -573,7 +575,7 @@ if(false !== \$varId)
 				);
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 				// Logging setzen
-				foreach($inverterModelRegister_array AS $inverterModelRegister)
+				foreach ($inverterModelRegister_array as $inverterModelRegister)
 				{
 					$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
@@ -614,7 +616,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				$instanceId = IPS_GetObjectIDByIdent("40082", $categoryId);
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				IPS_SetHidden($varId, true);
-				
+
 				$varName = "Autarkie";
 				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Autarkie in Prozent");
 				if (false !== $varId && false !== $archiveId)
@@ -623,7 +625,7 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				}
 
 				$varName = "Eigenverbrauch";
- 				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Eigenverbrauch in Prozent");
+				$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($varName), $varName, VARIABLETYPE_INTEGER, "~Valve", 0, true, $instanceId, "Eigenverbrauch in Prozent");
 				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingSelfconsumption);
@@ -637,18 +639,18 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				$instanceId = IPS_GetObjectIDByIdent("40085", $categoryId);
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				IPS_SetHidden($varId, true);
-				
+
 				$bitArray = array(
 					array('varName' => "Batterie laden", 'varProfile' => "~Lock", 'varInfo' => "Bit 0: Laden der Batterien ist gesperrt (1)    R"),
 					array('varName' => "Batterie entladen", 'varProfile' => "~Lock", 'varInfo' => "Bit 1: Entladen der Batterien ist gesperrt (1)    R"),
 					array('varName' => "Notstrommodus", 'varProfile' => "~Switch", 'varInfo' => "Bit 2: Notstrommodus ist möglich (1) (wenn die Batterien geladen sind)    R"),
-					array('varName' => "Wetterbasiertes Laden", 'varProfile' => "~Switch", 'varInfo' =>  "Bit 3: Wetterbasiertes Laden: 1 = Es wird Ladekapazität zurückgehalten, damit der erwartete Sonnenschein maximal ausgenutzt werden kann. Dies ist nötig, wenn die maximale Einspeisung begrenzt ist.;        0 = Es wird keine Ladekapazität zurückgehalten    R"),
+					array('varName' => "Wetterbasiertes Laden", 'varProfile' => "~Switch", 'varInfo' => "Bit 3: Wetterbasiertes Laden: 1 = Es wird Ladekapazität zurückgehalten, damit der erwartete Sonnenschein maximal ausgenutzt werden kann. Dies ist nötig, wenn die maximale Einspeisung begrenzt ist.;        0 = Es wird keine Ladekapazität zurückgehalten    R"),
 					array('varName' => "Abregelungs-Status", 'varProfile' => "~Alert", 'varInfo' => "Bit 4: Abregelungs-Status: 1 = Die Ausgangsleistung des S10 Hauskraftwerks wird abgeregelt, da die maximale Einspeisung erreicht ist;    0 = Dieser Fall ist nicht eingetreten    R"),
 					array('varName' => "Ladesperrzeit", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: 1 = Ladesperrzeit aktiv: Den Zeitraum für die Ladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Ladesperrzeit    R"),
 					array('varName' => "Entladesperrzeit", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: 1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit geben Sie in der Funktion SmartCharge ein.;    0 = keine Entladesperrzeit    R"),
 				);
 
-				foreach($bitArray AS $bit)
+				foreach ($bitArray as $bit)
 				{
 					$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
 				}
@@ -662,11 +664,11 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					array(40076, 2, 3, "Ext-Leistung", "Int32", "W", "Leistung aller zusätzlichen Einspeiser in Watt"),
 				);
 
-				if($readExtLeistung)
+				if ($readExtLeistung)
 				{
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 					// Logging setzen
-					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
@@ -676,14 +678,14 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 						}
 					}
 
-					// Variablen für kW-Logging erstellen, sofern nötig                           
-					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					// Variablen für kW-Logging erstellen, sofern nötig
+					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 						$varIdOrg = IPS_GetObjectIDByIdent("Value", $instanceId);
-						
+
 						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varIdOrg)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-						if(false !== $varId && false !== $archiveId)
+						if (false !== $varId && false !== $archiveId)
 						{
 							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 						}
@@ -693,129 +695,129 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				{
 					$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
 				}
-				
+
 				$varId = $this->myMaintainVariable("GesamtproduktionLeistung", "Gesamtproduktion-Leistung", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Watt.Int", 0, $readExtLeistung);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
 				}
 
 				$varId = $this->myMaintainVariable("GesamtproduktionLeistung_kW", "Gesamtproduktion-Leistung_kW", VARIABLETYPE_FLOAT, "~Power", 0, $readExtLeistung && $loggingPowerKw);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 				}
-				
+
 				// Wirkarbeit in Wh berechnen
 				$varId = $this->myMaintainVariable("BatteryChargingWh", "Batterie-Lade-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("BatteryDischargingWh", "Batterie-Entlade-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("ExtWh", "Ext-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && $readExtLeistung);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("GesamtproduktionWh", "Gesamtproduktion-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && $readExtLeistung);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("GridConsumptionWh", "Netz-Bezug-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("GridFeedWh", "Netz-Einspeisung-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("PvWh", "PV-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("HomeWh", "Verbrauchs-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("WallboxWh", "Wallbox-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("WallboxSolarWh", "Wallbox-Solar-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
-				
+
 				// Wirkarbeit in kWh berechnen
 				$varId = $this->myMaintainVariable("BatteryChargingKwh", "Batterie-Lade-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("BatteryDischargingKwh", "Batterie-Entlade-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("ExtKwh", "Ext-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && $readExtLeistung);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("GesamtproduktionKwh", "Gesamtproduktion-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && $readExtLeistung);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("GridConsumptionKwh", "Netz-Bezug-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("GridFeedKwh", "Netz-Einspeisung-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("PvKwh", "PV-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("HomeKwh", "Verbrauchs-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh);
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("WallboxKwh", "Wallbox-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 				$varId = $this->myMaintainVariable("WallboxSolarKwh", "Wallbox-Solar-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
-				if(false !== $varId && false !== $archiveId)
+				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 
 				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
-				if($calcWh || $calcKwh)
+				if ($calcWh || $calcKwh)
 				{
 					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
 				}
-			
+
 
 				/* ********** Spezifische Abfragen zur Steuerung der Wallbox **************************************
 					Hinweis: Es können nicht alle Bits geschaltet werden. Bereiche, bei denen die aktive Steuerung sinnvoll ist, sind mit RW (= 'Read' und 'Write') gekennzeichnet.
@@ -826,12 +828,12 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					array(40080, 2, 3, "Wallbox-Solarleistung", "Int32", "W", "Solarleistung, die von der Wallbox genutzt wird in Watt"),
 				);
 
-				if($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
+				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
 				{
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
 					// Logging setzen
-					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
@@ -844,14 +846,14 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
 
-					// Variablen fuer kW-Logging erstellen, sofern noetig                           
-					foreach($inverterModelRegister_array AS $inverterModelRegister)
+					// Variablen fuer kW-Logging erstellen, sofern noetig
+					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
 						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
 						$varIdOrg = IPS_GetObjectIDByIdent("Value", $instanceId);
-						
+
 						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varIdOrg)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-						if(false !== $varId	&& false !== $archiveId)
+						if (false !== $varId && false !== $archiveId)
 						{
 							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 						}
@@ -897,13 +899,13 @@ Bit 13  Nicht belegt";
 					array('varName' => "16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10: Relais an, 16A 3 Phasen, Typ 2  R"),
 					array('varName' => "32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11: Relais an, 32A 3 Phasen, Typ 2  R"),
 					array('varName' => "1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12: Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
-//					array('varName' => "", 'varProfile' => "", 'varInfo' => "Bit 13: Nicht belegt"),
+					//					array('varName' => "", 'varProfile' => "", 'varInfo' => "Bit 13: Nicht belegt"),
 				);
 
 				$inverterModelRegister_array = array();
 				$inverterModelRegisterDel_array = array();
 
-				if($readWallbox0)
+				if ($readWallbox0)
 				{
 					$inverterModelRegister_array[] = array(40088, 1, 6, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -912,7 +914,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40088, 1, 6, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-				if($readWallbox1)
+				if ($readWallbox1)
 				{
 					$inverterModelRegister_array[] = array(40089, 1, 6, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -921,7 +923,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40089, 1, 6, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-				if($readWallbox2)
+				if ($readWallbox2)
 				{
 					$inverterModelRegister_array[] = array(40090, 1, 6, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -930,7 +932,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40090, 1, 6, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-				if($readWallbox3)
+				if ($readWallbox3)
 				{
 					$inverterModelRegister_array[] = array(40091, 1, 6, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -939,7 +941,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40091, 1, 6, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-				if($readWallbox4)
+				if ($readWallbox4)
 				{
 					$inverterModelRegister_array[] = array(40092, 1, 6, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -948,7 +950,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40092, 1, 6, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-				if($readWallbox5)
+				if ($readWallbox5)
 				{
 					$inverterModelRegister_array[] = array(40093, 1, 6, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -957,7 +959,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40093, 1, 6, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-				if($readWallbox6)
+				if ($readWallbox6)
 				{
 					$inverterModelRegister_array[] = array(40094, 1, 6, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -966,7 +968,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40094, 1, 6, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
 				}
 
-				if($readWallbox7)
+				if ($readWallbox7)
 				{
 					$inverterModelRegister_array[] = array(40095, 1, 6, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
 				}
@@ -976,9 +978,9 @@ Bit 13  Nicht belegt";
 				}
 
 				// Variablen umbenennen, sofern ein Wallbox Name angegeben wurde
-				for($i=0; $i < count($inverterModelRegister_array); $i++)
+				for ($i = 0; $i < count($inverterModelRegister_array); $i++)
 				{
-					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("WallBox_0_", "WallBox_1_", "WallBox_2_", "WallBox_3_", "WallBox_4_", "WallBox_5_", "WallBox_6_", "WallBox_7_"), array("WallBox_".$wallbox0name."_", "WallBox_".$wallbox1name."_", "WallBox_".$wallbox2name."_", "WallBox_".$wallbox3name."_", "WallBox_".$wallbox4name."_", "WallBox_".$wallbox5name."_", "WallBox_".$wallbox6name."_", "WallBox_".$wallbox7name."_", ), $inverterModelRegister_array[$i][IMR_NAME]);
+					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("WallBox_0_", "WallBox_1_", "WallBox_2_", "WallBox_3_", "WallBox_4_", "WallBox_5_", "WallBox_6_", "WallBox_7_"), array("WallBox_".$wallbox0name."_", "WallBox_".$wallbox1name."_", "WallBox_".$wallbox2name."_", "WallBox_".$wallbox3name."_", "WallBox_".$wallbox4name."_", "WallBox_".$wallbox5name."_", "WallBox_".$wallbox6name."_", "WallBox_".$wallbox7name."_"), $inverterModelRegister_array[$i][IMR_NAME]);
 				}
 
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
@@ -996,14 +998,14 @@ Bit 13  Nicht belegt";
 					}
 				}
 
-				foreach($inverterModelRegister_array AS $register)
+				foreach ($inverterModelRegister_array as $register)
 				{
 					// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
 					$instanceId = IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 					IPS_SetHidden($varId, true);
-					
-					foreach($bitArray AS $bit)
+
+					foreach ($bitArray as $bit)
 					{
 						$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
 					}
@@ -1016,7 +1018,7 @@ Bit 13  Nicht belegt";
 				/* ********** Spezifische Abfragen der Leistungsmesser **************************************
 					Hinweis: Die im Folgenden gelisteten Leistungsmesser (Register 40105 bis 40132) werden im Kapitel „Typen von Leistungsmessern“
 				 ************************************************************************************************** */
-				if($readPowermeter0 || $readPowermeter1 || $readPowermeter2 || $readPowermeter3 || $readPowermeter4 || $readPowermeter5 || $readPowermeter6 || $readPowermeter7)
+				if ($readPowermeter0 || $readPowermeter1 || $readPowermeter2 || $readPowermeter3 || $readPowermeter4 || $readPowermeter5 || $readPowermeter6 || $readPowermeter7)
 				{
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
 //					$this->SetTimerInterval("Update-Powermeter", 5000);
@@ -1042,7 +1044,7 @@ Bit 13  Nicht belegt";
 9 Datenanzeige Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals.
 10 Regelungsbypass Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen.";
 
-				if($readPowermeter0)
+				if ($readPowermeter0)
 				{
 					$inverterModelRegister_array[] = array(40105, 1, 3, "Powermeter_0", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40106, 1, 3, "Powermeter_0_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1057,7 +1059,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40108, 1, 3, "Powermeter_0_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
-				if($readPowermeter1)
+				if ($readPowermeter1)
 				{
 					$inverterModelRegister_array[] = array(40109, 1, 3, "Powermeter_1", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40110, 1, 3, "Powermeter_1_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1072,7 +1074,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40112, 1, 3, "Powermeter_1_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
-				if($readPowermeter2)
+				if ($readPowermeter2)
 				{
 					$inverterModelRegister_array[] = array(40113, 1, 3, "Powermeter_2", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40114, 1, 3, "Powermeter_2_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1087,7 +1089,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40116, 1, 3, "Powermeter_2_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
-				if($readPowermeter3)
+				if ($readPowermeter3)
 				{
 					$inverterModelRegister_array[] = array(40117, 1, 3, "Powermeter_3", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40118, 1, 3, "Powermeter_3_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1102,7 +1104,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40120, 1, 3, "Powermeter_3_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
-				if($readPowermeter4)
+				if ($readPowermeter4)
 				{
 					$inverterModelRegister_array[] = array(40121, 1, 3, "Powermeter_4", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40122, 1, 3, "Powermeter_4_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1117,7 +1119,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40124, 1, 3, "Powermeter_4_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
-				if($readPowermeter5)
+				if ($readPowermeter5)
 				{
 					$inverterModelRegister_array[] = array(40125, 1, 3, "Powermeter_5", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40126, 1, 3, "Powermeter_5_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1132,7 +1134,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40128, 1, 3, "Powermeter_5_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
-				if($readPowermeter6)
+				if ($readPowermeter6)
 				{
 					$inverterModelRegister_array[] = array(40129, 1, 3, "Powermeter_6", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40130, 1, 3, "Powermeter_6_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1147,7 +1149,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40132, 1, 3, "Powermeter_6_L3", "Int16", "W", "Phasenleistung in Watt L3");
 				}
 
-				if($readPowermeter7)
+				if ($readPowermeter7)
 				{
 					$inverterModelRegister_array[] = array(40133, 1, 3, "Powermeter_7", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
 					$inverterModelRegister_array[] = array(40134, 1, 3, "Powermeter_7_L1", "Int16", "W", "Phasenleistung in Watt L1");
@@ -1163,9 +1165,9 @@ Bit 13  Nicht belegt";
 				}
 
 				// Variablen umbenennen, sofern ein Powermeter/Leistungsmesser Name angegeben wurde
-				for($i=0; $i < count($inverterModelRegister_array); $i++)
+				for ($i = 0; $i < count($inverterModelRegister_array); $i++)
 				{
-					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("Powermeter_0", "Powermeter_1", "Powermeter_2", "Powermeter_3", "Powermeter_4", "Powermeter_5", "Powermeter_6", "Powermeter_7"), array("Powermeter_".$powermeter0name, "Powermeter_".$powermeter1name, "Powermeter_".$powermeter2name, "Powermeter_".$powermeter3name, "Powermeter_".$powermeter4name, "Powermeter_".$powermeter5name, "Powermeter_".$powermeter6name, "Powermeter_".$powermeter7name, ), $inverterModelRegister_array[$i][IMR_NAME]);
+					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("Powermeter_0", "Powermeter_1", "Powermeter_2", "Powermeter_3", "Powermeter_4", "Powermeter_5", "Powermeter_6", "Powermeter_7"), array("Powermeter_".$powermeter0name, "Powermeter_".$powermeter1name, "Powermeter_".$powermeter2name, "Powermeter_".$powermeter3name, "Powermeter_".$powermeter4name, "Powermeter_".$powermeter5name, "Powermeter_".$powermeter6name, "Powermeter_".$powermeter7name), $inverterModelRegister_array[$i][IMR_NAME]);
 				}
 
 				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
@@ -1187,10 +1189,10 @@ Bit 13  Nicht belegt";
 
 				/* ********** DC-String **************************************************************************
 					Hinweis: Die folgenden Register 40096 bis 40104 koennen ab dem Release S10_2017_02 genutzt werden!
-					*************************************************************************************************/
+				 */
 				$categoryName = "DC_String";
 				$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
-				if($readDcString)
+				if ($readDcString)
 				{
 					$inverterModelRegister_array = array(
 						array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage"),
@@ -1205,12 +1207,12 @@ Bit 13  Nicht belegt";
 					);
 
 					// Variablen umbenennen, sofern ein DC-String Name angegeben wurde
-					for($i=0; $i < count($inverterModelRegister_array); $i++)
+					for ($i = 0; $i < count($inverterModelRegister_array); $i++)
 					{
 						$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("STRING_1_", "STRING_2_", "STRING_3_"), array("STRING_".$string1name."_", "STRING_".$string2name."_", "STRING_".$string3name."_"), $inverterModelRegister_array[$i][IMR_NAME]);
 					}
-					
-					if(false === $categoryId)
+
+					if (false === $categoryId)
 					{
 						$categoryId = IPS_CreateCategory();
 						IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
@@ -1225,7 +1227,7 @@ Bit 13  Nicht belegt";
 					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
 						$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-	
+
 						// Modbus-Instanz erstellen, sofern noch nicht vorhanden
 						if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
 						{
@@ -1236,9 +1238,9 @@ Bit 13  Nicht belegt";
 				}
 				else
 				{
-					if(false !== $categoryId)
+					if (false !== $categoryId)
 					{
-						foreach(IPS_GetChildrenIDs($categoryId) AS $childId)
+						foreach (IPS_GetChildrenIDs($categoryId) as $childId)
 						{
 							$this->deleteInstanceRecursive($childId);
 						}
@@ -1247,17 +1249,17 @@ Bit 13  Nicht belegt";
 				}
 
 
-				if($active)
+				if ($active)
 				{
 					// Erreichbarkeit von IP und Port pruefen
 					$portOpen = false;
-					$waitTimeoutInSeconds = 1; 
-					if(/*Sys_Ping($hostIp, $waitTimeoutInSeconds*1000)*/ $fp = @fsockopen($hostIp, $hostPort, $errCode, $errStr, $waitTimeoutInSeconds))
-					{   
+					$waitTimeoutInSeconds = 1;
+					if (/*Sys_Ping($hostIp, $waitTimeoutInSeconds*1000)*/ $fp = @fsockopen($hostIp, $hostPort, $errCode, $errStr, $waitTimeoutInSeconds))
+					{
 						// It worked
 						$portOpen = true;
 
-                        // Client Socket aktivieren
+						// Client Socket aktivieren
 						if (false == IPS_GetProperty($interfaceId, "Open"))
 						{
 							IPS_SetProperty($interfaceId, "Open", true);
@@ -1266,7 +1268,7 @@ Bit 13  Nicht belegt";
 
 							$this->SendDebug("ClientSocket-Status", "ClientSocket activated (".$interfaceId.")", 0);
 						}
-						
+
 						// aktiv
 						$this->SetStatus(102);
 
@@ -1281,7 +1283,7 @@ Bit 13  Nicht belegt";
 					}
 
 					// Close fsockopen
-					if(isset($fp) && false !== $fp)
+					if (isset($fp) && false !== $fp)
 					{
 						fclose($fp); // nötig für fsockopen!
 					}
@@ -1297,16 +1299,16 @@ Bit 13  Nicht belegt";
 
 						$this->SendDebug("ClientSocket-Status", "ClientSocket deactivated (".$interfaceId.")", 0);
 					}
-					
+
 					// Timer deaktivieren
-/*
-					$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
-					$this->SetTimerInterval("Update-EMS-Status", 0);
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
-					$this->SetTimerInterval("Update-ValuesKw", 0);
-					$this->SetTimerInterval("Wh-Berechnung", 0);
-					$this->SetTimerInterval("HistoryCleanUp", 0);
-*/		
+					/*
+										$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
+										$this->SetTimerInterval("Update-EMS-Status", 0);
+										$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
+										$this->SetTimerInterval("Update-ValuesKw", 0);
+										$this->SetTimerInterval("Wh-Berechnung", 0);
+										$this->SetTimerInterval("HistoryCleanUp", 0);
+					 */
 					// inaktiv
 					$this->SetStatus(104);
 
@@ -1315,7 +1317,7 @@ Bit 13  Nicht belegt";
 
 
 				// pruefen, ob sich ModBus-Gateway geaendert hat
-				if(0 != $gatewayId_Old && $gatewayId != $gatewayId_Old)
+				if (0 != $gatewayId_Old && $gatewayId != $gatewayId_Old)
 				{
 					$this->deleteInstanceNotInUse($gatewayId_Old, MODBUS_ADDRESSES);
 
@@ -1323,7 +1325,7 @@ Bit 13  Nicht belegt";
 				}
 
 				// pruefen, ob sich ClientSocket Interface geaendert hat
-				if(0 != $interfaceId_Old && $interfaceId != $interfaceId_Old)
+				if (0 != $interfaceId_Old && $interfaceId != $interfaceId_Old)
 				{
 					$this->deleteInstanceNotInUse($interfaceId_Old, MODBUS_INSTANCES);
 
@@ -1331,31 +1333,31 @@ Bit 13  Nicht belegt";
 				}
 			}
 		}
-/*
-BESCHREIBUNG
-Aktiviert die Standardaktion der Statusvariable. Dadurch ist diese in der Visualisierung veraenderbar und kann auch beschrieben werden. Diese Funktion muss aufgerufen werden, da alle Statusvariablen standardmaeßig ohne Standardaktion erstellt werden. Sofern die Standardaktion aktiviert ist, muss auf Aenderungsanfragen innerhalb von RequestAction reagiert werden.
+		/*
+		BESCHREIBUNG
+		Aktiviert die Standardaktion der Statusvariable. Dadurch ist diese in der Visualisierung veraenderbar und kann auch beschrieben werden. Diese Funktion muss aufgerufen werden, da alle Statusvariablen standardmaeßig ohne Standardaktion erstellt werden. Sofern die Standardaktion aktiviert ist, muss auf Aenderungsanfragen innerhalb von RequestAction reagiert werden.
 
-BEISPIEL
-// Aktiviert die Standardaktion der Statusvariable
-$this->EnableAction("Status");
+		BEISPIEL
+		// Aktiviert die Standardaktion der Statusvariable
+		$this->EnableAction("Status");
 
-		public function RequestAction($Ident, $Value)
-		{
-		 
-			switch($Ident) {
-				case "TestVariable":
-					//Hier wuerde normalerweise eine Aktion z.B. das Schalten ausgefuehrt werden
-					//Ausgaben ueber 'echo' werden an die Visualisierung zurueckgeleitet
-		 
-					//Neuen Wert in die Statusvariable schreiben
-					SetValue($this->GetIDForIdent($Ident), $Value);
-					break;
-				default:
-					throw new Exception("Invalid Ident");
-			}
-		 
-		}
-*/
+				public function RequestAction($Ident, $Value)
+				{
+
+					switch($Ident) {
+						case "TestVariable":
+							//Hier wuerde normalerweise eine Aktion z.B. das Schalten ausgefuehrt werden
+							//Ausgaben ueber 'echo' werden an die Visualisierung zurueckgeleitet
+
+							//Neuen Wert in die Statusvariable schreiben
+							SetValue($this->GetIDForIdent($Ident), $Value);
+							break;
+						default:
+							throw new Exception("Invalid Ident");
+					}
+
+				}
+		 */
 		private function createModbusInstances($modelRegister_array, $parentId, $gatewayId, $pollCycle, $uniqueIdent = "")
 		{
 			// Workaround für "InstanceInterface not available" Fehlermeldung beim Server-Start...
@@ -1366,13 +1368,13 @@ $this->EnableAction("Status");
 				{
 					// get datatype
 					$datenTyp = $this->getModbusDatatype($inverterModelRegister[IMR_TYPE]);
-					if("continue" == $datenTyp)
+					if ("continue" == $datenTyp)
 					{
 						continue;
 					}
 
 					// if scale factor is given, variable will be of type float
-					if(isset($inverterModelRegister[IMR_SF]) && 10000 >= $inverterModelRegister[IMR_SF])
+					if (isset($inverterModelRegister[IMR_SF]) && 10000 >= $inverterModelRegister[IMR_SF])
 					{
 						$varDataType = MODBUSDATATYPE_REAL;
 					}
@@ -1382,9 +1384,10 @@ $this->EnableAction("Status");
 					}
 
 					// get profile
-                    if (isset($inverterModelRegister[IMR_UNITS])) {
-                        $profile = $this->getProfile($inverterModelRegister[IMR_UNITS], $varDataType);
-                    }
+					if (isset($inverterModelRegister[IMR_UNITS]))
+					{
+						$profile = $this->getProfile($inverterModelRegister[IMR_UNITS], $varDataType);
+					}
 					else
 					{
 						$profile = false;
@@ -1443,12 +1446,12 @@ $this->EnableAction("Status");
 						IPS_SetProperty($instanceId, "Poller", $pollCycle);
 					}
 					// set length for modbus datatype string
-					if (MODBUSDATATYPE_STRING == $datenTyp && $inverterModelRegister[IMR_SIZE] != IPS_GetProperty($instanceId, "Length")) // if string --> set length accordingly
-					{
+					if (MODBUSDATATYPE_STRING == $datenTyp && $inverterModelRegister[IMR_SIZE] != IPS_GetProperty($instanceId, "Length"))
+					{ // if string --> set length accordingly
 						IPS_SetProperty($instanceId, "Length", $inverterModelRegister[IMR_SIZE]);
 					}
 					// set scale factor
-					if(isset($inverterModelRegister[IMR_SF]) && 10000 >= $inverterModelRegister[IMR_SF] && $inverterModelRegister[IMR_SF] != IPS_GetProperty($instanceId, "Factor"))
+					if (isset($inverterModelRegister[IMR_SF]) && 10000 >= $inverterModelRegister[IMR_SF] && $inverterModelRegister[IMR_SF] != IPS_GetProperty($instanceId, "Factor"))
 					{
 						IPS_SetProperty($instanceId, "Factor", $inverterModelRegister[IMR_SF]);
 					}
@@ -1458,15 +1461,15 @@ $this->EnableAction("Status");
 					{
 						IPS_SetProperty($instanceId, "ReadAddress", $inverterModelRegister[IMR_START_REGISTER] + MODBUS_REGISTER_TO_ADDRESS_OFFSET);
 					}
-					if(6 == $inverterModelRegister[IMR_FUNCTION_CODE])
+					if (6 == $inverterModelRegister[IMR_FUNCTION_CODE])
 					{
 						$ReadFunctionCode = 3;
 					}
-					else if("R" == $inverterModelRegister[IMR_FUNCTION_CODE])
+					elseif ("R" == $inverterModelRegister[IMR_FUNCTION_CODE])
 					{
 						$ReadFunctionCode = 3;
 					}
-					else if("RW" == $inverterModelRegister[IMR_FUNCTION_CODE])
+					elseif ("RW" == $inverterModelRegister[IMR_FUNCTION_CODE])
 					{
 						$ReadFunctionCode = 3;
 					}
@@ -1496,7 +1499,7 @@ $this->EnableAction("Status");
 						IPS_SetProperty($instanceId, "WriteFunctionCode", 0);
 					}
 
-					if(IPS_HasChanges($instanceId))
+					if (IPS_HasChanges($instanceId))
 					{
 						IPS_ApplyChanges($instanceId);
 					}
@@ -1505,15 +1508,15 @@ $this->EnableAction("Status");
 					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 
 					// Profil der Statusvariable initial einmal zuweisen
-					if(false != $profile && !IPS_VariableProfileExists($profile))
+					if (false != $profile && !IPS_VariableProfileExists($profile))
 					{
 						$this->SendDebug("Variable-Profile", "Profile ".$profile." does not exist!", 0);
-					}	
-					else if ($initialCreation && false != $profile)
+					}
+					elseif ($initialCreation && false != $profile)
 					{
 						// Justification Rule 11: es ist die Funktion RegisterVariable...() in diesem Fall nicht nutzbar, da die Variable durch die Modbus-Instanz bereits erstellt wurde
 						// --> Custo Profil wird initial einmal beim Instanz-erstellen gesetzt
-						if(!IPS_SetVariableCustomProfile($varId, $profile))
+						if (!IPS_SetVariableCustomProfile($varId, $profile))
 						{
 							$this->SendDebug("Variable-Profile", "Error setting profile ".$profile." for VarID ".$varId."!", 0);
 						}
@@ -1521,7 +1524,7 @@ $this->EnableAction("Status");
 				}
 			}
 		}
-		
+
 		private function getModbusDatatype($type)
 		{
 			// Datentyp ermitteln
@@ -1530,24 +1533,21 @@ $this->EnableAction("Status");
 			if ("uint8" == strtolower($type)
 				|| "enum8" == strtolower($type)
 				|| "int8" == strtolower($type)
-			)
-			{
+			) {
 				$datenTyp = MODBUSDATATYPE_BIT;
 			}
 			// 2=Word (16 bit unsigned)
-			else if ("uint16" == strtolower($type)
+			elseif ("uint16" == strtolower($type)
 				|| "enum16" == strtolower($type)
 				|| "uint8+uint8" == strtolower($type)
-			)
-			{
+			) {
 				$datenTyp = MODBUSDATATYPE_WORD;
 			}
 			// 3=DWord (32 bit unsigned)
 			elseif ("uint32" == strtolower($type)
 				|| "acc32" == strtolower($type)
 				|| "acc64" == strtolower($type)
-			)
-			{
+			) {
 				$datenTyp = MODBUSDATATYPE_DWORD;
 			}
 			// 4=Char / ShortInt (8 bit signed)
@@ -1585,8 +1585,7 @@ $this->EnableAction("Status");
 				|| "string16" == strtolower($type)
 				|| "string8" == strtolower($type)
 				|| "string" == strtolower($type)
-			)
-			{
+			) {
 				$datenTyp = MODBUSDATATYPE_STRING;
 			}
 			else
@@ -1594,7 +1593,7 @@ $this->EnableAction("Status");
 				$this->SendDebug("getModbusDatatype()", "Unbekannter Datentyp '".$type."'! --> skip", 0);
 
 				return "continue";
-			}	
+			}
 
 			return $datenTyp;
 		}
@@ -1617,21 +1616,19 @@ $this->EnableAction("Status");
 			elseif (("ah" == strtolower($unit)
 					|| "vah" == strtolower($unit))
 				&& MODBUSDATATYPE_REAL == $datenTyp
-			)
-			{
-						$profile = MODUL_PREFIX.".AmpereHour.Float";
+			) {
+				$profile = MODUL_PREFIX.".AmpereHour.Float";
 			}
 			elseif ("ah" == strtolower($unit)
 				|| "vah" == strtolower($unit)
-			)
-			{
-						$profile = MODUL_PREFIX.".AmpereHour.Int";
+			) {
+				$profile = MODUL_PREFIX.".AmpereHour.Int";
 			}
 			elseif ("v" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
 			{
 				$profile = "~Volt";
 			}
-			elseif("v" == strtolower($unit))
+			elseif ("v" == strtolower($unit))
 			{
 				$profile = MODUL_PREFIX.".Volt.Int";
 			}
@@ -1695,19 +1692,18 @@ $this->EnableAction("Status");
 			{
 				$profile = MODUL_PREFIX.".Electricity.Int";
 			}
-			elseif (("° C" == $unit
+			elseif ((
+				"° C" == $unit
 					|| "°C" == $unit
 					|| "C" == $unit
-				) && MODBUSDATATYPE_REAL == $datenTyp
-			)
-			{
+			) && MODBUSDATATYPE_REAL == $datenTyp
+			) {
 				$profile = "~Temperature";
 			}
 			elseif ("° C" == $unit
 				|| "°C" == $unit
 				|| "C" == $unit
-			)
-			{
+			) {
 				$profile = MODUL_PREFIX.".Temperature.Int";
 			}
 			elseif ("cos()" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
@@ -1770,8 +1766,7 @@ $this->EnableAction("Status");
 				|| "bitfield" == strtolower($unit)
 				|| "bitfield16" == strtolower($unit)
 				|| "bitfield32" == strtolower($unit)
-			)
-			{
+			) {
 				$profile = false;
 			}
 			else
@@ -1783,7 +1778,7 @@ $this->EnableAction("Status");
 				}
 			}
 
-			return $profile;			
+			return $profile;
 		}
 
 
@@ -1792,124 +1787,133 @@ $this->EnableAction("Status");
 			$deleteProfiles_array = array();
 
 			$deleteProfiles_array[] = MODUL_PREFIX.".TempFehler.Int";
-/*
-			$this->createVarProfile(MODUL_PREFIX.".TempFehler.Int", VARIABLETYPE_INTEGER, '', 0, 2, 1, 0, 0, array(
-					array('Name' => "OK", 'Wert' => 0, "OK", 'Farbe' => $this->getRgbColor("green")),
-					array('Name' => "Kurzschluss", 'Wert' => 1, "Kurzschlussfehler", 'Farbe' => $this->getRgbColor("red")),
-					array('Name' => "Unterbrechung", 'Wert' => 2, "Unterbrechungsfehler", 'Farbe' => $this->getRgbColor("red")),
-				)
-			);
-*/
+			/*
+						$this->createVarProfile(MODUL_PREFIX.".TempFehler.Int", VARIABLETYPE_INTEGER, '', 0, 2, 1, 0, 0, array(
+								array('Name' => "OK", 'Wert' => 0, "OK", 'Farbe' => $this->getRgbColor("green")),
+								array('Name' => "Kurzschluss", 'Wert' => 1, "Kurzschlussfehler", 'Farbe' => $this->getRgbColor("red")),
+								array('Name' => "Unterbrechung", 'Wert' => 2, "Unterbrechungsfehler", 'Farbe' => $this->getRgbColor("red")),
+							)
+						);
+			 */
 
 			$deleteProfiles_array[] = MODUL_PREFIX.".Betriebsart.Int";
-/*
-			$this->createVarProfile(MODUL_PREFIX.".Betriebsart.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "Auto PWM", 'Wert' => 0, "Auto PWM", 'Farbe' => $this->getRgbColor("green")),
-					array('Name' => "Hand PWM", 'Wert' => 1, "Hand PWM", 'Farbe' => $this->getRgbColor("yellow")),
-					array('Name' => "Auto analog", 'Wert' => 2, "Auto analog", 'Farbe' => $this->getRgbColor("green")),
-					array('Name' => "Hand analog", 'Wert' => 3, "Hand analog", 'Farbe' => $this->getRgbColor("yellow")),
-					array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
-				)
-			);
-*/
-			
+			/*
+						$this->createVarProfile(MODUL_PREFIX.".Betriebsart.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+								array('Name' => "Auto PWM", 'Wert' => 0, "Auto PWM", 'Farbe' => $this->getRgbColor("green")),
+								array('Name' => "Hand PWM", 'Wert' => 1, "Hand PWM", 'Farbe' => $this->getRgbColor("yellow")),
+								array('Name' => "Auto analog", 'Wert' => 2, "Auto analog", 'Farbe' => $this->getRgbColor("green")),
+								array('Name' => "Hand analog", 'Wert' => 3, "Hand analog", 'Farbe' => $this->getRgbColor("yellow")),
+								array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
+							)
+						);
+			 */
+
 			$deleteProfiles_array[] = MODUL_PREFIX.".StatsHeizkreis.Int";
-/*
-			$this->createVarProfile(MODUL_PREFIX.".StatsHeizkreis.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "Aus", 'Wert' => 1, "Aus"),
-					array('Name' => "Automatik", 'Wert' => 2, "Automatik"),
-					array('Name' => "Tagbetrieb", 'Wert' => 3, "Tagbetrieb"),
-					array('Name' => "Absenkbetrieb", 'Wert' => 4, "Absenkbetrieb"),
-					array('Name' => "Standby", 'Wert' => 5, "Standby"),
-					array('Name' => "Eco", 'Wert' => 6, "Eco"),
-					array('Name' => "Urlaub", 'Wert' => 7, "Urlaub"),
-					array('Name' => "WW Vorrang", 'Wert' => 8, "WW Vorrang"),
-					array('Name' => "Frostschutz", 'Wert' => 9, "Frostschutz"),
-					array('Name' => "Pumpenschutz", 'Wert' => 10, "Pumpenschutz"),
-					array('Name' => "Estrich", 'Wert' => 11, "Estrich"),
-					array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
-				)
-			);
-*/
+			/*
+						$this->createVarProfile(MODUL_PREFIX.".StatsHeizkreis.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+								array('Name' => "Aus", 'Wert' => 1, "Aus"),
+								array('Name' => "Automatik", 'Wert' => 2, "Automatik"),
+								array('Name' => "Tagbetrieb", 'Wert' => 3, "Tagbetrieb"),
+								array('Name' => "Absenkbetrieb", 'Wert' => 4, "Absenkbetrieb"),
+								array('Name' => "Standby", 'Wert' => 5, "Standby"),
+								array('Name' => "Eco", 'Wert' => 6, "Eco"),
+								array('Name' => "Urlaub", 'Wert' => 7, "Urlaub"),
+								array('Name' => "WW Vorrang", 'Wert' => 8, "WW Vorrang"),
+								array('Name' => "Frostschutz", 'Wert' => 9, "Frostschutz"),
+								array('Name' => "Pumpenschutz", 'Wert' => 10, "Pumpenschutz"),
+								array('Name' => "Estrich", 'Wert' => 11, "Estrich"),
+								array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
+							)
+						);
+			 */
 
 			$deleteProfiles_array[] = MODUL_PREFIX.".Zirkulation.Int";
-/*
-			$this->createVarProfile(MODUL_PREFIX.".Zirkulation.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "Aus", 'Wert' => 1, "Aus"),
-					array('Name' => "Puls", 'Wert' => 2, "Puls"),
-					array('Name' => "Temp", 'Wert' => 3, "Temp"),
-					array('Name' => "Warten", 'Wert' => 4, "Warten"),
-					array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
-				)
-			);
-*/
-/*
-			$this->createVarProfile("SunSpec.ChaSt.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
-					array('Name' => "OFF", 'Wert' => 1, "OFF: Energiespeicher nicht verfügbar"),
-					array('Name' => "EMPTY", 'Wert' => 2, "EMPTY: Energiespeicher vollständig entladen"),
-					array('Name' => "DISCHAGING", 'Wert' => 3, "DISCHARGING: Energiespeicher wird entladen"),
-					array('Name' => "CHARGING", 'Wert' => 4, "CHARGING: Energiespeicher wird geladen"),
-					array('Name' => "FULL", 'Wert' => 5, "FULL: Energiespeicher vollständig geladen"),
-					array('Name' => "HOLDING", 'Wert' => 6, "HOLDING: Energiespeicher wird weder geladen noch entladen"),
-					array('Name' => "TESTING", 'Wert' => 7, "TESTING: Energiespeicher wird getestet"),
-				)
-			);
-*/
-/*
-			$this->createVarProfile("SunSpec.ID.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "single phase Inv (i)", 'Wert' => 101, "101: single phase Inverter (int)"),
-					array('Name' => "split phase Inv (i)", 'Wert' => 102, "102: split phase Inverter (int)"),
-					array('Name' => "three phase Inv (i)", 'Wert' => 103, "103: three phase Inverter (int)"),
-					array('Name' => "single phase Inv (f)", 'Wert' => 111, "111: single phase Inverter (float)"),
-					array('Name' => "split phase Inv (f)", 'Wert' => 112, "112: split phase Inverter (float)"),
-					array('Name' => "three phase Inv (f)", 'Wert' => 113, "113: three phase Inverter (float)"),
-					array('Name' => "single phase Meter (i)", 'Wert' => 201, "201: single phase Meter (int)"),
-					array('Name' => "split phase Meter (i)", 'Wert' => 202, "202: split phase (int)"),
-					array('Name' => "three phase Meter (i)", 'Wert' => 203, "203: three phase (int)"),
-					array('Name' => "single phase Meter (f)", 'Wert' => 211, "211: single phase Meter (float)"),
-					array('Name' => "split phase Meter (f)", 'Wert' => 212, "212: split phase Meter (float)"),
-					array('Name' => "three phase Meter (f)", 'Wert' => 213, "213: three phase Meter (float)"),
-					array('Name' => "string combiner (i)", 'Wert' => 403, "403: String Combiner (int)"),
-				)
-			);
-*/
-/*
-			$this->createVarProfile("SunSpec.StateCodes.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
-					array('Name' => "OFF", 'Wert' => 1, "Wechselrichter ist aus"),
-					array('Name' => "SLEEPING", 'Wert' => 2, "Auto-Shutdown"),
-					array('Name' => "STARTING", 'Wert' => 3, "Wechselrichter startet"),
-					array('Name' => "MPPT", 'Wert' => 4, "Wechselrichter arbeitet normal", 'Farbe' => $this->getRgbColor("green")),
-					array('Name' => "THROTTLED", 'Wert' => 5, "Leistungsreduktion aktiv", 'Farbe' => $this->getRgbColor("orange")),
-					array('Name' => "SHUTTING_DOWN", 'Wert' => 6, "Wechselrichter schaltet ab"),
-					array('Name' => "FAULT", 'Wert' => 7, "Ein oder mehr Fehler existieren, siehe St *oder Evt * Register", 'Farbe' => $this->getRgbColor("red")),
-					array('Name' => "STANDBY", 'Wert' => 8, "Standby"),
-				)
-			);
-*/
+			/*
+						$this->createVarProfile(MODUL_PREFIX.".Zirkulation.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+								array('Name' => "Aus", 'Wert' => 1, "Aus"),
+								array('Name' => "Puls", 'Wert' => 2, "Puls"),
+								array('Name' => "Temp", 'Wert' => 3, "Temp"),
+								array('Name' => "Warten", 'Wert' => 4, "Warten"),
+								array('Name' => "FEHLER", 'Wert' => 255, "FEHLER", 'Farbe' => $this->getRgbColor("red")),
+							)
+						);
+			 */
+			/*
+						$this->createVarProfile("SunSpec.ChaSt.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+								array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
+								array('Name' => "OFF", 'Wert' => 1, "OFF: Energiespeicher nicht verfügbar"),
+								array('Name' => "EMPTY", 'Wert' => 2, "EMPTY: Energiespeicher vollständig entladen"),
+								array('Name' => "DISCHAGING", 'Wert' => 3, "DISCHARGING: Energiespeicher wird entladen"),
+								array('Name' => "CHARGING", 'Wert' => 4, "CHARGING: Energiespeicher wird geladen"),
+								array('Name' => "FULL", 'Wert' => 5, "FULL: Energiespeicher vollständig geladen"),
+								array('Name' => "HOLDING", 'Wert' => 6, "HOLDING: Energiespeicher wird weder geladen noch entladen"),
+								array('Name' => "TESTING", 'Wert' => 7, "TESTING: Energiespeicher wird getestet"),
+							)
+						);
+			 */
+			/*
+						$this->createVarProfile("SunSpec.ID.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+								array('Name' => "single phase Inv (i)", 'Wert' => 101, "101: single phase Inverter (int)"),
+								array('Name' => "split phase Inv (i)", 'Wert' => 102, "102: split phase Inverter (int)"),
+								array('Name' => "three phase Inv (i)", 'Wert' => 103, "103: three phase Inverter (int)"),
+								array('Name' => "single phase Inv (f)", 'Wert' => 111, "111: single phase Inverter (float)"),
+								array('Name' => "split phase Inv (f)", 'Wert' => 112, "112: split phase Inverter (float)"),
+								array('Name' => "three phase Inv (f)", 'Wert' => 113, "113: three phase Inverter (float)"),
+								array('Name' => "single phase Meter (i)", 'Wert' => 201, "201: single phase Meter (int)"),
+								array('Name' => "split phase Meter (i)", 'Wert' => 202, "202: split phase (int)"),
+								array('Name' => "three phase Meter (i)", 'Wert' => 203, "203: three phase (int)"),
+								array('Name' => "single phase Meter (f)", 'Wert' => 211, "211: single phase Meter (float)"),
+								array('Name' => "split phase Meter (f)", 'Wert' => 212, "212: split phase Meter (float)"),
+								array('Name' => "three phase Meter (f)", 'Wert' => 213, "213: three phase Meter (float)"),
+								array('Name' => "string combiner (i)", 'Wert' => 403, "403: String Combiner (int)"),
+							)
+						);
+			 */
+			/*
+						$this->createVarProfile("SunSpec.StateCodes.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+								array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
+								array('Name' => "OFF", 'Wert' => 1, "Wechselrichter ist aus"),
+								array('Name' => "SLEEPING", 'Wert' => 2, "Auto-Shutdown"),
+								array('Name' => "STARTING", 'Wert' => 3, "Wechselrichter startet"),
+								array('Name' => "MPPT", 'Wert' => 4, "Wechselrichter arbeitet normal", 'Farbe' => $this->getRgbColor("green")),
+								array('Name' => "THROTTLED", 'Wert' => 5, "Leistungsreduktion aktiv", 'Farbe' => $this->getRgbColor("orange")),
+								array('Name' => "SHUTTING_DOWN", 'Wert' => 6, "Wechselrichter schaltet ab"),
+								array('Name' => "FAULT", 'Wert' => 7, "Ein oder mehr Fehler existieren, siehe St *oder Evt * Register", 'Farbe' => $this->getRgbColor("red")),
+								array('Name' => "STANDBY", 'Wert' => 8, "Standby"),
+							)
+						);
+			 */
 
 			$deleteProfiles_array[] = MODUL_PREFIX.".StateCodes.Int";
-/*
-			$this->createVarProfile(MODUL_PREFIX.".StateCodes.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-					array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
-					array('Name' => "OFF", 'Wert' => 1, "Wechselrichter ist aus"),
-					array('Name' => "SLEEPING", 'Wert' => 2, "Auto-Shutdown"),
-					array('Name' => "STARTING", 'Wert' => 3, "Wechselrichter startet"),
-					array('Name' => "MPPT", 'Wert' => 4, "Wechselrichter arbeitet normal", 'Farbe' => $this->getRgbColor("green")),
-					array('Name' => "THROTTLED", 'Wert' => 5, "Leistungsreduktion aktiv", 'Farbe' => $this->getRgbColor("orange")),
-					array('Name' => "SHUTTING_DOWN", 'Wert' => 6, "Wechselrichter schaltet ab"),
-					array('Name' => "FAULT", 'Wert' => 7, "Ein oder mehr Fehler existieren, siehe St * oder Evt * Register", 'Farbe' => $this->getRgbColor("red")),
-					array('Name' => "STANDBY", 'Wert' => 8, "Standby"),
-					array('Name' => "NO_BUSINIT", 'Wert' => 9, "Keine SolarNet Kommunikation"),
-					array('Name' => "NO_COMM_INV", 'Wert' => 10, "Keine Kommunikation mit Wechselrichter möglich"),
-					array('Name' => "SN_OVERCURRENT", 'Wert' => 11, "Überstrom an SolarNet Stecker erkannt"),
-					array('Name' => "BOOTLOAD", 'Wert' => 12, "Wechselrichter wird gerade upgedatet"),
-					array('Name' => "AFCI", 'Wert' => 13, "AFCI Event (Arc-Erkennung)"),
-				)
-			);
-*/
-			$this->createVarProfile(MODUL_PREFIX.".Emergency-Power.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+			/*
+						$this->createVarProfile(MODUL_PREFIX.".StateCodes.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
+								array('Name' => "N/A", 'Wert' => 0, "Unbekannter Status"),
+								array('Name' => "OFF", 'Wert' => 1, "Wechselrichter ist aus"),
+								array('Name' => "SLEEPING", 'Wert' => 2, "Auto-Shutdown"),
+								array('Name' => "STARTING", 'Wert' => 3, "Wechselrichter startet"),
+								array('Name' => "MPPT", 'Wert' => 4, "Wechselrichter arbeitet normal", 'Farbe' => $this->getRgbColor("green")),
+								array('Name' => "THROTTLED", 'Wert' => 5, "Leistungsreduktion aktiv", 'Farbe' => $this->getRgbColor("orange")),
+								array('Name' => "SHUTTING_DOWN", 'Wert' => 6, "Wechselrichter schaltet ab"),
+								array('Name' => "FAULT", 'Wert' => 7, "Ein oder mehr Fehler existieren, siehe St * oder Evt * Register", 'Farbe' => $this->getRgbColor("red")),
+								array('Name' => "STANDBY", 'Wert' => 8, "Standby"),
+								array('Name' => "NO_BUSINIT", 'Wert' => 9, "Keine SolarNet Kommunikation"),
+								array('Name' => "NO_COMM_INV", 'Wert' => 10, "Keine Kommunikation mit Wechselrichter möglich"),
+								array('Name' => "SN_OVERCURRENT", 'Wert' => 11, "Überstrom an SolarNet Stecker erkannt"),
+								array('Name' => "BOOTLOAD", 'Wert' => 12, "Wechselrichter wird gerade upgedatet"),
+								array('Name' => "AFCI", 'Wert' => 13, "AFCI Event (Arc-Erkennung)"),
+							)
+						);
+			 */
+			$this->createVarProfile(
+				MODUL_PREFIX.".Emergency-Power.Int",
+				VARIABLETYPE_INTEGER,
+				'',
+				0,
+				0,
+				0,
+				0,
+				0,
+				array(
 					array('Name' => "nicht unterstützt", 'Wert' => 0, "Notstrom wird nicht von Ihrem Gerät unterstützt", 'Farbe' => 16753920),
 					array('Name' => "aktiv", 'Wert' => 1, "Notstrom aktiv (Ausfall des Stromnetzes)", 'Farbe' => $this->getRgbColor("green")),
 					array('Name' => "nicht aktiv", 'Wert' => 2, "Notstrom nicht aktiv", 'Farbe' => -1),
@@ -1918,28 +1922,46 @@ $this->EnableAction("Status");
 				)
 			);
 
-			$this->createVarProfile(MODUL_PREFIX.".Powermeter.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-				array('Name' => "N/A", 'Wert' => 0),
-				array('Name' => "Wurzelleistungsmesser", 'Wert' => 1, "Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt."),
-				array('Name' => "Externe Produktion", 'Wert' => 2),
-				array('Name' => "Zweirichtungszähler", 'Wert' => 3),
-				array('Name' => "Externer Verbrauch", 'Wert' => 4),
-				array('Name' => "Farm", 'Wert' => 5),
-				array('Name' => "Wird nicht verwendet", 'Wert' => 6),
-				array('Name' => "Wallbox", 'Wert' => 7),
-				array('Name' => "Externer Leistungsmesser Farm", 'Wert' => 8),
-				array('Name' => "Datenanzeige", 'Wert' => 9, "Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals."),
-				array('Name' => "Regelungsbypass", 'Wert' => 10, "Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen."),
+			$this->createVarProfile(
+				MODUL_PREFIX.".Powermeter.Int",
+				VARIABLETYPE_INTEGER,
+				'',
+				0,
+				0,
+				0,
+				0,
+				0,
+				array(
+					array('Name' => "N/A", 'Wert' => 0),
+					array('Name' => "Wurzelleistungsmesser", 'Wert' => 1, "Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt."),
+					array('Name' => "Externe Produktion", 'Wert' => 2),
+					array('Name' => "Zweirichtungszähler", 'Wert' => 3),
+					array('Name' => "Externer Verbrauch", 'Wert' => 4),
+					array('Name' => "Farm", 'Wert' => 5),
+					array('Name' => "Wird nicht verwendet", 'Wert' => 6),
+					array('Name' => "Wallbox", 'Wert' => 7),
+					array('Name' => "Externer Leistungsmesser Farm", 'Wert' => 8),
+					array('Name' => "Datenanzeige", 'Wert' => 9, "Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals."),
+					array('Name' => "Regelungsbypass", 'Wert' => 10, "Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen."),
 				)
 			);
 
-			$this->createVarProfile(MODUL_PREFIX.".SG-Ready-Status.Int", VARIABLETYPE_INTEGER, '', 0, 0, 0, 0, 0, array(
-				array('Name' => "N/A", 'Wert' => 0),
-				array('Name' => "Sperrbetrieb", 'Wert' => 1, "Betriebszustand 1 (Sperrbetrieb):Dieser Betriebszustand ist abwärtskompatibel zur häufig zufesten Uhrzeiten geschalteten EVU-Sperre und umfasstmaximal 2 Stunden „harte“ Sperrzeit."),
-				array('Name' => "Normalbetrieb", 'Wert' => 2, "Betriebszustand 2 (Normalbetrieb):In dieser Schaltung läuft die Wärmepumpe imenergieeffizienten Normalbetrieb mit anteiligerWärmespeicher-Füllung für die maximal zweistündige EVU-Sperre."),
-				array('Name' => "PV-Überschussbetrieb", 'Wert' => 3, "Betriebszustand 3 (PV-Überschussbetrieb): In diesem Betriebszustand läuft die Wärmepumpe innerhalb des Reglers im verstärkten Betrieb für Raumheizung und Warmwasserbereitung. Es handelt sich dabei nicht um einen definitiven Anlaufbefehl, sondern um eine Einschaltempfehlung entsprechend der heutigen Anhebung."),
-				array('Name' => "Betrieb für Abregelung", 'Wert' => 4, "Betriebszustand 4 (Betrieb für Abregelung): Hierbei handelt es sich um einen definitiven Anlaufbefehl, insofern dieser im Rahmen der Regeleinstellungen möglich ist."),
-				array('Name' => "undefined", 'Wert' => 5),
+			$this->createVarProfile(
+				MODUL_PREFIX.".SG-Ready-Status.Int",
+				VARIABLETYPE_INTEGER,
+				'',
+				0,
+				0,
+				0,
+				0,
+				0,
+				array(
+					array('Name' => "N/A", 'Wert' => 0),
+					array('Name' => "Sperrbetrieb", 'Wert' => 1, "Betriebszustand 1 (Sperrbetrieb):Dieser Betriebszustand ist abwärtskompatibel zur häufig zufesten Uhrzeiten geschalteten EVU-Sperre und umfasstmaximal 2 Stunden „harte“ Sperrzeit."),
+					array('Name' => "Normalbetrieb", 'Wert' => 2, "Betriebszustand 2 (Normalbetrieb):In dieser Schaltung läuft die Wärmepumpe imenergieeffizienten Normalbetrieb mit anteiligerWärmespeicher-Füllung für die maximal zweistündige EVU-Sperre."),
+					array('Name' => "PV-Überschussbetrieb", 'Wert' => 3, "Betriebszustand 3 (PV-Überschussbetrieb): In diesem Betriebszustand läuft die Wärmepumpe innerhalb des Reglers im verstärkten Betrieb für Raumheizung und Warmwasserbereitung. Es handelt sich dabei nicht um einen definitiven Anlaufbefehl, sondern um eine Einschaltempfehlung entsprechend der heutigen Anhebung."),
+					array('Name' => "Betrieb für Abregelung", 'Wert' => 4, "Betriebszustand 4 (Betrieb für Abregelung): Hierbei handelt es sich um einen definitiven Anlaufbefehl, insofern dieser im Rahmen der Regeleinstellungen möglich ist."),
+					array('Name' => "undefined", 'Wert' => 5),
 				)
 			);
 
@@ -2002,9 +2024,9 @@ $this->EnableAction("Status");
 			$this->createVarProfile(MODUL_PREFIX.".Watt.Int", VARIABLETYPE_INTEGER, ' W');
 
 			// delete not used profiles
-			foreach($deleteProfiles_array AS $profileName)
+			foreach ($deleteProfiles_array as $profileName)
 			{
-				if(IPS_VariableProfileExists($profileName))
+				if (IPS_VariableProfileExists($profileName))
 				{
 					IPS_DeleteVariableProfile($profileName);
 				}
@@ -2049,10 +2071,10 @@ $this->EnableAction("Status");
 			return $returnValue;
 		}
 
-		/********************************
+		/*
 			public functions
-		  *******************************/
-		  
+		 */
+
 		public function GetAutarky(): int
 		{
 			return $this->GetVariableValue(40082, "Autarkie");
@@ -2091,7 +2113,7 @@ $this->EnableAction("Status");
 
 		public function GetBatteryPowerIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetBatteryPowerIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetBatteryPowerIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetBatteryChargeEnergyWh(int $startTime, int $endTime): int
@@ -2136,7 +2158,7 @@ $this->EnableAction("Status");
 
 			$batteryRange = ($this->GetBatterySoc() / 100) * $batterySize * ($batteryDischargeMax / 100);
 
-			if($readEmergencyPower)
+			if ($readEmergencyPower)
 			{
 				$batteryRange = $batteryRange - $emergencyPowerBuffer;
 			}
@@ -2164,7 +2186,7 @@ $this->EnableAction("Status");
 			{
 				$returnValue = 0;
 			}
-			else if (0 < $timeIntervalInMinutes)
+			elseif (0 < $timeIntervalInMinutes)
 			{
 				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
 			}
@@ -2181,9 +2203,9 @@ $this->EnableAction("Status");
 			return $this->GetExtPowerIntervalKw(0);
 		}
 
-		public function GetExtPowerIntervalKw($timeIntervalInMinutes): float
+		public function GetExtPowerIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetExtPowerIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetExtPowerIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetExtEnergyWh(int $startTime, int $endTime): int
@@ -2218,7 +2240,7 @@ $this->EnableAction("Status");
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
-			return ($readExtLeistung ? $this->GetExtPowerIntervalW($timeIntervalInMinutes) + $this->GetPvPowerIntervalW($timeIntervalInMinutes) : $this->GetPvPowerIntervalW($timeIntervalInMinutes));
+			return $readExtLeistung ? $this->GetExtPowerIntervalW($timeIntervalInMinutes) + $this->GetPvPowerIntervalW($timeIntervalInMinutes) : $this->GetPvPowerIntervalW($timeIntervalInMinutes);
 		}
 
 		public function GetProductionPowerKw(): float
@@ -2228,7 +2250,7 @@ $this->EnableAction("Status");
 
 		public function GetProductionPowerIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetProductionPowerIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetProductionPowerIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetProductionEnergyWh(int $startTime, int $endTime): int
@@ -2280,7 +2302,7 @@ $this->EnableAction("Status");
 
 		public function GetGridPowerIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetGridPowerIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetGridPowerIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetGridConsumptionEnergyWh(int $startTime, int $endTime): int
@@ -2339,7 +2361,7 @@ $this->EnableAction("Status");
 
 		public function GetPvPowerIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetPvPowerIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetPvPowerIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetPvEnergyWh(int $startTime, int $endTime): int
@@ -2384,7 +2406,7 @@ $this->EnableAction("Status");
 
 		public function GetHomePowerIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetHomePowerIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetHomePowerIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetHomeEnergyWh(int $startTime, int $endTime): int
@@ -2416,14 +2438,14 @@ $this->EnableAction("Status");
 			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
-			
+
 			$varIdent = 40078;
 
-			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
 				$returnValue = 0;
 			}
-			else if (0 < $timeIntervalInMinutes)
+			elseif (0 < $timeIntervalInMinutes)
 			{
 				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
 			}
@@ -2442,7 +2464,7 @@ $this->EnableAction("Status");
 
 		public function GetWallboxPowerIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetWallboxPowerIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetWallboxPowerIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetWallboxEnergyWh(int $startTime, int $endTime): int
@@ -2455,10 +2477,10 @@ $this->EnableAction("Status");
 			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
-			
+
 			$varIdent = 40078;
 
-			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
 				$returnValue = 0;
 			}
@@ -2493,11 +2515,11 @@ $this->EnableAction("Status");
 
 			$varIdent = 40080;
 
-			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
 				$returnValue = 0;
 			}
-			else if (0 < $timeIntervalInMinutes)
+			elseif (0 < $timeIntervalInMinutes)
 			{
 				$returnValue = $this->GetLoggedValuesInterval($this->GetVariableId($varIdent, "Value"), $timeIntervalInMinutes);
 			}
@@ -2516,7 +2538,7 @@ $this->EnableAction("Status");
 
 		public function GetWallboxPowerSolarIntervalKw(int $timeIntervalInMinutes): float
 		{
-			return ($this->GetWallboxPowerSolarIntervalW($timeIntervalInMinutes) / 1000);
+			return $this->GetWallboxPowerSolarIntervalW($timeIntervalInMinutes) / 1000;
 		}
 
 		public function GetWallboxSolarEnergyWh(int $startTime, int $endTime): int
@@ -2529,10 +2551,10 @@ $this->EnableAction("Status");
 			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
-			
+
 			$varIdent = 40080;
 
-			if(false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
 				$returnValue = 0;
 			}
@@ -2549,13 +2571,13 @@ $this->EnableAction("Status");
 			return $this->GetWallboxSolarEnergyWh($startTime, $endTime) / 1000;
 		}
 
-/*
-EmergencyPowerState
-			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
-			$emergencyPowerBuffer = $this->ReadPropertyInteger('emergencyPowerBuffer');
-ErrorState
-ErrorMessage
-*/
+		/*
+		EmergencyPowerState
+					$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
+					$emergencyPowerBuffer = $this->ReadPropertyInteger('emergencyPowerBuffer');
+		ErrorState
+		ErrorMessage
+		 */
 
 		public function IsDerating(): bool
 		{
@@ -2563,8 +2585,8 @@ ErrorMessage
 			$bitName = "Abregelungs-Status";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2583,8 +2605,8 @@ ErrorMessage
 			$bitName = "Batterie laden";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2603,8 +2625,8 @@ ErrorMessage
 			$bitName = "Batterie entladen";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2624,8 +2646,8 @@ ErrorMessage
 			$bitName = "Wallbox";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2644,8 +2666,8 @@ ErrorMessage
 			$bitName = "Solarbetrieb";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2664,8 +2686,8 @@ ErrorMessage
 			$bitName = "Laden sperren";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2684,8 +2706,8 @@ ErrorMessage
 			$bitName = "Ladevorgang";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2704,8 +2726,8 @@ ErrorMessage
 			$bitName = "Typ-2-Stecker verriegelt";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2724,8 +2746,8 @@ ErrorMessage
 			$bitName = "Typ-2-Stecker gesteckt";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2744,8 +2766,8 @@ ErrorMessage
 			$bitName = "Schukosteckdose";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2764,8 +2786,8 @@ ErrorMessage
 			$bitName = "Schukostecker gesteckt";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2784,8 +2806,8 @@ ErrorMessage
 			$bitName = "Schukostecker verriegelt";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2804,8 +2826,8 @@ ErrorMessage
 			$bitName = "16A 1 Phase";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2824,8 +2846,8 @@ ErrorMessage
 			$bitName = "16A 3 Phasen";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2844,8 +2866,8 @@ ErrorMessage
 			$bitName = "32A 3 Phasen";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2864,8 +2886,8 @@ ErrorMessage
 			$bitName = "1 Phase";
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-			
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitName), $instanceId);
 				$bitValue = GetValue($bitId);
@@ -2882,12 +2904,12 @@ ErrorMessage
 		public function SetWallboxSolarmode(int $wallboxId, int $setValue): bool
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
-			$bitSet   = 0b0000000000000010;
+			$bitSet = 0b0000000000000010;
 			$bitUnset = 0b1111111111111101;
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-	
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				$varValue = GetValue($varId);
@@ -2927,12 +2949,12 @@ ErrorMessage
 			// Ansonsten bleibe ich dabei, dass doch E3DC bitte den Fehler beheben sollte...
 
 			$modbusAddress = 40088 + (int)$wallboxId;
-			$bitSet   = 0b0000000000000100;
+			$bitSet = 0b0000000000000100;
 			$bitUnset = 0b1111111111111011;
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-	
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				$varValue = GetValue($varId);
@@ -2972,12 +2994,12 @@ ErrorMessage
 			// Ansonsten bleibe ich dabei, dass doch E3DC bitte den Fehler beheben sollte...
 
 			$modbusAddress = 40088 + (int)$wallboxId;
-			$bitSet   = 0b0000000001000000;
+			$bitSet = 0b0000000001000000;
 			$bitUnset = 0b1111111110111111;
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-	
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				$varValue = GetValue($varId);
@@ -3006,12 +3028,12 @@ ErrorMessage
 		public function SetWallbox1Phase(int $wallboxId, int $setValue): bool
 		{
 			$modbusAddress = 40088 + (int)$wallboxId;
-			$bitSet   = 0b0001000000000000;
+			$bitSet = 0b0001000000000000;
 			$bitUnset = 0b1110111111111111;
 
 			$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
-	
-			if(false !== $instanceId)
+
+			if (false !== $instanceId)
 			{
 				$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
 				$varValue = GetValue($varId);
