@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 include_once __DIR__.'/stubs/Validator.php';
-class FileValidationTest extends TestCaseSymconValidation
+class ValidationTest extends TestCaseSymconValidation
 {
 	public function testValidateCoreStubs(): void
 	{
