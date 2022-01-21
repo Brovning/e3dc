@@ -2103,7 +2103,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return round($returnValue);
+			return (int)round($returnValue);
 		}
 
 		public function GetBatteryPowerKw(): float
@@ -2122,7 +2122,7 @@ Bit 13  Nicht belegt";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
 
-			return round($returnValue);
+			return (int)round($returnValue);
 		}
 
 		public function GetBatteryChargeEnergyKwh(int $startTime, int $endTime): float
@@ -2136,7 +2136,7 @@ Bit 13  Nicht belegt";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
 
-			return abs(round($returnValue));
+			return (int)abs(round($returnValue));
 		}
 
 		public function GetBatteryDischargeEnergyKwh(int $startTime, int $endTime): float
@@ -2195,7 +2195,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return abs(round($returnValue));
+			return (int)abs(round($returnValue));
 		}
 
 		public function GetExtPowerKw(): float
@@ -2223,7 +2223,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 			}
 
-			return abs(round($returnValue));
+			return (int)abs(round($returnValue));
 		}
 
 		public function GetExtEnergyKwh(int $startTime, int $endTime): float
@@ -2266,7 +2266,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->GetPvEnergyWh($startTime, $endTime);
 			}
 
-			return round($returnValue);
+			return (int)round($returnValue);
 		}
 
 		public function GetProductionEnergyKwh(int $startTime, int $endTime): float
@@ -2292,7 +2292,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return round($returnValue);
+			return (int)round($returnValue);
 		}
 
 		public function GetGridPowerKw(): float
@@ -2311,7 +2311,7 @@ Bit 13  Nicht belegt";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
 
-			return round($returnValue);
+			return (int)round($returnValue);
 		}
 
 		public function GetGridConsumptionEnergyKwh(int $startTime, int $endTime): float
@@ -2325,7 +2325,7 @@ Bit 13  Nicht belegt";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
 
-			return abs(round($returnValue));
+			return (int)abs(round($returnValue));
 		}
 
 		public function GetGridFeedEnergyKwh(int $startTime, int $endTime): float
@@ -2351,7 +2351,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->GetVariableValue($varIdent, "Value");
 			}
 
-			return abs(round($returnValue));
+			return (int)abs(round($returnValue));
 		}
 
 		public function GetPvPowerKw(): float
@@ -2370,7 +2370,7 @@ Bit 13  Nicht belegt";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 
-			return abs(round($returnValue));
+			return (int)abs(round($returnValue));
 		}
 
 		public function GetPvEnergyKwh(int $startTime, int $endTime): float
@@ -2415,7 +2415,7 @@ Bit 13  Nicht belegt";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 
-			return round($returnValue);
+			return (int)round($returnValue);
 		}
 
 		public function GetHomeEnergyKwh(int $startTime, int $endTime): float
@@ -2489,7 +2489,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 			}
 
-			return round($returnValue);
+			return (int)round($returnValue);
 		}
 
 		public function GetWallboxEnergyKwh(int $startTime, int $endTime): float
@@ -2563,7 +2563,7 @@ Bit 13  Nicht belegt";
 				$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 			}
 
-			return abs(round($returnValue));
+			return (int)abs(round($returnValue));
 		}
 
 		public function GetWallboxSolarEnergyKwh(int $startTime, int $endTime): float
