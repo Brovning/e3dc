@@ -370,6 +370,450 @@ if(false !== \$varId)
 			parent::Destroy();
 		}
 
+		public function GetConfigurationForm()
+		{
+			$formElements = array();
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Im E3DC Stromspeicher muss Modbus TCP aktiviert sein!",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version \n- unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode'\n- ODER: unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus\naktiviert werden.",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Open",
+				'name' => "active",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "IP",
+				'name' => "hostIp",
+				'validate' => "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Port (Standard: 502)",
+				'name' => "hostPort",
+				'digits' => 0,
+				'minimum' => 1,
+				'maximum' => 65535,
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Geräte ID (Standard: 1)",
+				'name' => "hostmodbusDevice",
+				'digits' => 0,
+				'minimum' => 1,
+				'maximum' => 255,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "In welchem Zeitintervall sollen die Modbus-Werte abgefragt werden (Empfehlung: 10 Sekunden)?",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Abfrage-Intervall (in Sekunden)",
+				'name' => "pollCycle",
+				'minimum' => 1,
+				'maximum' => 3600,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird.\nABER: Je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei aktiviertem Logging!",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Welche Batteriekapazität in kWh ist installiert?",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Batteriekapazität (bspw. 6.5, 10, 13, 15, 19.5,...)",
+				'name' => "batterySize",
+				'digits' => 1,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Ist ein zusätzlicher Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) angeschlossen?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "externer Einspeiser",
+				'name' => "readExtLeistung",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Wie viele bzw. welche Wallbox IDs sind am E3DC in Verwendung?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 0",
+				'name' => "readWallbox0",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 0 (Standard: 0)",
+				'name' => "wallbox0name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 1",
+				'name' => "readWallbox1",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 1 (Standard: 1)",
+				'name' => "wallbox1name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 2",
+				'name' => "readWallbox2",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 2 (Standard: 2)",
+				'name' => "wallbox2name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 3",
+				'name' => "readWallbox3",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 3 (Standard: 3)",
+				'name' => "wallbox3name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 4",
+				'name' => "readWallbox4",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 4 (Standard: 4)",
+				'name' => "wallbox4name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 5",
+				'name' => "readWallbox5",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 5 (Standard: 5)",
+				'name' => "wallbox5name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 6",
+				'name' => "readWallbox6",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 6 (Standard: 6)",
+				'name' => "wallbox6name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Wallbox 7",
+				'name' => "readWallbox7",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Wallbox 7 (Standard: 7)",
+				'name' => "wallbox7name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Wie viele bzw. welche Leistungsmesser/Powermeter IDs sind am E3DC in Verwendung?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 0",
+				'name' => "readPowermeter0",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 0 (Standard: 0)",
+				'name' => "powermeter0name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 1",
+				'name' => "readPowermeter1",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 1 (Standard: 1)",
+				'name' => "powermeter1name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 2",
+				'name' => "readPowermeter2",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 2 (Standard: 2)",
+				'name' => "powermeter2name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 3",
+				'name' => "readPowermeter3",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 3 (Standard: 3)",
+				'name' => "powermeter3name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 4",
+				'name' => "readPowermeter4",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 4 (Standard: 4)",
+				'name' => "powermeter4name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 5",
+				'name' => "readPowermeter5",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 5 (Standard: 5)",
+				'name' => "powermeter5name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 6",
+				'name' => "readPowermeter6",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 6 (Standard: 6)",
+				'name' => "powermeter6name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsmesser 7",
+				'name' => "readPowermeter7",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von Leistungsmesser 7 (Standard: 7)",
+				'name' => "powermeter7name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Ist im E3DC eine Notstromversorgung installiert?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Notstromversorgung",
+				'name' => "readEmergencyPower",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Wenn Notstromversorgung vorhanden, welche Notstrom-Reserve in kWh wurde im Speicher eingestellt (siehe Notstrom -> Einstellungen)?",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Notstrom-Reserve (in kWh)",
+				'name' => "emergencyPowerBuffer",
+				'digits' => 3,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Sollen V, A und W der DC-Strings ausgelesen werden? (verfügbar ab Release S10_2017_02)",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "DC String Informationen",
+				'name' => "readDcString",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von MPP-Tracker 1, entspricht String 1.1+1.2 (Standard: 1)",
+				'name' => "string1name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von MPP-Tracker 2, entspricht String 2.1+2.2 (Standard: 2)",
+				'name' => "string2name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "Name von MPP-Tracker 3, entspricht String 3.1+3.2 (Standard: 3)",
+				'name' => "string3name",
+				'validate' => "^[a-zA-Z0-9_-]+$",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Für welche Variablen soll das Logging aktiviert werden?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsvariablen in W",
+				'name' => "loggingPowerW",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsvariablen in kW",
+				'name' => "loggingPowerKw",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Batterie SOC (Ladezustand) in %",
+				'name' => "loggingBatterySoc",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Autarkie in %",
+				'name' => "loggingAutarky",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Eigenverbrauch in %",
+				'name' => "loggingSelfconsumption",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Sollen die Tageswerte der Wirkarbeit (in Wh/kWh) berechnet werden?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Tageswerte in Wh",
+				'name' => "calcWh",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Tageswerte in kWh",
+				'name' => "calcKwh",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Achtung: Hierbei handelt es sich lediglich um eine näherungsweise Berechnung anhand der geloggten Leistungswerte, da die exakten Werte des Leistungsmessers von E3DC nicht per Modbus zur Verfügung gestellt werden!",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			if (defined('DEVELOPMENT') && DEVELOPMENT)
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Sollen die Werte der Wirkarbeit (in Wh/kWh) gelogged werden (nur 1 Max-Wert pro Tag)?",
+				);
+			}
+			else
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Sollen die Werte der Wirkarbeit (in Wh/kWh) gelogged werden?",
+				);
+			}
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Logging von Wh/kWh",
+				'name' => "loggingWirkarbeit",
+			);
+			if (defined('DEVELOPMENT') && DEVELOPMENT)
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => " ",
+				);
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Soll die Menge der geloggeten Werte, die älter als ein Tag sind auf 1 Wert pro Minute reduziert werden (=geringerer Speicherbedarf des Archivs)?",
+				);
+				$formElements[] = array(
+					'type' => "CheckBox",
+					'caption' => "Logging auf 1 Wert pro Minute reduzieren",
+					'name' => "reduceLogsize",
+				);
+			}
+			$formActions = array();
+
+			$formStatus = array();
+			$formStatus[] = array(
+				'code' => 200,
+				'icon' => "error",
+				'caption' => "IP oder Port sind nicht erreichtbar",
+			);
+			$formStatus[] = array(
+				'code' => 201,
+				'icon' => "error",
+				'caption' => "Archiv nicht gefunden",
+			);
+			return json_encode(array('elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus));
+		}
+
 		public function ApplyChanges()
 		{
 			//Never delete this line!
