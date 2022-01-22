@@ -108,267 +108,19 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 
 			// *** Erstelle deaktivierte Timer ***
 			// Autarkie und Eigenverbrauch
-			$this->RegisterTimer("Update-Autarkie-Eigenverbrauch", 0, "\$instanceId = IPS_GetObjectIDByIdent(\"40082\", ".$this->InstanceID.");
-\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-\$varValue = GetValue(\$varId);
-\$Autarkie = (\$varValue >> 8 ) & 0xFF;
-\$Eigenverbrauch = (\$varValue & 0xFF);
-
-\$AutarkieId = IPS_GetObjectIDByIdent(\"Autarkie\", \$instanceId);
-\$EigenverbrauchId = IPS_GetObjectIDByIdent(\"Eigenverbrauch\", \$instanceId);
-
-if(GetValue(\$AutarkieId) != \$Autarkie)
-{
-	SetValue(\$AutarkieId, \$Autarkie);
-}
-
-if(GetValue(\$EigenverbrauchId) != \$Eigenverbrauch)
-{
-	SetValue(\$EigenverbrauchId, \$Eigenverbrauch);
-}");
-
-			// EMS-Status Bits
-			$this->RegisterTimer("Update-EMS-Status", 0, "\$instanceId = IPS_GetObjectIDByIdent(\"40085\", ".$this->InstanceID.");
-\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-\$varValue = GetValue(\$varId);
-
-\$bitArray = array(\"Batterie laden\", \"Batterie entladen\", \"Notstrommodus\", \"Wetterbasiertes Laden\", \"Abregelungs-Status\", \"Ladesperrzeit\", \"Entladesperrzeit\");
-
-for(\$i = 0; \$i < count(\$bitArray); \$i++)
-{
-	\$bitId = IPS_GetObjectIDByIdent(removeInvalidChars(\$bitArray[\$i]), \$instanceId);
-    \$bitValue = (\$varValue >> \$i ) & 0x1;
-
-	if(GetValue(\$bitId) != \$bitValue)
-	{
-		SetValue(\$bitId, \$bitValue);
-	}
-}
-
-function removeInvalidChars(\$input)
-{
-	return preg_replace( '/[^a-z0-9]/i', '', \$input);
-}");
-
-			// WallBox_X_CTRL Bits
-			$this->RegisterTimer("Update-WallBox_X_CTRL", 0, "\$modbusAddress_Array = array(40088, 40089, 40090, 40091, 40092, 40093, 40094, 40095);
-foreach(\$modbusAddress_Array AS \$modbusAddress)
-{
-	\$instanceId = @IPS_GetObjectIDByIdent(\$modbusAddress, ".$this->InstanceID.");
-	
-	if(false !== \$instanceId)
-	{
-		\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-		\$varValue = GetValue(\$varId);
-
-		\$bitArray = array(\"Wallbox\", \"Solarbetrieb\", \"Laden sperren\", \"Ladevorgang\", \"Typ-2-Stecker verriegelt\", \"Typ-2-Stecker gesteckt\", \"Schukosteckdose\", \"Schukostecker gesteckt\", \"Schukostecker verriegelt\", \"16A 1 Phase\", \"16A 3 Phasen\", \"32A 3 Phasen\", \"1 Phase\");
-
-		for(\$i = 0; \$i < count(\$bitArray); \$i++)
-		{
-			\$bitId = IPS_GetObjectIDByIdent(removeInvalidChars(\$bitArray[\$i]), \$instanceId);
-			\$bitValue = (\$varValue >> \$i ) & 0x1;
-
-			if(GetValue(\$bitId) != \$bitValue)
-			{
-				SetValue(\$bitId, \$bitValue);
-			}
-		}
-	}
-}
-
-function removeInvalidChars(\$input)
-{
-	return preg_replace( '/[^a-z0-9]/i', '', \$input);
-}");
-
-			// Berechnung der Leistungs-Werte in kW
-			$this->RegisterTimer("Update-ValuesKw", 0, "\$modbusAddress_Array = array(40068, 40070, 40072, 40074, 40078, 40080, 40076);
-foreach(\$modbusAddress_Array AS \$modbusAddress)
-{
-	\$instanceId = @IPS_GetObjectIDByIdent(\$modbusAddress, ".$this->InstanceID.");
-	
-	if(false !== \$instanceId)
-	{
-		\$kwId = @IPS_GetObjectIDByIdent(\"Value_kW\", \$instanceId);
-
-		if(false !== \$kwId)
-		{
-			\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-			\$varValue = GetValue(\$varId);
-
-			\$kwValue = \$varValue / 1000;
-
-			if(GetValue(\$kwId) != \$kwValue)
-			{
-				SetValue(\$kwId, \$kwValue);
-			}
-		}
-		else
-		{
-			// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
-			break;
-		}
-	}
-}
-
-\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionLeistung\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$varValueCalc = abs(GetValue(IPS_GetObjectIDByIdent(\"Value\", IPS_GetObjectIDByIdent(\"40068\", ".$this->InstanceID.")))) + abs(GetValue(IPS_GetObjectIDByIdent(\"Value\", IPS_GetObjectIDByIdent(\"40076\", ".$this->InstanceID."))));
-
-	if(GetValue(\$varId) != \$varValueCalc)
-	{
-		SetValue(\$varId, \$varValueCalc);
-
-		\$kwId = @IPS_GetObjectIDByIdent(\"GesamtproduktionLeistung_kW\", ".$this->InstanceID.");
-		if(false !== \$kwId)
-		{
-			\$kwValue = \$varValueCalc / 1000;
-			SetValue(\$kwId, \$kwValue);
-		}
-	}
-}
-");
-
-			// Berechnung der Energie-Werte in Wh/kWh
-			$this->RegisterTimer("Wh-Berechnung", 0, "//require_once '".__DIR__."/../libs/myFunctions.php';
-
-// calculate Wh values
-\$startzeit = microtime(true);
-\$engergyArray = array();
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryChargingWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryChargeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryDischargingWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryDischargeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"ExtWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetExtEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridConsumptionWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridConsumptionEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridFeedWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridFeedEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetProductionEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"PvWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetPvEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"HomeWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetHomeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxSolarWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxSolarEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-
-// calculate kWh values
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryChargingKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryChargeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryDischargingKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryDischargeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"ExtKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetExtEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridConsumptionKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridConsumptionEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridFeedKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridFeedEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetProductionEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"PvKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetPvEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"HomeKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetHomeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxSolarKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxSolarEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-");
+			$this->RegisterTimer("cyclicDataUpdate", 0, MODUL_PREFIX."_CyclicDataUpdate(".$this->InstanceID.");");
+			$this->RegisterTimer("cyclicDataUpdateSlow", 0, MODUL_PREFIX."_CyclicDataUpdateSlow(".$this->InstanceID.");");
 
 if(defined('DEVELOPMENT') && DEVELOPMENT)
 {
 	// Bereinigung der Historie-Werte von den W/kW Werten (optional auf Wunsch)
 	$this->RegisterTimer("HistoryCleanUp", 0, "// cleanup der Wh/kWh Logwerte auf 1 Wert je Tag
+	\$startzeit = microtime(true);
 	foreach(\$engergyArray AS \$energyId)
 	{
 		if(10 > round((microtime(true) - \$startzeit) / 1000 / 1000))
 		{
-	//		RecordReducing(\$energyId, mktime(0,0,0, date(\"m\"), date(\"j\")-365, date(\"Y\")), mktime(23,59,59, date(\"m\"), date(\"j\")-1, date(\"Y\")), \"j\");
+	//		RecordReducing(\$energyId, mktime(0, 0, 0, (int)date(\"n\"), (int)date(\"j\")-365, (int)date(\"Y\")), mktime(23,59,59, (int)date(\"m\"), (int)date(\"j\")-1, (int)date(\"Y\")), \"j\");
 		}
 		else
 		{
@@ -400,8 +152,8 @@ if(defined('DEVELOPMENT') && DEVELOPMENT)
 		for(\$i=0; \$i<\$i_max; \$i++)
 		{
 			// Datensätze für einen Tag aus AC holen
-			\$ts = mktime(0,0,0,date(\"m\", \$p_ts),date(\"d\", \$p_ts) + \$i,date(\"Y\", \$p_ts));
-			\$te = mktime(23,59,59,date(\"m\", \$p_ts),date(\"d\", \$p_ts) + \$i,date(\"Y\", \$p_ts));
+			\$ts = mktime(0,0,0,(int)date(\"n\", \$p_ts),(int)date(\"j\", \$p_ts) + \$i,(int)date(\"Y\", \$p_ts));
+			\$te = mktime(23,59,59,(int)date(\"n\", \$p_ts),(int)date(\"j\", \$p_ts) + \$i,(int)date(\"Y\", \$p_ts));
 			\$Data = AC_GetLoggedValues(\$ah_ID,\$ID,\$ts,\$te,5000);
 	
 			foreach(\$Data as \$key=>\$v)
@@ -985,28 +737,11 @@ if(defined('DEVELOPMENT') && DEVELOPMENT)
 				// --> do nothing
 				// Verursacht scheinbar an dieser Stelle Probleme. Manchmal werden die Timer nicht mehr ausgeführt, daher explizit aktivieren...
 
-				if ($loggingPowerKw || $readExtLeistung)
-				{
-					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
-					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
-				}
-				else
-				{
-					// Deaktiviert einen Timer
-					$this->SetTimerInterval("Update-ValuesKw", 0);
-				}
+				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
+				$this->SetTimerInterval("cyclicDataUpdate", 5 * 1000);
 
 				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
-
-				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-EMS-Status", 5000);
-
-				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
-				if ($calcWh || $calcKwh)
-				{
-					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
-				}
+				$this->SetTimerInterval("cyclicDataUpdateSlow", 60 * 1000);
 
 				if(defined('DEVELOPMENT') && DEVELOPMENT)
 				{
@@ -1015,17 +750,6 @@ if(defined('DEVELOPMENT') && DEVELOPMENT)
 					{
 						$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
 					}
-				}
-
-				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
-				{
-					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
-				}
-				else
-				{
-					// deaktiviert einen Timer
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
 				}
 			}
 			// IP-Adresse nicht konfiguriert
@@ -1097,17 +821,6 @@ if(defined('DEVELOPMENT') && DEVELOPMENT)
 					}
 				}
 
-				if ($loggingPowerKw || $readExtLeistung)
-				{
-					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
-					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
-				}
-				else
-				{
-					// Deaktiviert einen Timer
-					$this->SetTimerInterval("Update-ValuesKw", 0);
-				}
-
 				$inverterModelRegister_array = array(
 					array(40082, 1, 3, "Autarkie-Eigenverbrauch", "Uint8+Uint8", "", "Autarkie und Eigenverbrauch in Prozent"),
 				);
@@ -1174,9 +887,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					AC_SetLoggingStatus($archiveId, $varId, $loggingSelfconsumption);
 				}
 
-				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
-
+				// Erstellt Timer mit einem Intervall von 5 und 60 Sekunden.
+				$this->SetTimerInterval("cyclicDataUpdate", 5 * 1000);
+				$this->SetTimerInterval("cyclicDataUpdateSlow", 60 * 1000);
 
 				// Bit 0 - 6 für "EMS-Status" erstellen
 				$instanceId = IPS_GetObjectIDByIdent("40085", $categoryId);
@@ -1197,10 +910,6 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				{
 					$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
 				}
-
-				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-EMS-Status", 5000);
-
 
 
 				$inverterModelRegister_array = array(
@@ -1355,12 +1064,6 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 
-				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
-				if ($calcWh || $calcKwh)
-				{
-					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
-				}
-			
 if(defined('DEVELOPMENT') && DEVELOPMENT)
 {
 				// Erstellt einen Timer mit einem Intervall von 6 Stunden
@@ -1395,9 +1098,6 @@ if(defined('DEVELOPMENT') && DEVELOPMENT)
 						}
 					}
 
-					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
-
 					// Variablen fuer kW-Logging erstellen, sofern noetig
 					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
@@ -1413,9 +1113,6 @@ if(defined('DEVELOPMENT') && DEVELOPMENT)
 				}
 				else
 				{
-					// deaktiviert einen Timer
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
-
 					$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
 				}
 
@@ -1570,17 +1267,6 @@ Bit 13  Nicht belegt";
 				/* ********** Spezifische Abfragen der Leistungsmesser **************************************
 					Hinweis: Die im Folgenden gelisteten Leistungsmesser (Register 40105 bis 40132) werden im Kapitel „Typen von Leistungsmessern“
 				 ************************************************************************************************** */
-				if ($readPowermeter0 || $readPowermeter1 || $readPowermeter2 || $readPowermeter3 || $readPowermeter4 || $readPowermeter5 || $readPowermeter6 || $readPowermeter7)
-				{
-					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-//					$this->SetTimerInterval("Update-Powermeter", 5000);
-				}
-				else
-				{
-					// deaktiviert einen Timer
-//					$this->SetTimerInterval("Update-Powermeter", 0);
-				}
-
 				$inverterModelRegister_array = array();
 				$inverterModelRegisterDel_array = array();
 
@@ -1854,11 +1540,8 @@ Bit 13  Nicht belegt";
 
 					// Timer deaktivieren
 					/*
-										$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
-										$this->SetTimerInterval("Update-EMS-Status", 0);
-										$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
-										$this->SetTimerInterval("Update-ValuesKw", 0);
-										$this->SetTimerInterval("Wh-Berechnung", 0);
+										$this->SetTimerInterval("cyclicDataUpdate", 0);
+										$this->SetTimerInterval("cyclicDataUpdateSlow", 0);
 										$this->SetTimerInterval("HistoryCleanUp", 0);
 					 */
 					// inaktiv
@@ -2626,6 +2309,349 @@ Bit 13  Nicht belegt";
 		/*
 			public functions
 		 */
+
+		public function CyclicDataUpdate()
+		{
+			// Update Autarkie-Eigenverbrauch
+			$instanceId = IPS_GetObjectIDByIdent("40082", $this->InstanceID);
+			$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+			$varValue = GetValue($varId);
+			$Autarkie = ($varValue >> 8 ) & 0xFF;
+			$Eigenverbrauch = ($varValue & 0xFF);
+			
+			$AutarkieId = IPS_GetObjectIDByIdent("Autarkie", $instanceId);
+			$EigenverbrauchId = IPS_GetObjectIDByIdent("Eigenverbrauch", $instanceId);
+			
+			if(GetValue($AutarkieId) != $Autarkie)
+			{
+				SetValue($AutarkieId, $Autarkie);
+			}
+			
+			if(GetValue($EigenverbrauchId) != $Eigenverbrauch)
+			{
+				SetValue($EigenverbrauchId, $Eigenverbrauch);
+			}			
+
+			// Update EMS-Status
+			$instanceId = IPS_GetObjectIDByIdent("40085", $this->InstanceID);
+			$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+			$varValue = GetValue($varId);
+			
+			$bitArray = array("Batterie laden", "Batterie entladen", "Notstrommodus", "Wetterbasiertes Laden", "Abregelungs-Status", "Ladesperrzeit", "Entladesperrzeit");
+			
+			for($i = 0; $i < count($bitArray); $i++)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitArray[$i]), $instanceId);
+				$bitValue = ($varValue >> $i ) & 0x1;
+			
+				if(GetValue($bitId) != $bitValue)
+				{
+					SetValue($bitId, $bitValue);
+				}
+			}
+
+			// Update WallBox_X_CTRL
+			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
+			{
+				$modbusAddress_Array = array(40088, 40089, 40090, 40091, 40092, 40093, 40094, 40095);
+				foreach($modbusAddress_Array AS $modbusAddress)
+				{
+					$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+					
+					if(false !== $instanceId)
+					{
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						$varValue = GetValue($varId);
+
+						$bitArray = array("Wallbox", "Solarbetrieb", "Laden sperren", "Ladevorgang", "Typ-2-Stecker verriegelt", "Typ-2-Stecker gesteckt", "Schukosteckdose", "Schukostecker gesteckt", "Schukostecker verriegelt", "16A 1 Phase", "16A 3 Phasen", "32A 3 Phasen", "1 Phase");
+
+						for($i = 0; $i < count($bitArray); $i++)
+						{
+							$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitArray[$i]), $instanceId);
+							$bitValue = ($varValue >> $i ) & 0x1;
+
+							if(GetValue($bitId) != $bitValue)
+							{
+								SetValue($bitId, $bitValue);
+							}
+						}
+					}
+				}
+			}
+
+			// Update ValuesKw
+			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
+			$loggingPowerKw = $this->ReadPropertyBoolean("loggingPowerKw");
+			if ($loggingPowerKw || $readExtLeistung)
+			{
+				$modbusAddress_Array = array(40068, 40070, 40072, 40074);
+
+				if ($readExtLeistung)
+				{
+					$modbusAddress_Array[] = 40076;
+				}
+
+				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
+				{
+					$modbusAddress_Array[] = 40078;
+					$modbusAddress_Array[] = 40080;
+				}
+
+				foreach($modbusAddress_Array AS $modbusAddress)
+				{
+					$instanceId = IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID); // @
+					
+					if(false !== $instanceId)
+					{
+						$kwId = IPS_GetObjectIDByIdent("Value_kW", $instanceId); // @
+				
+						if(false !== $kwId)
+						{
+							$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+							$varValue = GetValue($varId);
+				
+							$kwValue = $varValue / 1000;
+				
+							if(GetValue($kwId) != $kwValue)
+							{
+								SetValue($kwId, $kwValue);
+							}
+						}
+						else
+						{
+							// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
+							break;
+						}
+					}
+				}
+				
+				$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung", $this->InstanceID); // @
+				if(false !== $varId)
+				{
+					if ($readExtLeistung)
+					{
+						$varValueCalc = abs(GetValue(IPS_GetObjectIDByIdent("Value", IPS_GetObjectIDByIdent("40068", $this->InstanceID)))) + abs(GetValue(IPS_GetObjectIDByIdent("Value", IPS_GetObjectIDByIdent("40076", $this->InstanceID))));
+					}
+					else
+					{
+						$varValueCalc = abs(GetValue(IPS_GetObjectIDByIdent("Value", IPS_GetObjectIDByIdent("40068", $this->InstanceID))));
+					}
+			
+					if(GetValue($varId) != $varValueCalc)
+					{
+						SetValue($varId, $varValueCalc);
+				
+						$kwId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung_kW", $this->InstanceID); // @
+						if(false !== $kwId)
+						{
+							$kwValue = $varValueCalc / 1000;
+							SetValue($kwId, $kwValue);
+						}
+					}
+				}
+			}
+		}
+
+		public function CyclicDataUpdateSlow()
+		{
+			// Wh-Berechnung
+			$calcWh = $this->ReadPropertyBoolean("calcWh");
+			$calcKwh = $this->ReadPropertyBoolean("calcKwh");
+			if ($calcWh || $calcKwh)
+			{
+				// calculate Wh values
+				$varId = @IPS_GetObjectIDByIdent("BatteryChargingWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryChargeEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("BatteryDischargingWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryDischargeEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("ExtWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetExtEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridConsumptionWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetGridConsumptionEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridFeedWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetGridFeedEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GesamtproduktionWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetProductionEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("PvWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetPvEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("HomeWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetHomeEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxSolarWh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxSolarEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				
+				// calculate kWh values
+				$varId = @IPS_GetObjectIDByIdent("BatteryChargingKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryChargeEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("BatteryDischargingKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryDischargeEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("ExtKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetExtEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridConsumptionKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetGridConsumptionEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridFeedKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetGridFeedEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GesamtproduktionKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetProductionEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("PvKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetPvEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("HomeKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetHomeEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxSolarKwh", $this->InstanceID);
+				if(false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxSolarEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if(GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+			}
+		}
 
 		public function GetAutarky(): int
 		{
