@@ -321,92 +321,164 @@ if (!defined('IMR_START_REGISTER'))
 				'label' => "Wie viele bzw. welche Wallbox IDs sind am E3DC in Verwendung?",
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 0",
-				'name' => "readWallbox0",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 0",
+						'name' => "readWallbox0",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 0 (Standard: 0)",
+						'name' => "wallbox0name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 0 (Standard: 0)",
-				'name' => "wallbox0name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 1",
+						'name' => "readWallbox1",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 1 (Standard: 1)",
+						'name' => "wallbox1name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 1",
-				'name' => "readWallbox1",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 2",
+						'name' => "readWallbox2",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 2 (Standard: 2)",
+						'name' => "wallbox2name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 1 (Standard: 1)",
-				'name' => "wallbox1name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 3",
+						'name' => "readWallbox3",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 3 (Standard: 3)",
+						'name' => "wallbox3name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 2",
-				'name' => "readWallbox2",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 4",
+						'name' => "readWallbox4",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 4 (Standard: 4)",
+						'name' => "wallbox4name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 2 (Standard: 2)",
-				'name' => "wallbox2name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 5",
+						'name' => "readWallbox5",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 5 (Standard: 5)",
+						'name' => "wallbox5name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 3",
-				'name' => "readWallbox3",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 6",
+						'name' => "readWallbox6",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 6 (Standard: 6)",
+						'name' => "wallbox6name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 3 (Standard: 3)",
-				'name' => "wallbox3name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 4",
-				'name' => "readWallbox4",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 4 (Standard: 4)",
-				'name' => "wallbox4name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 5",
-				'name' => "readWallbox5",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 5 (Standard: 5)",
-				'name' => "wallbox5name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 6",
-				'name' => "readWallbox6",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 6 (Standard: 6)",
-				'name' => "wallbox6name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Wallbox 7",
-				'name' => "readWallbox7",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Wallbox 7 (Standard: 7)",
-				'name' => "wallbox7name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Wallbox 7",
+						'name' => "readWallbox7",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Wallbox 7 (Standard: 7)",
+						'name' => "wallbox7name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
 				'type' => "Label",
@@ -417,92 +489,164 @@ if (!defined('IMR_START_REGISTER'))
 				'label' => "Wie viele bzw. welche Leistungsmesser/Powermeter IDs sind am E3DC in Verwendung?",
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 0",
-				'name' => "readPowermeter0",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 0",
+						'name' => "readPowermeter0",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 0 (Standard: 0)",
+						'name' => "powermeter0name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 0 (Standard: 0)",
-				'name' => "powermeter0name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 1",
+						'name' => "readPowermeter1",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 1 (Standard: 1)",
+						'name' => "powermeter1name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 1",
-				'name' => "readPowermeter1",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 2",
+						'name' => "readPowermeter2",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 2 (Standard: 2)",
+						'name' => "powermeter2name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 1 (Standard: 1)",
-				'name' => "powermeter1name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 3",
+						'name' => "readPowermeter3",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 3 (Standard: 3)",
+						'name' => "powermeter3name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 2",
-				'name' => "readPowermeter2",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 4",
+						'name' => "readPowermeter4",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 4 (Standard: 4)",
+						'name' => "powermeter4name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 2 (Standard: 2)",
-				'name' => "powermeter2name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 5",
+						'name' => "readPowermeter5",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 5 (Standard: 5)",
+						'name' => "powermeter5name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 3",
-				'name' => "readPowermeter3",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 6",
+						'name' => "readPowermeter6",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 6 (Standard: 6)",
+						'name' => "powermeter6name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 3 (Standard: 3)",
-				'name' => "powermeter3name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 4",
-				'name' => "readPowermeter4",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 4 (Standard: 4)",
-				'name' => "powermeter4name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 5",
-				'name' => "readPowermeter5",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 5 (Standard: 5)",
-				'name' => "powermeter5name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 6",
-				'name' => "readPowermeter6",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 6 (Standard: 6)",
-				'name' => "powermeter6name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
-			$formElements[] = array(
-				'type' => "CheckBox",
-				'caption' => "Leistungsmesser 7",
-				'name' => "readPowermeter7",
-			);
-			$formElements[] = array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von Leistungsmesser 7 (Standard: 7)",
-				'name' => "powermeter7name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+						'type' => "CheckBox",
+						'caption' => "Leistungsmesser 7",
+						'name' => "readPowermeter7",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von Leistungsmesser 7 (Standard: 7)",
+						'name' => "powermeter7name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
 			);
 			$formElements[] = array(
 				'type' => "Label",
