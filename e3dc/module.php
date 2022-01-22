@@ -933,7 +933,7 @@ if(false !== \$varId)
 			elseif ("" == $hostIp)
 			{
 				// keine IP --> inaktiv
-				$this->SetStatus(104);
+				$this->SetStatus(IS_INACTIVE);
 
 				$this->SendDebug("Module-Status", "ERROR: ".MODUL_PREFIX." IP not set!", 0);
 			}
@@ -1714,7 +1714,7 @@ Bit 13  Nicht belegt";
 						}
 
 						// aktiv
-						$this->SetStatus(102);
+						$this->SetStatus(IS_ACTIVE);
 
 						$this->SendDebug("Module-Status", MODUL_PREFIX."-module activated", 0);
 					}
@@ -1754,7 +1754,7 @@ Bit 13  Nicht belegt";
 										$this->SetTimerInterval("HistoryCleanUp", 0);
 					 */
 					// inaktiv
-					$this->SetStatus(104);
+					$this->SetStatus(IS_INACTIVE);
 
 					$this->SendDebug("Module-Status", MODUL_PREFIX."-module deactivated", 0);
 				}
