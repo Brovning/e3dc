@@ -360,6 +360,102 @@ if(false !== \$varId)
 }
 ");
 
+if(defined('DEVELOPMENT') && DEVELOPMENT)
+{
+	// Bereinigung der Historie-Werte von den W/kW Werten (optional auf Wunsch)
+	$this->RegisterTimer("HistoryCleanUp", 0, "// cleanup der Wh/kWh Logwerte auf 1 Wert je Tag
+	foreach(\$engergyArray AS \$energyId)
+	{
+		if(10 > round((microtime(true) - \$startzeit) / 1000 / 1000))
+		{
+	//		RecordReducing(\$energyId, mktime(0,0,0, date(\"m\"), date(\"j\")-365, date(\"Y\")), mktime(23,59,59, date(\"m\"), date(\"j\")-1, date(\"Y\")), \"j\");
+		}
+		else
+		{
+			exit;
+		}
+	}
+	
+	/*function RecordReducing(\$ID, \$MStartDate, \$MEndDate, \$aggregation = \"i\")
+	{
+		\$ah_ID = ".$this->getArchiveId().";
+		if(false === \$ah_ID)
+		{
+			return false;
+		}
+	
+		if(\"i\" != \$aggregation // Minute
+			&& \"G\" != \$aggregation // Stunde
+			&& \"j\" != \$aggregation // Tag
+		)
+		{
+			return false;
+		}
+	
+		\$p_ts = \$MStartDate;  // Angabe Startzeitpunkt Reducing-Periode
+		\$p_te = \$MEndDate;  // Angabe Startzeitpunkt Reducing-Periode
+	
+		\$i_max = (int)round((\$p_te - \$p_ts)/(60*60*24), 0);
+	
+		for(\$i=0; \$i<\$i_max; \$i++)
+		{
+			// Datensätze für einen Tag aus AC holen
+			\$ts = mktime(0,0,0,date(\"m\", \$p_ts),date(\"d\", \$p_ts) + \$i,date(\"Y\", \$p_ts));
+			\$te = mktime(23,59,59,date(\"m\", \$p_ts),date(\"d\", \$p_ts) + \$i,date(\"Y\", \$p_ts));
+			\$Data = AC_GetLoggedValues(\$ah_ID,\$ID,\$ts,\$te,5000);
+	
+			foreach(\$Data as \$key=>\$v)
+			{
+				\$Data[\$key]['TimeStamp_humanDate'] = date(\"d.m.Y H:i:s\", \$v['TimeStamp']);
+			}
+			\$Raw = array_reverse(\$Data);
+	
+			\$RawCount = count(\$Raw)-1;
+			foreach(\$Raw as \$key=>\$v)
+			{
+				if(0 == \$key)
+				{
+					\$Count = 0;
+					\$i_Flag = date(\$aggregation, \$v['TimeStamp']);
+					\$i_TimeStart = \$v['TimeStamp'] + 1;
+					\$i_TimeEnd = \$v['TimeStamp'];
+				}
+	
+				if(0 < \$key)
+				{
+					if(\$i_Flag == date(\$aggregation, \$v['TimeStamp']))
+					{
+						\$Count++;
+						\$i_TimeEnd = \$v['TimeStamp'];
+					}
+					else
+					{
+						if(0 < \$Count)
+						{
+							AC_DeleteVariableData(\$ah_ID,\$ID, \$i_TimeStart, \$i_TimeEnd);
+						}
+	
+						\$Count = 0;
+						\$i_Flag	= date(\$aggregation, \$v['TimeStamp']);
+						\$i_TimeStart = \$v['TimeStamp'] + 1;
+						\$i_TimeEnd = \$v['TimeStamp'];
+	
+					}
+	
+					if((\$Count > 0) && (\$RawCount == \$key))
+					{
+						\$i_TimeEnd = \$v['TimeStamp'];
+						AC_DeleteVariableData(\$ah_ID,\$ID, \$i_TimeStart, \$i_TimeEnd);
+					}
+				}
+			}
+		}
+	
+		return true;
+	}*/
+	");
+}
+
 			// *** Erstelle Variablen-Profile ***
 			$this->checkProfiles();
 		}
@@ -912,6 +1008,15 @@ if(false !== \$varId)
 					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
 				}
 
+				if(defined('DEVELOPMENT') && DEVELOPMENT)
+				{
+					// Erstellt einen Timer mit einem Intervall von 6 Stunden
+					if ($loggingWirkarbeit)
+					{
+						$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
+					}
+				}
+
 				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
 				{
 					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
@@ -1255,7 +1360,16 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				{
 					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
 				}
-
+			
+if(defined('DEVELOPMENT') && DEVELOPMENT)
+{
+				// Erstellt einen Timer mit einem Intervall von 6 Stunden
+				if($loggingWirkarbeit)
+				{
+					$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
+				}
+}
+				
 
 				/* ********** Spezifische Abfragen zur Steuerung der Wallbox **************************************
 					Hinweis: Es können nicht alle Bits geschaltet werden. Bereiche, bei denen die aktive Steuerung sinnvoll ist, sind mit RW (= 'Read' und 'Write') gekennzeichnet.
