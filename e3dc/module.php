@@ -802,12 +802,12 @@ if(false !== \$varId)
 
 			$formStatus = array();
 			$formStatus[] = array(
-				'code' => 200,
+				'code' => IS_IPPORTERROR,
 				'icon' => "error",
 				'caption' => "IP oder Port sind nicht erreichtbar",
 			);
 			$formStatus[] = array(
-				'code' => 201,
+				'code' => IS_NOARCHIVE,
 				'icon' => "error",
 				'caption' => "Archiv nicht gefunden",
 			);
@@ -880,7 +880,7 @@ if(false !== \$varId)
 			if (false === $archiveId)
 			{
 				// no archive found
-				$this->SetStatus(201);
+				$this->SetStatus(IS_NOARCHIVE);
 			}
 
 			// Workaround für "InstanceInterface not available" Fehlermeldung beim Server-Start...
@@ -910,12 +910,6 @@ if(false !== \$varId)
 				if ($calcWh || $calcKwh)
 				{
 					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
-				}
-
-				// Erstellt einen Timer mit einem Intervall von 6 Stunden
-				if ($loggingWirkarbeit)
-				{
-					$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
 				}
 
 				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
@@ -1721,7 +1715,7 @@ Bit 13  Nicht belegt";
 					else
 					{
 						// IP oder Port nicht erreichbar
-						$this->SetStatus(200);
+						$this->SetStatus(IS_IPPORTERROR);
 
 						$this->SendDebug("Module-Status", "ERROR: ".MODUL_PREFIX." with IP=".$hostIp." and Port=".$hostPort." cannot be reached!", 0);
 					}
@@ -2507,7 +2501,7 @@ Bit 13  Nicht belegt";
 				$archiveId = false;
 
 				// no archive found
-				$this->SetStatus(201);
+				$this->SetStatus(IS_NOARCHIVE);
 
 				$returnValue = GetValue($id);
 			}

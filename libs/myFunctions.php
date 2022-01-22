@@ -19,6 +19,11 @@ if (!defined('KL_DEBUG'))
 	define('KL_WARNING', 10204);	// Warnung
 }
 
+if (!defined('IS_NOARCHIVE')) {
+    define('IS_NOARCHIVE', IS_EBASE + 1);
+    define('IS_IPPORTERROR', IS_EBASE + 2);
+}
+
 // ModBus RTU TCP
 if (!defined('MODBUS_INSTANCES'))
 {
