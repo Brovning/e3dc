@@ -685,62 +685,62 @@ if (!defined('IMR_START_REGISTER'))
 				'type' => "RowLayout",
 				'items' => array(
 					array(
-				'type' => "CheckBox",
-				'caption' => "MPP-Tracker 1 (String 1.1+1.2)",
-				'name' => "readDcString1",
-			),
-			array(
-				'type' => "Label",
-				'label' => "   ",
-			),
-			array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von MPP-Tracker 1 (Standard: 1)",
-				'name' => "string1name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			),
-		),
-	);
+						'type' => "CheckBox",
+						'caption' => "MPP-Tracker 1 (String 1.1+1.2)",
+						'name' => "readDcString1",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von MPP-Tracker 1 (Standard: 1)",
+						'name' => "string1name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
+			);
 			$formElements[] = array(
 				'type' => "RowLayout",
 				'items' => array(
 					array(
-				'type' => "CheckBox",
-				'caption' => "MPP-Tracker 2 (String 2.1+2.2)",
-				'name' => "readDcString2",
-			),
-			array(
-				'type' => "Label",
-				'label' => "   ",
-			),
-			array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von MPP-Tracker 2 (Standard: 2)",
-				'name' => "string2name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			),
-		),
-	);
+						'type' => "CheckBox",
+						'caption' => "MPP-Tracker 2 (String 2.1+2.2)",
+						'name' => "readDcString2",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von MPP-Tracker 2 (Standard: 2)",
+						'name' => "string2name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
+			);
 			$formElements[] = array(
 				'type' => "RowLayout",
 				'items' => array(
 					array(
-				'type' => "CheckBox",
-				'caption' => "MPP-Tracker 3 (String 3.1+3.2)",
-				'name' => "readDcString3",
-			),
-			array(
-				'type' => "Label",
-				'label' => "   ",
-			),
-			array(
-				'type' => "ValidationTextBox",
-				'caption' => "Name von MPP-Tracker 3 (Standard: 3)",
-				'name' => "string3name",
-				'validate' => "^[a-zA-Z0-9_-]+$",
-			),
-		),
-	);
+						'type' => "CheckBox",
+						'caption' => "MPP-Tracker 3 (String 3.1+3.2)",
+						'name' => "readDcString3",
+					),
+					array(
+						'type' => "Label",
+						'label' => "   ",
+					),
+					array(
+						'type' => "ValidationTextBox",
+						'caption' => "Name von MPP-Tracker 3 (Standard: 3)",
+						'name' => "string3name",
+						'validate' => "^[a-zA-Z0-9_-]+$",
+					),
+				),
+			);
 			$formElements[] = array(
 				'type' => "Label",
 				'label' => " ",
@@ -1625,7 +1625,7 @@ Bit 13  Nicht belegt";
 				$inverterModelRegister_array = array();
 				$inverterModelRegisterDel_array = array();
 
-				if($readDcString1)
+				if ($readDcString1)
 				{
 					$inverterModelRegister_array[] = array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage");
 					$inverterModelRegister_array[] = array(40099, 1, 3, "DC_STRING_1_Current", "UInt16", "A", "DC_STRING_1_Current", 0.01);
@@ -1638,7 +1638,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40102, 1, 3, "DC_STRING_1_Power", "UInt16", "W", "DC_STRING_1_Power");
 				}
 
-				if($readDcString2)
+				if ($readDcString2)
 				{
 					$inverterModelRegister_array[] = array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage");
 					$inverterModelRegister_array[] = array(40100, 1, 3, "DC_STRING_2_Current", "UInt16", "A", "DC_STRING_2_Current", 0.01);
@@ -1651,7 +1651,7 @@ Bit 13  Nicht belegt";
 					$inverterModelRegisterDel_array[] = array(40103, 1, 3, "DC_STRING_2_Power", "UInt16", "W", "DC_STRING_2_Power");
 				}
 
-				if($readDcString3)
+				if ($readDcString3)
 				{
 					$inverterModelRegister_array[] = array(40098, 1, 3, "DC_STRING_3_Voltage", "UInt16", "V", "DC_STRING_3_Voltage");
 					$inverterModelRegister_array[] = array(40101, 1, 3, "DC_STRING_3_Current", "UInt16", "A", "DC_STRING_3_Current", 0.01);
@@ -1694,6 +1694,21 @@ Bit 13  Nicht belegt";
 							IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
 							$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
 						}
+					}
+
+					// Variablen für kW-Logging erstellen, sofern nötig
+					foreach ($inverterModelRegister_array as $inverterModelRegister)
+					{
+						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+
+						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+						/*	No default logging for DC_Strings
+						if (false !== $varId && false !== $archiveId)
+						{
+							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
+						}
+						 */
 					}
 
 					$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
@@ -2616,13 +2631,16 @@ Bit 13  Nicht belegt";
 			$loggingPowerKw = $this->ReadPropertyBoolean("loggingPowerKw");
 			if ($loggingPowerKw || $readExtLeistung)
 			{
+				// PV-, Batterie-, Verbrauchs-, Netz-Leistung
 				$modbusAddress_Array = array(40068, 40070, 40072, 40074);
 
+				// Ext. Leistung (bspw. ext. Wechselrichter)
 				if ($readExtLeistung)
 				{
 					$modbusAddress_Array[] = 40076;
 				}
 
+				// Wallbox-Leistung und Wallbox Solar-Leistung
 				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
 				{
 					$modbusAddress_Array[] = 40078;
@@ -2631,11 +2649,11 @@ Bit 13  Nicht belegt";
 
 				foreach ($modbusAddress_Array as $modbusAddress)
 				{
-					$instanceId = IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID); // @
+					$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
 
 					if (false !== $instanceId)
 					{
-						$kwId = IPS_GetObjectIDByIdent("Value_kW", $instanceId); // @
+						$kwId = @IPS_GetObjectIDByIdent("Value_kW", $instanceId);
 
 						if (false !== $kwId)
 						{
@@ -2657,7 +2675,64 @@ Bit 13  Nicht belegt";
 					}
 				}
 
-				$varId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung", $this->InstanceID); // @
+				// DC-Strings
+				$readDcString1 = $this->ReadPropertyBoolean('readDcString1');
+				$readDcString2 = $this->ReadPropertyBoolean('readDcString2');
+				$readDcString3 = $this->ReadPropertyBoolean('readDcString3');
+				if ($readDcString1 || $readDcString2 || $readDcString3)
+				{
+					$modbusAddress_Array = array();
+
+					if ($readDcString1)
+					{
+						$modbusAddress_Array[] = 40102;
+					}
+
+					if ($readDcString2)
+					{
+						$modbusAddress_Array[] = 40103;
+					}
+
+					if ($readDcString3)
+					{
+						$modbusAddress_Array[] = 40104;
+					}
+
+					$categoryName = "DC_String";
+					$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $this->InstanceID);
+
+					foreach ($modbusAddress_Array as $modbusAddress)
+					{
+						$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $categoryId);
+
+						if (false !== $instanceId)
+						{
+							$kwId = @IPS_GetObjectIDByIdent("Value_kW", $instanceId);
+
+							if (false !== $kwId)
+							{
+								$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+								$varValue = GetValue($varId);
+
+								$kwValue = $varValue / 1000;
+
+								if (GetValue($kwId) != $kwValue)
+								{
+									SetValue($kwId, $kwValue);
+								}
+							}
+							else
+							{
+								// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
+								break;
+							}
+						}
+					}
+				}
+
+
+				// Gesamtproduktionsleistung
+				$varId = @IPS_GetObjectIDByIdent("GesamtproduktionLeistung", $this->InstanceID);
 				if (false !== $varId)
 				{
 					if ($readExtLeistung)
@@ -2673,7 +2748,7 @@ Bit 13  Nicht belegt";
 					{
 						SetValue($varId, $varValueCalc);
 
-						$kwId = IPS_GetObjectIDByIdent("GesamtproduktionLeistung_kW", $this->InstanceID); // @
+						$kwId = @IPS_GetObjectIDByIdent("GesamtproduktionLeistung_kW", $this->InstanceID);
 						if (false !== $kwId)
 						{
 							$kwValue = $varValueCalc / 1000;
