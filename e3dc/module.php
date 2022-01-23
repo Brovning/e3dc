@@ -85,7 +85,9 @@ if (!defined('IMR_START_REGISTER'))
 			$this->RegisterPropertyString('powermeter7name', '7');
 			$this->RegisterPropertyBoolean('readEmergencyPower', 'false');
 			$this->RegisterPropertyFloat('emergencyPowerBuffer', '0');
-			$this->RegisterPropertyBoolean('readDcString', 'false');
+			$this->RegisterPropertyBoolean('readDcString1', 'false');
+			$this->RegisterPropertyBoolean('readDcString2', 'false');
+			$this->RegisterPropertyBoolean('readDcString3', 'false');
 			$this->RegisterPropertyString('string1name', '1');
 			$this->RegisterPropertyString('string2name', '2');
 			$this->RegisterPropertyString('string3name', '3');
@@ -680,28 +682,65 @@ if (!defined('IMR_START_REGISTER'))
 				'label' => "Sollen V, A und W der DC-Strings ausgelesen werden? (verfügbar ab Release S10_2017_02)",
 			);
 			$formElements[] = array(
+				'type' => "RowLayout",
+				'items' => array(
+					array(
 				'type' => "CheckBox",
-				'caption' => "DC String Informationen",
-				'name' => "readDcString",
-			);
-			$formElements[] = array(
+				'caption' => "MPP-Tracker 1 (String 1.1+1.2)",
+				'name' => "readDcString1",
+			),
+			array(
+				'type' => "Label",
+				'label' => "   ",
+			),
+			array(
 				'type' => "ValidationTextBox",
-				'caption' => "Name von MPP-Tracker 1, entspricht String 1.1+1.2 (Standard: 1)",
+				'caption' => "Name von MPP-Tracker 1 (Standard: 1)",
 				'name' => "string1name",
 				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
+			),
+		),
+	);
 			$formElements[] = array(
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+				'type' => "CheckBox",
+				'caption' => "MPP-Tracker 2 (String 2.1+2.2)",
+				'name' => "readDcString2",
+			),
+			array(
+				'type' => "Label",
+				'label' => "   ",
+			),
+			array(
 				'type' => "ValidationTextBox",
-				'caption' => "Name von MPP-Tracker 2, entspricht String 2.1+2.2 (Standard: 2)",
+				'caption' => "Name von MPP-Tracker 2 (Standard: 2)",
 				'name' => "string2name",
 				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
+			),
+		),
+	);
 			$formElements[] = array(
+				'type' => "RowLayout",
+				'items' => array(
+					array(
+				'type' => "CheckBox",
+				'caption' => "MPP-Tracker 3 (String 3.1+3.2)",
+				'name' => "readDcString3",
+			),
+			array(
+				'type' => "Label",
+				'label' => "   ",
+			),
+			array(
 				'type' => "ValidationTextBox",
-				'caption' => "Name von MPP-Tracker 3, entspricht String 3.1+3.2 (Standard: 3)",
+				'caption' => "Name von MPP-Tracker 3 (Standard: 3)",
 				'name' => "string3name",
 				'validate' => "^[a-zA-Z0-9_-]+$",
-			);
+			),
+		),
+	);
 			$formElements[] = array(
 				'type' => "Label",
 				'label' => " ",
@@ -860,7 +899,9 @@ if (!defined('IMR_START_REGISTER'))
 			$powermeter7name = $this->ReadPropertyString('powermeter7name');
 			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
 			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
-			$readDcString = $this->ReadPropertyBoolean('readDcString');
+			$readDcString1 = $this->ReadPropertyBoolean('readDcString1');
+			$readDcString2 = $this->ReadPropertyBoolean('readDcString2');
+			$readDcString3 = $this->ReadPropertyBoolean('readDcString3');
 			$string1name = $this->ReadPropertyString('string1name');
 			$string2name = $this->ReadPropertyString('string2name');
 			$string3name = $this->ReadPropertyString('string3name');
@@ -1580,20 +1621,51 @@ Bit 13  Nicht belegt";
 				 */
 				$categoryName = "DC_String";
 				$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
-				if ($readDcString)
-				{
-					$inverterModelRegister_array = array(
-						array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage"),
-						array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage"),
-						array(40098, 1, 3, "DC_STRING_3_Voltage", "UInt16", "V", "DC_STRING_3_Voltage"),
-						array(40099, 1, 3, "DC_STRING_1_Current", "UInt16", "A", "DC_STRING_1_Current", 0.01),
-						array(40100, 1, 3, "DC_STRING_2_Current", "UInt16", "A", "DC_STRING_2_Current", 0.01),
-						array(40101, 1, 3, "DC_STRING_3_Current", "UInt16", "A", "DC_STRING_3_Current", 0.01),
-						array(40102, 1, 3, "DC_STRING_1_Power", "UInt16", "W", "DC_STRING_1_Power"),
-						array(40103, 1, 3, "DC_STRING_2_Power", "UInt16", "W", "DC_STRING_2_Power"),
-						array(40104, 1, 3, "DC_STRING_3_Power", "UInt16", "W", "DC_STRING_3_Power"),
-					);
 
+				$inverterModelRegister_array = array();
+				$inverterModelRegisterDel_array = array();
+
+				if($readDcString1)
+				{
+					$inverterModelRegister_array[] = array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage");
+					$inverterModelRegister_array[] = array(40099, 1, 3, "DC_STRING_1_Current", "UInt16", "A", "DC_STRING_1_Current", 0.01);
+					$inverterModelRegister_array[] = array(40102, 1, 3, "DC_STRING_1_Power", "UInt16", "W", "DC_STRING_1_Power");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage");
+					$inverterModelRegisterDel_array[] = array(40099, 1, 3, "DC_STRING_1_Current", "UInt16", "A", "DC_STRING_1_Current", 0.01);
+					$inverterModelRegisterDel_array[] = array(40102, 1, 3, "DC_STRING_1_Power", "UInt16", "W", "DC_STRING_1_Power");
+				}
+
+				if($readDcString2)
+				{
+					$inverterModelRegister_array[] = array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage");
+					$inverterModelRegister_array[] = array(40100, 1, 3, "DC_STRING_2_Current", "UInt16", "A", "DC_STRING_2_Current", 0.01);
+					$inverterModelRegister_array[] = array(40103, 1, 3, "DC_STRING_2_Power", "UInt16", "W", "DC_STRING_2_Power");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage");
+					$inverterModelRegisterDel_array[] = array(40100, 1, 3, "DC_STRING_2_Current", "UInt16", "A", "DC_STRING_2_Current", 0.01);
+					$inverterModelRegisterDel_array[] = array(40103, 1, 3, "DC_STRING_2_Power", "UInt16", "W", "DC_STRING_2_Power");
+				}
+
+				if($readDcString3)
+				{
+					$inverterModelRegister_array[] = array(40098, 1, 3, "DC_STRING_3_Voltage", "UInt16", "V", "DC_STRING_3_Voltage");
+					$inverterModelRegister_array[] = array(40101, 1, 3, "DC_STRING_3_Current", "UInt16", "A", "DC_STRING_3_Current", 0.01);
+					$inverterModelRegister_array[] = array(40104, 1, 3, "DC_STRING_3_Power", "UInt16", "W", "DC_STRING_3_Power");
+				}
+				else
+				{
+					$inverterModelRegisterDel_array[] = array(40098, 1, 3, "DC_STRING_3_Voltage", "UInt16", "V", "DC_STRING_3_Voltage");
+					$inverterModelRegisterDel_array[] = array(40101, 1, 3, "DC_STRING_3_Current", "UInt16", "A", "DC_STRING_3_Current", 0.01);
+					$inverterModelRegisterDel_array[] = array(40104, 1, 3, "DC_STRING_3_Power", "UInt16", "W", "DC_STRING_3_Power");
+				}
+
+				if ($readDcString1 || $readDcString2 || $readDcString3)
+				{
 					// Variablen umbenennen, sofern ein DC-String Name angegeben wurde
 					for ($i = 0; $i < count($inverterModelRegister_array); $i++)
 					{
@@ -1623,6 +1695,8 @@ Bit 13  Nicht belegt";
 							$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
 						}
 					}
+
+					$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
 				}
 				else
 				{
