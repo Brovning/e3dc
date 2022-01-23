@@ -341,7 +341,7 @@ trait myFunctions
 		return array($currentGatewayId, $currentClientSocketId);
 	}
 
-	private function createVarProfile(string $ProfilName, int $ProfileType, string $Suffix = '', int $MinValue = 0, int $MaxValue = 0, int $StepSize = 0, int $Digits = 0, int $Icon = 0, string $Associations = ''): bool
+	private function createVarProfile(string $ProfilName, int $ProfileType, string $Suffix = '', int $MinValue = 0, int $MaxValue = 0, int $StepSize = 0, int $Digits = 0, int $Icon = 0, array $Associations = array()): bool
 	{
 		$returnValue = true;
 
@@ -358,16 +358,13 @@ trait myFunctions
 
 			$returnValue &= IPS_SetVariableProfileIcon($ProfilName, $Icon);
 
-			if ($Associations != '')
+			foreach ($Associations as $a)
 			{
-				foreach ($Associations as $a)
-				{
-					$w = isset($a['Wert']) ? $a['Wert'] : '';
-					$n = isset($a['Name']) ? $a['Name'] : '';
-					$i = isset($a['Icon']) ? $a['Icon'] : '';
-					$f = isset($a['Farbe']) ? $a['Farbe'] : -1;
-					$returnValue &= IPS_SetVariableProfileAssociation($ProfilName, $w, $n, $i, $f);
-				}
+				$w = isset($a['Wert']) ? $a['Wert'] : '';
+				$n = isset($a['Name']) ? $a['Name'] : '';
+				$i = isset($a['Icon']) ? $a['Icon'] : '';
+				$f = isset($a['Farbe']) ? $a['Farbe'] : -1;
+				$returnValue &= IPS_SetVariableProfileAssociation($ProfilName, $w, $n, $i, $f);
 			}
 
 			$this->SendDebug("Variable-Profile", "Profile ".$ProfilName." created", 0);
