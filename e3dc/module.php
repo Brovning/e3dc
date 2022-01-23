@@ -1999,7 +1999,7 @@ Bit 13  Nicht belegt";
 			}
 		}
 
-		private function getModbusDatatype($type)
+		private function getModbusDatatype(string $type)//PHP8 :mixed
 		{
 			// Datentyp ermitteln
 			// 0=Bit (1 bit)
@@ -2072,7 +2072,7 @@ Bit 13  Nicht belegt";
 			return $datenTyp;
 		}
 
-		private function getProfile($unit, $datenTyp = -1)
+		private function getProfile(string $unit, int $datenTyp = -1)//PHP8 :mixed
 		{
 			// Profil ermitteln
 			if ("a" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
@@ -2507,7 +2507,7 @@ Bit 13  Nicht belegt";
 			}
 		}
 
-		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
+		private function GetVariableValue(string $instanceIdent, string $variableIdent = "Value")//PHP8 : mixed
 		{
 			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
 			$varId = IPS_GetObjectIDByIdent($this->removeInvalidChars($variableIdent), $instanceId);
@@ -2515,7 +2515,7 @@ Bit 13  Nicht belegt";
 			return GetValue($varId);
 		}
 
-		private function GetVariableId($instanceIdent, $variableIdent = "Value")
+		private function GetVariableId(string $instanceIdent, string $variableIdent = "Value"): int
 		{
 			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
 			$varId = IPS_GetObjectIDByIdent($this->removeInvalidChars($variableIdent), $instanceId);
@@ -2523,7 +2523,7 @@ Bit 13  Nicht belegt";
 			return $varId;
 		}
 
-		private function GetLoggedValuesInterval($id, $minutes)
+		private function GetLoggedValuesInterval(int $id, int $minutes)//PHP8 :mixed
 		{
 			$archiveId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}");
 			if (isset($archiveId[0]))
@@ -2954,12 +2954,12 @@ Bit 13  Nicht belegt";
 
 		public function GetAutarky(): int
 		{
-			return $this->GetVariableValue(40082, "Autarkie");
+			return $this->GetVariableValue("40082", "Autarkie");
 		}
 
 		public function GetSelfConsumption(): int
 		{
-			return $this->GetVariableValue(40082, "Eigenverbrauch");
+			return $this->GetVariableValue("40082", "Eigenverbrauch");
 		}
 
 		public function GetBatteryPowerW(): int
@@ -2969,7 +2969,7 @@ Bit 13  Nicht belegt";
 
 		public function GetBatteryPowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40070;
+			$varIdent = "40070";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -2995,7 +2995,7 @@ Bit 13  Nicht belegt";
 
 		public function GetBatteryChargeEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40070;
+			$varIdent = "40070";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
 
@@ -3009,7 +3009,7 @@ Bit 13  Nicht belegt";
 
 		public function GetBatteryDischargeEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40070;
+			$varIdent = "40070";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
 
@@ -3023,7 +3023,7 @@ Bit 13  Nicht belegt";
 
 		public function GetBatterySoc(): int
 		{
-			return $this->GetVariableValue(40083, "Value");
+			return $this->GetVariableValue("40083", "Value");
 		}
 
 		public function GetBatteryRangeKwh(): float
@@ -3057,7 +3057,7 @@ Bit 13  Nicht belegt";
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
-			$varIdent = 40076;
+			$varIdent = "40076";
 
 			if (false === $readExtLeistung)
 			{
@@ -3089,7 +3089,7 @@ Bit 13  Nicht belegt";
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
-			$varIdent = 40076;
+			$varIdent = "40076";
 
 			if (false === $readExtLeistung)
 			{
@@ -3158,7 +3158,7 @@ Bit 13  Nicht belegt";
 
 		public function GetGridPowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40074;
+			$varIdent = "40074";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -3184,7 +3184,7 @@ Bit 13  Nicht belegt";
 
 		public function GetGridConsumptionEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40074;
+			$varIdent = "40074";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
 
@@ -3198,7 +3198,7 @@ Bit 13  Nicht belegt";
 
 		public function GetGridFeedEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40074;
+			$varIdent = "40074";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
 
@@ -3217,7 +3217,7 @@ Bit 13  Nicht belegt";
 
 		public function GetPvPowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40068;
+			$varIdent = "40068";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -3243,7 +3243,7 @@ Bit 13  Nicht belegt";
 
 		public function GetPvEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40068;
+			$varIdent = "40068";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 
@@ -3262,7 +3262,7 @@ Bit 13  Nicht belegt";
 
 		public function GetHomePowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40072;
+			$varIdent = "40072";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -3288,7 +3288,7 @@ Bit 13  Nicht belegt";
 
 		public function GetHomeEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40072;
+			$varIdent = "40072";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 
@@ -3316,7 +3316,7 @@ Bit 13  Nicht belegt";
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40078;
+			$varIdent = "40078";
 
 			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
@@ -3355,7 +3355,7 @@ Bit 13  Nicht belegt";
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40078;
+			$varIdent = "40078";
 
 			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
@@ -3390,7 +3390,7 @@ Bit 13  Nicht belegt";
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40080;
+			$varIdent = "40080";
 
 			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
@@ -3429,7 +3429,7 @@ Bit 13  Nicht belegt";
 			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
 			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40080;
+			$varIdent = "40080";
 
 			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
 			{
