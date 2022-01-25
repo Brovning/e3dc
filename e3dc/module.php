@@ -2006,7 +2006,6 @@ Bit 13  Nicht belegt";
 			// 1=Byte (8 bit unsigned)
 			if ("uint8" == strtolower($type)
 				|| "enum8" == strtolower($type)
-				|| "int8" == strtolower($type)
 			) {
 				$datenTyp = MODBUSDATATYPE_BIT;
 			}
@@ -2025,7 +2024,9 @@ Bit 13  Nicht belegt";
 				$datenTyp = MODBUSDATATYPE_DWORD;
 			}
 			// 4=Char / ShortInt (8 bit signed)
-			elseif ("sunssf" == strtolower($type))
+			elseif ("sunssf" == strtolower($type)
+				|| "int8" == strtolower($type)
+			)
 			{
 				$datenTyp = MODBUSDATATYPE_CHAR;
 			}
