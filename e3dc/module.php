@@ -37,6 +37,7 @@ if (!defined('E3DC_WALLBOX'))
 {
 	define("E3DC_WALLBOX", 8);
 	define("E3DC_POWERMETER", 8);
+	define("E3DC_INVERTER", 8);
 	define("E3DC_MPPT", 3);
 }
 
@@ -82,6 +83,14 @@ if (!defined('E3DC_WALLBOX'))
 				{
 					$this->RegisterPropertyBoolean('readDcString'.$i, 'false');
 					$this->RegisterPropertyString('string'.$i.'name', strval($i));
+				}
+			}
+			if (defined('E3DC_INVERTER'))
+			{
+				for($i = 0; $i<E3DC_INVERTER; $i++)
+				{
+					$this->RegisterPropertyBoolean('readInverter'.$i, 'false');
+					$this->RegisterPropertyString('inverter'.$i.'name', strval($i));
 				}
 			}
 			$this->RegisterPropertyBoolean("loggingPowerW", 'true');
@@ -436,6 +445,40 @@ if (!defined('E3DC_WALLBOX'))
 					'label' => " ",
 				);
 			}
+			if (defined('E3DC_INVERTER'))
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Sollen V, A und W der Wechselrichter ausgelesen werden? (verfügbar ab Release S10_2020_02)",
+				);
+				for($i = 0; $i<E3DC_INVERTER; $i++)
+				{
+					$formElements[] = array(
+						'type' => "RowLayout",
+						'items' => array(
+							array(
+								'type' => "CheckBox",
+								'caption' => "Wechselrichter ".$i,
+								'name' => "readInverter".$i,
+							),
+							array(
+								'type' => "Label",
+								'label' => "   ",
+							),
+							array(
+								'type' => "ValidationTextBox",
+								'caption' => "Name von Wechselrichter ".$i." (Standard: ".$i.")",
+								'name' => "inverter".$i."name",
+								'validate' => "^[a-zA-Z0-9_-]+$",
+							),
+						),
+					);
+				}
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => " ",
+				);
+			}
 			$formElements[] = array(
 				'type' => "Label",
 				'label' => "Für welche Variablen soll das Logging aktiviert werden?",
@@ -586,6 +629,16 @@ if (!defined('E3DC_WALLBOX'))
 				{
 					$readDcString[$i] = $this->ReadPropertyBoolean('readDcString'.$i);
 					$stringName[$i] = $this->ReadPropertyString('string'.$i.'name');
+				}
+			}
+			if (defined('E3DC_INVERTER'))
+			{
+				$readInverter = array();
+				$inverterName = array();
+				for($i = 0; $i<E3DC_INVERTER; $i++)
+				{
+					$readInverter[$i] = $this->ReadPropertyBoolean('readInverter'.$i);
+					$inverterName[$i] = $this->ReadPropertyString('inverter'.$i.'name');
 				}
 			}
 			$loggingPowerW = $this->ReadPropertyBoolean("loggingPowerW");
@@ -1214,6 +1267,132 @@ Bit 13  Nicht belegt";
 					}
 				}
 
+				/* ********** Register der Wechselrichter **************************************************************************
+					Hinweis: Die folgenden Register koennen ab dem Release S10_2022_02 genutzt werden!
+				 */
+				if (defined('E3DC_INVERTER'))
+				{
+					$categoryName = "Wechselrichter";
+					$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
+
+					$inverterModelRegister_array = array();
+					$inverterModelRegisterDel_array = array();
+
+					for($i = 0; $i<E3DC_INVERTER; $i++)
+					{
+						if ($readInverter[$i])
+						{
+							$inverterModelRegister_array[] = array(41000 + 0 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int32", "W", "Scheinleistung in Watt L1");
+							$inverterModelRegister_array[] = array(41000 + 2 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegister_array[] = array(41000 + 4 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegister_array[] = array(41000 + 6 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int32", "W", "Wirkleistung in Watt L1");
+							$inverterModelRegister_array[] = array(41000 + 8 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int32", "W", "Wirkleistung in Watt L2");
+							$inverterModelRegister_array[] = array(41000 + 10 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int32", "W", "Wirkleistung in Watt L3");
+							$inverterModelRegister_array[] = array(41000 + 12 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int32", "W", "Blindleistung in Watt L1");
+							$inverterModelRegister_array[] = array(41000 + 14 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int32", "W", "Blindleistung in Watt L2");
+							$inverterModelRegister_array[] = array(41000 + 16 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int32", "W", "Blindleistung in Watt L3");
+							$inverterModelRegister_array[] = array(41000 + 18 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L1", "int16", "V", "AC-Spannung in Volt L1", 0.1);
+							$inverterModelRegister_array[] = array(41000 + 19 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L2", "int16", "V", "AC-Spannung in Volt L2", 0.1);
+							$inverterModelRegister_array[] = array(41000 + 20 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L3", "int16", "V", "AC-Spannung in Volt L3", 0.1);
+							$inverterModelRegister_array[] = array(41000 + 21 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L1", "int16", "A", "AC-Strom in Ampere L1", 0.01);
+							$inverterModelRegister_array[] = array(41000 + 22 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L2", "int16", "A", "AC-Strom in Ampere L2", 0.01);
+							$inverterModelRegister_array[] = array(41000 + 23 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L3", "int16", "A", "AC-Strom in Ampere L3", 0.01);
+							$inverterModelRegister_array[] = array(41000 + 24 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_Phasen-Frequenz_L1", "int16", "Hz", "Phasen-Frequenz in Hertz L1", 0.01);
+							$inverterModelRegister_array[] = array(41000 + 25 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L1", "int16", "W", "DC-Leistung in Watt L1");
+							$inverterModelRegister_array[] = array(41000 + 26 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L2", "int16", "W", "DC-Leistung in Watt L2");
+	//						$inverterModelRegister_array[] = array(41000 + 27 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L3", "int16", "W", "DC-Leistung in Watt L3 (wird nicht verwendet)");
+							$inverterModelRegister_array[] = array(41000 + 28 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L1", "int16", "V", "DC-Spannung in Volt L1", 0.1);
+							$inverterModelRegister_array[] = array(41000 + 29 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L2", "int16", "V", "DC-Spannung in Volt L2", 0.1);
+	//						$inverterModelRegister_array[] = array(41000 + 30 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L3", "int16", "V", "DC-Spannung in Volt L3 (wird nicht verwendet)", 0.1);
+							$inverterModelRegister_array[] = array(41000 + 31 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L1", "int16", "A", "DC-Strom in Ampere L1", 0.01);
+							$inverterModelRegister_array[] = array(41000 + 32 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L2", "int16", "A", "DC-Strom in Ampere L2", 0.01);
+	//						$inverterModelRegister_array[] = array(41000 + 33 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L3", "int16", "A", "DC-Strom in Ampere L3 (wird nicht verwendet)", 0.01);
+						}
+						else
+						{
+							$inverterModelRegisterDel_array[] = array(41000 + 0 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int32", "W", "Scheinleistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array(41000 + 2 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array(41000 + 4 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array(41000 + 6 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int32", "W", "Wirkleistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array(41000 + 8 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int32", "W", "Wirkleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array(41000 + 10 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int32", "W", "Wirkleistung in Watt L3");
+							$inverterModelRegisterDel_array[] = array(41000 + 12 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int32", "W", "Blindleistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array(41000 + 14 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int32", "W", "Blindleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array(41000 + 16 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int32", "W", "Blindleistung in Watt L3");
+							$inverterModelRegisterDel_array[] = array(41000 + 18 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L1", "int16", "V", "AC-Spannung in Volt L1", 0.1);
+							$inverterModelRegisterDel_array[] = array(41000 + 19 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L2", "int16", "V", "AC-Spannung in Volt L2", 0.1);
+							$inverterModelRegisterDel_array[] = array(41000 + 20 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L3", "int16", "V", "AC-Spannung in Volt L3", 0.1);
+							$inverterModelRegisterDel_array[] = array(41000 + 21 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L1", "int16", "A", "AC-Strom in Ampere L1", 0.01);
+							$inverterModelRegisterDel_array[] = array(41000 + 22 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L2", "int16", "A", "AC-Strom in Ampere L2", 0.01);
+							$inverterModelRegisterDel_array[] = array(41000 + 23 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L3", "int16", "A", "AC-Strom in Ampere L3", 0.01);
+							$inverterModelRegisterDel_array[] = array(41000 + 24 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_Phasen-Frequenz_L1", "int16", "Hz", "Phasen-Frequenz in Hertz L1", 0.01);
+							$inverterModelRegisterDel_array[] = array(41000 + 25 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L1", "int16", "W", "DC-Leistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array(41000 + 26 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L2", "int16", "W", "DC-Leistung in Watt L2");
+	//						$inverterModelRegisterDel_array[] = array(41000 + 27 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L3", "int16", "W", "DC-Leistung in Watt L3 (wird nicht verwendet)");
+							$inverterModelRegisterDel_array[] = array(41000 + 28 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L1", "int16", "V", "DC-Spannung in Volt L1", 0.1);
+							$inverterModelRegisterDel_array[] = array(41000 + 29 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L2", "int16", "V", "DC-Spannung in Volt L2", 0.1);
+	//						$inverterModelRegisterDel_array[] = array(41000 + 30 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L3", "int16", "V", "DC-Spannung in Volt L3 (wird nicht verwendet)", 0.1);
+							$inverterModelRegisterDel_array[] = array(41000 + 31 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L1", "int16", "A", "DC-Strom in Ampere L1", 0.01);
+							$inverterModelRegisterDel_array[] = array(41000 + 32 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L2", "int16", "A", "DC-Strom in Ampere L2", 0.01);
+	//						$inverterModelRegisterDel_array[] = array(41000 + 33 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L3", "int16", "A", "DC-Strom in Ampere L3 (wird nicht verwendet)", 0.01);
+						}
+					}
+
+					if ($readInverter[0] || $readInverter[1] || $readInverter[2] || $readInverter[3] || $readInverter[4] || $readInverter[5] || $readInverter[6] || $readInverter[7])
+					{
+						if (false === $categoryId)
+						{
+							$categoryId = IPS_CreateCategory();
+							IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
+							IPS_SetName($categoryId, $categoryName);
+							IPS_SetParent($categoryId, $parentId);
+							IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 41000 bis 41272 können ab dem Release S10_2020_02 genutzt werden!");
+						}
+
+						$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+						// Entsprechend String Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
+						{
+							$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+
+							// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+							if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+							{
+								IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
+								$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+							}
+						}
+
+						// Variablen für kW-Logging erstellen, sofern nötig
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
+						{
+							$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+							$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+
+							$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+							/*	No default logging for DC_Strings
+							if (false !== $varId && false !== $archiveId)
+							{
+								AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
+							}
+							*/
+						}
+
+						$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
+					}
+					else
+					{
+						if (false !== $categoryId)
+						{
+							foreach (IPS_GetChildrenIDs($categoryId) as $childId)
+							{
+								$this->deleteInstanceRecursive($childId);
+							}
+							IPS_DeleteCategory($categoryId);
+						}
+					}
+				}
 
 				if ($active)
 				{
@@ -2219,6 +2398,40 @@ Bit 13  Nicht belegt";
 						}
 					}
 				}
+
+
+				// Wechselrichter
+				if (defined('E3DC_INVERTER'))
+				{
+					$readInverter = array();
+					$inverterName = array();
+					for($i = 0; $i<E3DC_INVERTER; $i++)
+					{
+						$readInverter[$i] = $this->ReadPropertyBoolean('readInverter'.$i);
+					}
+
+					$modbusAddress_Array = array();
+
+					for($i = 0; $i<E3DC_INVERTER; $i++)
+					{
+						if ($readInverter[$i])
+						{
+							$modbusAddress_Array[] = 41000 + 0 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 2 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 4 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 6 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 8 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 10 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 12 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 14 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 16 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 25 + ($i * 34);
+							$modbusAddress_Array[] = 41000 + 26 + ($i * 34);
+	//						$modbusAddress_Array[] = 41000 + 27 + ($i * 34);
+						}
+					}
+
+					$categoryName = "Wechselrichter";
 					$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $this->InstanceID);
 
 					foreach ($modbusAddress_Array as $modbusAddress)
