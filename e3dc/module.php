@@ -1370,16 +1370,19 @@ Bit 13  Nicht belegt";
 						// Variablen für kW-Logging erstellen, sofern nötig
 						foreach ($inverterModelRegister_array as $inverterModelRegister)
 						{
-							$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-							$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-
-							$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-							/*	No default logging for DC_Strings
-							if (false !== $varId && false !== $archiveId)
+							if("w" == strtolower($inverterModelRegister[IMR_UNITS]))
 							{
-								AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
+								$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+								$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+
+								$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+								/*	No default logging for DC_Strings
+								if (false !== $varId && false !== $archiveId)
+								{
+									AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
+								}
+								*/
 							}
-							*/
 						}
 
 						$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
