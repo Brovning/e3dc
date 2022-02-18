@@ -1285,15 +1285,15 @@ Bit 13  Nicht belegt";
 					{
 						if ($readInverter[$i])
 						{
-							$inverterModelRegister_array[] = array($startOffsetRegister + 0 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int32", "W", "Scheinleistung in Watt L1");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 2 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 4 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 6 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int32", "W", "Wirkleistung in Watt L1");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 8 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int32", "W", "Wirkleistung in Watt L2");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 10 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int32", "W", "Wirkleistung in Watt L3");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 12 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int32", "W", "Blindleistung in Watt L1");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 14 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int32", "W", "Blindleistung in Watt L2");
-							$inverterModelRegister_array[] = array($startOffsetRegister + 16 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int32", "W", "Blindleistung in Watt L3");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 1 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int16", "W", "Scheinleistung in Watt L1");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 3 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 5 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 7 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int16", "W", "Wirkleistung in Watt L1");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 9 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int16", "W", "Wirkleistung in Watt L2");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 11 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int16", "W", "Wirkleistung in Watt L3");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 13 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int16", "W", "Blindleistung in Watt L1");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 15 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int16", "W", "Blindleistung in Watt L2");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 17 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int16", "W", "Blindleistung in Watt L3");
 							$inverterModelRegister_array[] = array($startOffsetRegister + 18 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L1", "int16", "V", "AC-Spannung in Volt L1", 0.1);
 							$inverterModelRegister_array[] = array($startOffsetRegister + 19 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L2", "int16", "V", "AC-Spannung in Volt L2", 0.1);
 							$inverterModelRegister_array[] = array($startOffsetRegister + 20 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L3", "int16", "V", "AC-Spannung in Volt L3", 0.1);
@@ -1313,15 +1313,15 @@ Bit 13  Nicht belegt";
 						}
 						else
 						{
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 0 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int32", "W", "Scheinleistung in Watt L1");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 2 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 4 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int32", "W", "Scheinleistung in Watt L2");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 6 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int32", "W", "Wirkleistung in Watt L1");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 8 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int32", "W", "Wirkleistung in Watt L2");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 10 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int32", "W", "Wirkleistung in Watt L3");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 12 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int32", "W", "Blindleistung in Watt L1");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 14 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int32", "W", "Blindleistung in Watt L2");
-							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 16 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int32", "W", "Blindleistung in Watt L3");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 1 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int16", "W", "Scheinleistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 3 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 5 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 7 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int16", "W", "Wirkleistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 9 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int16", "W", "Wirkleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 11 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int16", "W", "Wirkleistung in Watt L3");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 13 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int16", "W", "Blindleistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 15 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int16", "W", "Blindleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 17 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int16", "W", "Blindleistung in Watt L3");
 							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 18 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L1", "int16", "V", "AC-Spannung in Volt L1", 0.1);
 							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 19 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L2", "int16", "V", "AC-Spannung in Volt L2", 0.1);
 							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 20 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L3", "int16", "V", "AC-Spannung in Volt L3", 0.1);
@@ -2425,15 +2425,15 @@ Bit 13  Nicht belegt";
 					{
 						if ($readInverter[$i])
 						{
-							$modbusAddress_Array[] = $startOffsetRegister + 0 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 2 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 4 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 6 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 8 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 10 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 12 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 14 + ($i * 34);
-							$modbusAddress_Array[] = $startOffsetRegister + 16 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 1 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 3 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 5 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 7 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 9 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 11 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 13 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 15 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 17 + ($i * 34);
 							$modbusAddress_Array[] = $startOffsetRegister + 25 + ($i * 34);
 							$modbusAddress_Array[] = $startOffsetRegister + 26 + ($i * 34);
 	//						$modbusAddress_Array[] = $startOffsetRegister + 27 + ($i * 34);
