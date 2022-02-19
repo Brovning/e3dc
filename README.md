@@ -230,22 +230,22 @@ Offset | Size | FunctionCode | Name | Type | Units | Description
 ~~12~~ 13 | 2 | 3 | WR_X_Blindleistung_L1 | ~~int32~~ int16 | W | Blindleistung in Watt L1
 ~~14~~ 15 | 2 | 3 | WR_X_Blindleistung_L2 | ~~int32~~ int16 | W | Blindleistung in Watt L2
 ~~16~~ 17 | 2 | 3 | WR_X_Blindleistung_L3 | ~~int32~~ int16 | W | Blindleistung in Watt L3
-18 | 1 | 3 | WR_X_AC-Spannung_L1 | int16 | V | AC-Spannung in Volt L1 | 0.1);
-19 | 1 | 3 | WR_X_AC-Spannung_L2 | int16 | V | AC-Spannung in Volt L2 | 0.1);
-20 | 1 | 3 | WR_X_AC-Spannung_L3 | int16 | V | AC-Spannung in Volt L3 | 0.1);
-21 | 1 | 3 | WR_X_AC-Strom_L1 | int16 | A | AC-Strom in Ampere L1 | 0.01);
-22 | 1 | 3 | WR_X_AC-Strom_L2 | int16 | A | AC-Strom in Ampere L2 | 0.01);
-23 | 1 | 3 | WR_X_AC-Strom_L3 | int16 | A | AC-Strom in Ampere L3 | 0.01);
-24 | 1 | 3 | WR_X_Phasen-Frequenz_L1 | int16 | Hz | Phasen-Frequenz in Hertz L1 | 0.01);
+18 | 1 | 3 | WR_X_AC-Spannung_L1 | int16 | V | AC-Spannung in Volt L1
+19 | 1 | 3 | WR_X_AC-Spannung_L2 | int16 | V | AC-Spannung in Volt L2
+20 | 1 | 3 | WR_X_AC-Spannung_L3 | int16 | V | AC-Spannung in Volt L3
+21 | 1 | 3 | WR_X_AC-Strom_L1 | int16 | A | AC-Strom in Ampere L1
+22 | 1 | 3 | WR_X_AC-Strom_L2 | int16 | A | AC-Strom in Ampere L2
+23 | 1 | 3 | WR_X_AC-Strom_L3 | int16 | A | AC-Strom in Ampere L3
+24 | 1 | 3 | WR_X_Phasen-Frequenz_L1 | int16 | Hz | Phasen-Frequenz in Hertz L1
 25 | 1 | 3 | WR_X_DC-Leistung_L1 | int16 | W | DC-Leistung in Watt L1
 26 | 1 | 3 | WR_X_DC-Leistung_L2 | int16 | W | DC-Leistung in Watt L2
 27 | 1 | 3 | WR_X_DC-Leistung_L3 | int16 | W | DC-Leistung in Watt L3 (wird nicht verwendet)
-28 | 1 | 3 | WR_X_DC-Spannung_L1 | int16 | V | DC-Spannung in Volt L1 | 0.1);
-29 | 1 | 3 | WR_X_DC-Spannung_L2 | int16 | V | DC-Spannung in Volt L2 | 0.1);
-30 | 1 | 3 | WR_X_DC-Spannung_L3 | int16 | V | DC-Spannung in Volt L3 (wird nicht verwendet) | 0.1);
-31 | 1 | 3 | WR_X_DC-Strom_L1 | int16 | A | DC-Strom in Ampere L1 | 0.01);
-32 | 1 | 3 | WR_X_DC-Strom_L2 | int16 | A | DC-Strom in Ampere L2 | 0.01);
-33 | 1 | 3 | WR_X_DC-Strom_L3 | int16 | A | DC-Strom in Ampere L3 (wird nicht verwendet) | 0.01);
+28 | 1 | 3 | WR_X_DC-Spannung_L1 | int16 | V | DC-Spannung in Volt L1
+29 | 1 | 3 | WR_X_DC-Spannung_L2 | int16 | V | DC-Spannung in Volt L2
+30 | 1 | 3 | WR_X_DC-Spannung_L3 | int16 | V | DC-Spannung in Volt L3 (wird nicht verwendet)
+31 | 1 | 3 | WR_X_DC-Strom_L1 | int16 | A | DC-Strom in Ampere L1
+32 | 1 | 3 | WR_X_DC-Strom_L2 | int16 | A | DC-Strom in Ampere L2
+33 | 1 | 3 | WR_X_DC-Strom_L3 | int16 | A | DC-Strom in Ampere L3 (wird nicht verwendet)
 
 
 #### Statusvariablen
