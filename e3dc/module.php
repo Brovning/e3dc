@@ -33,11 +33,12 @@ if (!defined('IMR_START_REGISTER'))
 	define("IMR_SF", 7);
 }
 
-// E3DC settings
-if (!defined('BATTERY_DISCHARGE_MAX'))
+if (!defined('E3DC_WALLBOX'))
 {
-	// Aktuelle E3DC-Modelle können maximal 90% der angegebenen Batterykapazität nutzen
-	define("BATTERY_DISCHARGE_MAX", 90);
+	define("E3DC_WALLBOX", 8);
+	define("E3DC_POWERMETER", 8);
+	define("E3DC_INVERTER", 8);
+	define("E3DC_MPPT", 3);
 }
 
 	class E3DC extends IPSModule
@@ -56,45 +57,42 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 			$this->RegisterPropertyInteger('hostPort', '502');
 			$this->RegisterPropertyInteger('hostmodbusDevice', '1');
 			$this->RegisterPropertyFloat('batterySize', '0');
+			$this->RegisterPropertyInteger('batteryDischargeMax', '90');
 			$this->RegisterPropertyBoolean('readExtLeistung', 'false');
-			$this->RegisterPropertyBoolean('readWallbox0', 'false');
-			$this->RegisterPropertyBoolean('readWallbox1', 'false');
-			$this->RegisterPropertyBoolean('readWallbox2', 'false');
-			$this->RegisterPropertyBoolean('readWallbox3', 'false');
-			$this->RegisterPropertyBoolean('readWallbox4', 'false');
-			$this->RegisterPropertyBoolean('readWallbox5', 'false');
-			$this->RegisterPropertyBoolean('readWallbox6', 'false');
-			$this->RegisterPropertyBoolean('readWallbox7', 'false');
-			$this->RegisterPropertyString('wallbox0name', '0');
-			$this->RegisterPropertyString('wallbox1name', '1');
-			$this->RegisterPropertyString('wallbox2name', '2');
-			$this->RegisterPropertyString('wallbox3name', '3');
-			$this->RegisterPropertyString('wallbox4name', '4');
-			$this->RegisterPropertyString('wallbox5name', '5');
-			$this->RegisterPropertyString('wallbox6name', '6');
-			$this->RegisterPropertyString('wallbox7name', '7');
-			$this->RegisterPropertyBoolean('readPowermeter0', 'false');
-			$this->RegisterPropertyBoolean('readPowermeter1', 'false');
-			$this->RegisterPropertyBoolean('readPowermeter2', 'false');
-			$this->RegisterPropertyBoolean('readPowermeter3', 'false');
-			$this->RegisterPropertyBoolean('readPowermeter4', 'false');
-			$this->RegisterPropertyBoolean('readPowermeter5', 'false');
-			$this->RegisterPropertyBoolean('readPowermeter6', 'false');
-			$this->RegisterPropertyBoolean('readPowermeter7', 'false');
-			$this->RegisterPropertyString('powermeter0name', '0');
-			$this->RegisterPropertyString('powermeter1name', '1');
-			$this->RegisterPropertyString('powermeter2name', '2');
-			$this->RegisterPropertyString('powermeter3name', '3');
-			$this->RegisterPropertyString('powermeter4name', '4');
-			$this->RegisterPropertyString('powermeter5name', '5');
-			$this->RegisterPropertyString('powermeter6name', '6');
-			$this->RegisterPropertyString('powermeter7name', '7');
+			if (defined('E3DC_WALLBOX'))
+			{
+				for($i = 0; $i<E3DC_WALLBOX; $i++)
+				{
+					$this->RegisterPropertyBoolean('readWallbox'.$i, 'false');
+					$this->RegisterPropertyString('wallbox'.$i.'name', strval($i));
+				}
+			}
+			if (defined('E3DC_POWERMETER'))
+			{
+				for($i = 0; $i<E3DC_POWERMETER; $i++)
+				{
+					$this->RegisterPropertyBoolean('readPowermeter'.$i, 'false');
+					$this->RegisterPropertyString('powermeter'.$i.'name', strval($i));
+				}
+			}
 			$this->RegisterPropertyBoolean('readEmergencyPower', 'false');
 			$this->RegisterPropertyFloat('emergencyPowerBuffer', '0');
-			$this->RegisterPropertyBoolean('readDcString', 'false');
-			$this->RegisterPropertyString('string1name', '1');
-			$this->RegisterPropertyString('string2name', '2');
-			$this->RegisterPropertyString('string3name', '3');
+			if (defined('E3DC_MPPT'))
+			{
+				for($i = 1; $i<=E3DC_MPPT; $i++)
+				{
+					$this->RegisterPropertyBoolean('readDcString'.$i, 'false');
+					$this->RegisterPropertyString('string'.$i.'name', strval($i));
+				}
+			}
+			if (defined('E3DC_INVERTER'))
+			{
+				for($i = 0; $i<E3DC_INVERTER; $i++)
+				{
+					$this->RegisterPropertyBoolean('readInverter'.$i, 'false');
+					$this->RegisterPropertyString('inverter'.$i.'name', strval($i));
+				}
+			}
 			$this->RegisterPropertyBoolean("loggingPowerW", 'true');
 			$this->RegisterPropertyBoolean("loggingPowerKw", 'false');
 			$this->RegisterPropertyBoolean("loggingBatterySoc", 'true');
@@ -108,257 +106,105 @@ if (!defined('BATTERY_DISCHARGE_MAX'))
 
 			// *** Erstelle deaktivierte Timer ***
 			// Autarkie und Eigenverbrauch
-			$this->RegisterTimer("Update-Autarkie-Eigenverbrauch", 0, "\$instanceId = IPS_GetObjectIDByIdent(\"40082\", ".$this->InstanceID.");
-\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-\$varValue = GetValue(\$varId);
-\$Autarkie = (\$varValue >> 8 ) & 0xFF;
-\$Eigenverbrauch = (\$varValue & 0xFF);
+			$this->RegisterTimer("cyclicDataUpdate", 0, MODUL_PREFIX."_CyclicDataUpdate(".$this->InstanceID.");");
+			$this->RegisterTimer("cyclicDataUpdateSlow", 0, MODUL_PREFIX."_CyclicDataUpdateSlow(".$this->InstanceID.");");
 
-\$AutarkieId = IPS_GetObjectIDByIdent(\"Autarkie\", \$instanceId);
-\$EigenverbrauchId = IPS_GetObjectIDByIdent(\"Eigenverbrauch\", \$instanceId);
-
-if(GetValue(\$AutarkieId) != \$Autarkie)
-{
-	SetValue(\$AutarkieId, \$Autarkie);
-}
-
-if(GetValue(\$EigenverbrauchId) != \$Eigenverbrauch)
-{
-	SetValue(\$EigenverbrauchId, \$Eigenverbrauch);
-}");
-
-			// EMS-Status Bits
-			$this->RegisterTimer("Update-EMS-Status", 0, "\$instanceId = IPS_GetObjectIDByIdent(\"40085\", ".$this->InstanceID.");
-\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-\$varValue = GetValue(\$varId);
-
-\$bitArray = array(\"Batterie laden\", \"Batterie entladen\", \"Notstrommodus\", \"Wetterbasiertes Laden\", \"Abregelungs-Status\", \"Ladesperrzeit\", \"Entladesperrzeit\");
-
-for(\$i = 0; \$i < count(\$bitArray); \$i++)
-{
-	\$bitId = IPS_GetObjectIDByIdent(removeInvalidChars(\$bitArray[\$i]), \$instanceId);
-    \$bitValue = (\$varValue >> \$i ) & 0x1;
-
-	if(GetValue(\$bitId) != \$bitValue)
-	{
-		SetValue(\$bitId, \$bitValue);
-	}
-}
-
-function removeInvalidChars(\$input)
-{
-	return preg_replace( '/[^a-z0-9]/i', '', \$input);
-}");
-
-			// WallBox_X_CTRL Bits
-			$this->RegisterTimer("Update-WallBox_X_CTRL", 0, "\$modbusAddress_Array = array(40088, 40089, 40090, 40091, 40092, 40093, 40094, 40095);
-foreach(\$modbusAddress_Array AS \$modbusAddress)
-{
-	\$instanceId = @IPS_GetObjectIDByIdent(\$modbusAddress, ".$this->InstanceID.");
-	
-	if(false !== \$instanceId)
-	{
-		\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-		\$varValue = GetValue(\$varId);
-
-		\$bitArray = array(\"Wallbox\", \"Solarbetrieb\", \"Laden sperren\", \"Ladevorgang\", \"Typ-2-Stecker verriegelt\", \"Typ-2-Stecker gesteckt\", \"Schukosteckdose\", \"Schukostecker gesteckt\", \"Schukostecker verriegelt\", \"16A 1 Phase\", \"16A 3 Phasen\", \"32A 3 Phasen\", \"1 Phase\");
-
-		for(\$i = 0; \$i < count(\$bitArray); \$i++)
-		{
-			\$bitId = IPS_GetObjectIDByIdent(removeInvalidChars(\$bitArray[\$i]), \$instanceId);
-			\$bitValue = (\$varValue >> \$i ) & 0x1;
-
-			if(GetValue(\$bitId) != \$bitValue)
+			if (defined('DEVELOPMENT') && DEVELOPMENT)
 			{
-				SetValue(\$bitId, \$bitValue);
-			}
-		}
-	}
-}
-
-function removeInvalidChars(\$input)
-{
-	return preg_replace( '/[^a-z0-9]/i', '', \$input);
-}");
-
-			// Berechnung der Leistungs-Werte in kW
-			$this->RegisterTimer("Update-ValuesKw", 0, "\$modbusAddress_Array = array(40068, 40070, 40072, 40074, 40078, 40080, 40076);
-foreach(\$modbusAddress_Array AS \$modbusAddress)
-{
-	\$instanceId = @IPS_GetObjectIDByIdent(\$modbusAddress, ".$this->InstanceID.");
-	
-	if(false !== \$instanceId)
+				// Bereinigung der Historie-Werte von den W/kW Werten (optional auf Wunsch)
+				$this->RegisterTimer("HistoryCleanUp", 0, "// cleanup der Wh/kWh Logwerte auf 1 Wert je Tag
+	\$startzeit = microtime(true);
+	foreach(\$engergyArray AS \$energyId)
 	{
-		\$kwId = @IPS_GetObjectIDByIdent(\"Value_kW\", \$instanceId);
-
-		if(false !== \$kwId)
+		if(10 > round((microtime(true) - \$startzeit) / 1000 / 1000))
 		{
-			\$varId = IPS_GetObjectIDByIdent(\"Value\", \$instanceId);
-			\$varValue = GetValue(\$varId);
-
-			\$kwValue = \$varValue / 1000;
-
-			if(GetValue(\$kwId) != \$kwValue)
-			{
-				SetValue(\$kwId, \$kwValue);
-			}
+	//		RecordReducing(\$energyId, mktime(0, 0, 0, (int)date(\"n\"), (int)date(\"j\")-365, (int)date(\"Y\")), mktime(23,59,59, (int)date(\"m\"), (int)date(\"j\")-1, (int)date(\"Y\")), \"j\");
 		}
 		else
 		{
-			// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
-			break;
+			exit;
 		}
 	}
-}
-
-\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionLeistung\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$varValueCalc = abs(GetValue(IPS_GetObjectIDByIdent(\"Value\", IPS_GetObjectIDByIdent(\"40068\", ".$this->InstanceID.")))) + abs(GetValue(IPS_GetObjectIDByIdent(\"Value\", IPS_GetObjectIDByIdent(\"40076\", ".$this->InstanceID."))));
-
-	if(GetValue(\$varId) != \$varValueCalc)
+	
+	/*function RecordReducing(\$ID, \$MStartDate, \$MEndDate, \$aggregation = \"i\")
 	{
-		SetValue(\$varId, \$varValueCalc);
-
-		\$kwId = @IPS_GetObjectIDByIdent(\"GesamtproduktionLeistung_kW\", ".$this->InstanceID.");
-		if(false !== \$kwId)
+		\$ah_ID = ".$this->getArchiveId().";
+		if(false === \$ah_ID)
 		{
-			\$kwValue = \$varValueCalc / 1000;
-			SetValue(\$kwId, \$kwValue);
+			return false;
 		}
-	}
-}
-");
-
-			// Berechnung der Energie-Werte in Wh/kWh
-			$this->RegisterTimer("Wh-Berechnung", 0, "//require_once '".__DIR__."/../libs/myFunctions.php';
-
-// calculate Wh values
-\$startzeit = microtime(true);
-\$engergyArray = array();
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryChargingWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryChargeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryDischargingWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryDischargeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"ExtWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetExtEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridConsumptionWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridConsumptionEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridFeedWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridFeedEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetProductionEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"PvWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetPvEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"HomeWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetHomeEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxSolarWh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxSolarEnergyWh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-
-// calculate kWh values
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryChargingKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryChargeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"BatteryDischargingKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetBatteryDischargeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"ExtKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetExtEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridConsumptionKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridConsumptionEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GridFeedKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetGridFeedEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"GesamtproduktionKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetProductionEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"PvKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetPvEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"HomeKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetHomeEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-\$varId = @IPS_GetObjectIDByIdent(\"WallboxSolarKwh\", ".$this->InstanceID.");
-if(false !== \$varId)
-{
-	\$engergyArray[] = \$varId;
-	SetValue(\$varId, E3DC_GetWallboxSolarEnergyKwh(".$this->InstanceID.", mktime(0,0,0, date(\"m\"), date(\"j\"), date(\"Y\")), time()));
-}
-");
+	
+		if(\"i\" != \$aggregation // Minute
+			&& \"G\" != \$aggregation // Stunde
+			&& \"j\" != \$aggregation // Tag
+		)
+		{
+			return false;
+		}
+	
+		\$p_ts = \$MStartDate;  // Angabe Startzeitpunkt Reducing-Periode
+		\$p_te = \$MEndDate;  // Angabe Startzeitpunkt Reducing-Periode
+	
+		\$i_max = (int)round((\$p_te - \$p_ts)/(60*60*24), 0);
+	
+		for(\$i=0; \$i<\$i_max; \$i++)
+		{
+			// Datensätze für einen Tag aus AC holen
+			\$ts = mktime(0,0,0,(int)date(\"n\", \$p_ts),(int)date(\"j\", \$p_ts) + \$i,(int)date(\"Y\", \$p_ts));
+			\$te = mktime(23,59,59,(int)date(\"n\", \$p_ts),(int)date(\"j\", \$p_ts) + \$i,(int)date(\"Y\", \$p_ts));
+			\$Data = AC_GetLoggedValues(\$ah_ID,\$ID,\$ts,\$te,5000);
+	
+			foreach(\$Data as \$key=>\$v)
+			{
+				\$Data[\$key]['TimeStamp_humanDate'] = date(\"d.m.Y H:i:s\", \$v['TimeStamp']);
+			}
+			\$Raw = array_reverse(\$Data);
+	
+			\$RawCount = count(\$Raw)-1;
+			foreach(\$Raw as \$key=>\$v)
+			{
+				if(0 == \$key)
+				{
+					\$Count = 0;
+					\$i_Flag = date(\$aggregation, \$v['TimeStamp']);
+					\$i_TimeStart = \$v['TimeStamp'] + 1;
+					\$i_TimeEnd = \$v['TimeStamp'];
+				}
+	
+				if(0 < \$key)
+				{
+					if(\$i_Flag == date(\$aggregation, \$v['TimeStamp']))
+					{
+						\$Count++;
+						\$i_TimeEnd = \$v['TimeStamp'];
+					}
+					else
+					{
+						if(0 < \$Count)
+						{
+							AC_DeleteVariableData(\$ah_ID,\$ID, \$i_TimeStart, \$i_TimeEnd);
+						}
+	
+						\$Count = 0;
+						\$i_Flag	= date(\$aggregation, \$v['TimeStamp']);
+						\$i_TimeStart = \$v['TimeStamp'] + 1;
+						\$i_TimeEnd = \$v['TimeStamp'];
+	
+					}
+	
+					if((\$Count > 0) && (\$RawCount == \$key))
+					{
+						\$i_TimeEnd = \$v['TimeStamp'];
+						AC_DeleteVariableData(\$ah_ID,\$ID, \$i_TimeStart, \$i_TimeEnd);
+					}
+				}
+			}
+		}
+	
+		return true;
+	}*/
+	");
+			}
 
 			// *** Erstelle Variablen-Profile ***
 			$this->checkProfiles();
@@ -368,6 +214,375 @@ if(false !== \$varId)
 		{
 			//Never delete this line!
 			parent::Destroy();
+		}
+
+		public function GetConfigurationForm()
+		{
+			$formElements = array();
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Im E3DC Stromspeicher muss Modbus TCP aktiviert sein!",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Im Konfigurationsmenü des E3DC Stromspeichers muss je nach Version \n- unter Hauptmenü > Funktionen > Funktion Modbus > Feld Protokoll das Registermapping 'E3/DC Simple-Mode'\n- ODER: unter Hauptmenü > Smart-Funktionen > Smart Home > Modbus\naktiviert werden.",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Open",
+				'name' => "active",
+			);
+			$formElements[] = array(
+				'type' => "ValidationTextBox",
+				'caption' => "IP",
+				'name' => "hostIp",
+				'validate' => "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Port (Standard: 502)",
+				'name' => "hostPort",
+				'digits' => 0,
+				'minimum' => 1,
+				'maximum' => 65535,
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Geräte ID (Standard: 1)",
+				'name' => "hostmodbusDevice",
+				'digits' => 0,
+				'minimum' => 1,
+				'maximum' => 255,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "In welchem Zeitintervall sollen die Modbus-Werte abgefragt werden (Empfehlung: 10 bis 60 Sekunden)?",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Abfrage-Intervall (in Sekunden)",
+				'name' => "pollCycle",
+				'minimum' => 1,
+				'maximum' => 3600,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Achtung: Die Berechnung der Wirkarbeit (Wh/kWh) wird exakter, je kleiner der Abfarge-Intervall gewählt wird.\nABER: Je kleiner der Abfrage-Intervall, um so höher die Systemlast und auch die Archiv-Größe bei aktiviertem Logging!",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Welche Batteriekapazität in kWh ist installiert?",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Batteriekapazität (bspw. 6.5, 10, 13, 15, 19.5,...)",
+				'name' => "batterySize",
+				'digits' => 1,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Maximal nutzbare Batteriekapazität? (Standard: 90%)",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Kann bei Batterie-Alterung reduziert werden",
+				'name' => "batteryDischargeMax",
+				'digits' => 0,
+				'minimum' => 10,
+				'maximum' => 100,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Ist ein zusätzlicher Einspeiser (bspw. zweiter Wechselrichter, Stromgenerator, Brennstoffzelle,...) angeschlossen?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "externer Einspeiser",
+				'name' => "readExtLeistung",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			if (defined('E3DC_WALLBOX'))
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Wie viele bzw. welche Wallbox IDs sind am E3DC in Verwendung?",
+				);
+				for($i = 0; $i<E3DC_WALLBOX; $i++)
+				{
+					$formElements[] = array(
+						'type' => "RowLayout",
+						'items' => array(
+							array(
+								'type' => "CheckBox",
+								'caption' => "Wallbox ".$i,
+								'name' => "readWallbox".$i,
+							),
+							array(
+								'type' => "Label",
+								'label' => "   ",
+							),
+							array(
+								'type' => "ValidationTextBox",
+								'caption' => "Name von Wallbox ".$i." (Standard: ".$i.")",
+								'name' => "wallbox".$i."name",
+								'validate' => "^[a-zA-Z0-9_-]+$",
+							),
+						),
+					);
+				}
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => " ",
+				);
+			}
+			if (defined('E3DC_POWERMETER'))
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Wie viele bzw. welche Leistungsmesser/Powermeter IDs sind am E3DC in Verwendung?",
+				);
+				for($i = 0; $i<E3DC_POWERMETER; $i++)
+				{
+					$formElements[] = array(
+						'type' => "RowLayout",
+						'items' => array(
+							array(
+								'type' => "CheckBox",
+								'caption' => "Leistungsmesser ".$i,
+								'name' => "readPowermeter".$i,
+							),
+							array(
+								'type' => "Label",
+								'label' => "   ",
+							),
+							array(
+								'type' => "ValidationTextBox",
+								'caption' => "Name von Leistungsmesser ".$i." (Standard: ".$i.")",
+								'name' => "powermeter".$i."name",
+								'validate' => "^[a-zA-Z0-9_-]+$",
+							),
+						),
+					);
+				}
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => " ",
+				);
+			}
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Ist im E3DC eine Notstromversorgung installiert?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Notstromversorgung",
+				'name' => "readEmergencyPower",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Wenn Notstromversorgung vorhanden, welche Notstrom-Reserve in kWh wurde im Speicher eingestellt (siehe Notstrom -> Einstellungen)?",
+			);
+			$formElements[] = array(
+				'type' => "NumberSpinner",
+				'caption' => "Notstrom-Reserve (in kWh)",
+				'name' => "emergencyPowerBuffer",
+				'digits' => 3,
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			if (defined('E3DC_MPPT'))
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Sollen V, A und W der DC-Strings ausgelesen werden? (verfügbar ab Release S10_2017_02)",
+				);
+				for($i = 1; $i<=E3DC_MPPT; $i++)
+				{
+					$formElements[] = array(
+						'type' => "RowLayout",
+						'items' => array(
+							array(
+								'type' => "CheckBox",
+								'caption' => "MPP-Tracker ".$i." (String ".$i.".1+".$i.".2)",
+								'name' => "readDcString".$i,
+							),
+							array(
+								'type' => "Label",
+								'label' => "   ",
+							),
+							array(
+								'type' => "ValidationTextBox",
+								'caption' => "Name von MPP-Tracker ".$i." (Standard: ".$i.")",
+								'name' => "string".$i."name",
+								'validate' => "^[a-zA-Z0-9_-]+$",
+							),
+						),
+					);
+				}
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => " ",
+				);
+			}
+			if (defined('E3DC_INVERTER'))
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Sollen V, A und W der Wechselrichter ausgelesen werden? (verfügbar ab Release S10_2020_02)",
+				);
+				for($i = 0; $i<E3DC_INVERTER; $i++)
+				{
+					$formElements[] = array(
+						'type' => "RowLayout",
+						'items' => array(
+							array(
+								'type' => "CheckBox",
+								'caption' => "Wechselrichter ".$i,
+								'name' => "readInverter".$i,
+							),
+							array(
+								'type' => "Label",
+								'label' => "   ",
+							),
+							array(
+								'type' => "ValidationTextBox",
+								'caption' => "Name von Wechselrichter ".$i." (Standard: ".$i.")",
+								'name' => "inverter".$i."name",
+								'validate' => "^[a-zA-Z0-9_-]+$",
+							),
+						),
+					);
+				}
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => " ",
+				);
+			}
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Für welche Variablen soll das Logging aktiviert werden?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsvariablen in W",
+				'name' => "loggingPowerW",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Leistungsvariablen in kW",
+				'name' => "loggingPowerKw",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Batterie SOC (Ladezustand) in %",
+				'name' => "loggingBatterySoc",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Autarkie in %",
+				'name' => "loggingAutarky",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Eigenverbrauch in %",
+				'name' => "loggingSelfconsumption",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Sollen die Tageswerte der Wirkarbeit (in Wh/kWh) berechnet werden?",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Tageswerte in Wh",
+				'name' => "calcWh",
+			);
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Tageswerte in kWh",
+				'name' => "calcKwh",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => "Achtung: Hierbei handelt es sich lediglich um eine näherungsweise Berechnung anhand der geloggten Leistungswerte, da die exakten Werte des Leistungsmessers von E3DC nicht per Modbus zur Verfügung gestellt werden!",
+			);
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => " ",
+			);
+			if (defined('DEVELOPMENT') && DEVELOPMENT)
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Sollen die Werte der Wirkarbeit (in Wh/kWh) gelogged werden (nur 1 Max-Wert pro Tag)?",
+				);
+			}
+			else
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Sollen die Werte der Wirkarbeit (in Wh/kWh) gelogged werden?",
+				);
+			}
+			$formElements[] = array(
+				'type' => "CheckBox",
+				'caption' => "Logging von Wh/kWh",
+				'name' => "loggingWirkarbeit",
+			);
+			if (defined('DEVELOPMENT') && DEVELOPMENT)
+			{
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => " ",
+				);
+				$formElements[] = array(
+					'type' => "Label",
+					'label' => "Soll die Menge der geloggeten Werte, die älter als ein Tag sind auf 1 Wert pro Minute reduziert werden (=geringerer Speicherbedarf des Archivs)?",
+				);
+				$formElements[] = array(
+					'type' => "CheckBox",
+					'caption' => "Logging auf 1 Wert pro Minute reduzieren",
+					'name' => "reduceLogsize",
+				);
+			}
+			$formActions = array();
+
+			$formStatus = array();
+			$formStatus[] = array(
+				'code' => IS_IPPORTERROR,
+				'icon' => "error",
+				'caption' => "IP oder Port sind nicht erreichtbar",
+			);
+			$formStatus[] = array(
+				'code' => IS_NOARCHIVE,
+				'icon' => "error",
+				'caption' => "Archiv nicht gefunden",
+			);
+			return json_encode(array('elements' => $formElements, 'actions' => $formActions, 'status' => $formStatus));
 		}
 
 		public function ApplyChanges()
@@ -382,46 +597,50 @@ if(false !== \$varId)
 			$hostmodbusDevice = $this->ReadPropertyInteger('hostmodbusDevice');
 			$hostSwapWords = 1; // E3DC = true
 			$batterySize = $this->ReadPropertyFloat('batterySize');
-			$batteryDischargeMax = BATTERY_DISCHARGE_MAX;
+			$batteryDischargeMax = $this->ReadPropertyInteger('batteryDischargeMax');
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
-			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
-			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
-			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
-			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
-			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
-			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
-			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
-			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
-			$wallbox0name = $this->ReadPropertyString('wallbox0name');
-			$wallbox1name = $this->ReadPropertyString('wallbox1name');
-			$wallbox2name = $this->ReadPropertyString('wallbox2name');
-			$wallbox3name = $this->ReadPropertyString('wallbox3name');
-			$wallbox4name = $this->ReadPropertyString('wallbox4name');
-			$wallbox5name = $this->ReadPropertyString('wallbox5name');
-			$wallbox6name = $this->ReadPropertyString('wallbox6name');
-			$wallbox7name = $this->ReadPropertyString('wallbox7name');
-			$readPowermeter0 = $this->ReadPropertyBoolean('readPowermeter0');
-			$readPowermeter1 = $this->ReadPropertyBoolean('readPowermeter1');
-			$readPowermeter2 = $this->ReadPropertyBoolean('readPowermeter2');
-			$readPowermeter3 = $this->ReadPropertyBoolean('readPowermeter3');
-			$readPowermeter4 = $this->ReadPropertyBoolean('readPowermeter4');
-			$readPowermeter5 = $this->ReadPropertyBoolean('readPowermeter5');
-			$readPowermeter6 = $this->ReadPropertyBoolean('readPowermeter6');
-			$readPowermeter7 = $this->ReadPropertyBoolean('readPowermeter7');
-			$powermeter0name = $this->ReadPropertyString('powermeter0name');
-			$powermeter1name = $this->ReadPropertyString('powermeter1name');
-			$powermeter2name = $this->ReadPropertyString('powermeter2name');
-			$powermeter3name = $this->ReadPropertyString('powermeter3name');
-			$powermeter4name = $this->ReadPropertyString('powermeter4name');
-			$powermeter5name = $this->ReadPropertyString('powermeter5name');
-			$powermeter6name = $this->ReadPropertyString('powermeter6name');
-			$powermeter7name = $this->ReadPropertyString('powermeter7name');
+			if (defined('E3DC_WALLBOX'))
+			{
+				$readWallbox = array();
+				$wallboxName = array();
+				for($i = 0; $i<E3DC_WALLBOX; $i++)
+				{
+					$readWallbox[$i] = $this->ReadPropertyBoolean('readWallbox'.$i);
+					$wallboxName[$i] = $this->ReadPropertyString('wallbox'.$i.'name');
+				}
+			}
+			if (defined('E3DC_POWERMETER'))
+			{
+				$readPowermeter = array();
+				$powermeterName = array();
+				for($i = 0; $i<E3DC_POWERMETER; $i++)
+				{
+					$readPowermeter[$i] = $this->ReadPropertyBoolean('readPowermeter'.$i);
+					$powermeterName[$i] = $this->ReadPropertyString('powermeter'.$i.'name');
+				}
+			}
 			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
 			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
-			$readDcString = $this->ReadPropertyBoolean('readDcString');
-			$string1name = $this->ReadPropertyString('string1name');
-			$string2name = $this->ReadPropertyString('string2name');
-			$string3name = $this->ReadPropertyString('string3name');
+			if (defined('E3DC_MPPT'))
+			{
+				$readDcString = array();
+				$stringName = array();
+				for($i = 1; $i<=E3DC_MPPT; $i++)
+				{
+					$readDcString[$i] = $this->ReadPropertyBoolean('readDcString'.$i);
+					$stringName[$i] = $this->ReadPropertyString('string'.$i.'name');
+				}
+			}
+			if (defined('E3DC_INVERTER'))
+			{
+				$readInverter = array();
+				$inverterName = array();
+				for($i = 0; $i<E3DC_INVERTER; $i++)
+				{
+					$readInverter[$i] = $this->ReadPropertyBoolean('readInverter'.$i);
+					$inverterName[$i] = $this->ReadPropertyString('inverter'.$i.'name');
+				}
+			}
 			$loggingPowerW = $this->ReadPropertyBoolean("loggingPowerW");
 			$loggingPowerKw = $this->ReadPropertyBoolean("loggingPowerKw");
 			$loggingBatterySoc = $this->ReadPropertyBoolean("loggingBatterySoc");
@@ -436,7 +655,7 @@ if(false !== \$varId)
 			if (false === $archiveId)
 			{
 				// no archive found
-				$this->SetStatus(201);
+				$this->SetStatus(IS_NOARCHIVE);
 			}
 
 			// Workaround für "InstanceInterface not available" Fehlermeldung beim Server-Start...
@@ -445,51 +664,26 @@ if(false !== \$varId)
 				// --> do nothing
 				// Verursacht scheinbar an dieser Stelle Probleme. Manchmal werden die Timer nicht mehr ausgeführt, daher explizit aktivieren...
 
-				if ($loggingPowerKw || $readExtLeistung)
-				{
-					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
-					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
-				}
-				else
-				{
-					// Deaktiviert einen Timer
-					$this->SetTimerInterval("Update-ValuesKw", 0);
-				}
+				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
+				$this->SetTimerInterval("cyclicDataUpdate", 5 * 1000);
 
 				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
+				$this->SetTimerInterval("cyclicDataUpdateSlow", 60 * 1000);
 
-				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-EMS-Status", 5000);
-
-				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
-				if ($calcWh || $calcKwh)
+				if (defined('DEVELOPMENT') && DEVELOPMENT)
 				{
-					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
-				}
-
-				// Erstellt einen Timer mit einem Intervall von 6 Stunden
-				if ($loggingWirkarbeit)
-				{
-					$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
-				}
-
-				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
-				{
-					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
-				}
-				else
-				{
-					// deaktiviert einen Timer
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
+					// Erstellt einen Timer mit einem Intervall von 6 Stunden
+					if ($loggingWirkarbeit)
+					{
+						$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
+					}
 				}
 			}
 			// IP-Adresse nicht konfiguriert
 			elseif ("" == $hostIp)
 			{
 				// keine IP --> inaktiv
-				$this->SetStatus(104);
+				$this->SetStatus(IS_INACTIVE);
 
 				$this->SendDebug("Module-Status", "ERROR: ".MODUL_PREFIX." IP not set!", 0);
 			}
@@ -552,17 +746,6 @@ if(false !== \$varId)
 					{
 						AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
 					}
-				}
-
-				if ($loggingPowerKw || $readExtLeistung)
-				{
-					// Erstellt einen Timer mit einem Intervall von $pollCycle/2 in Millisekunden.
-					$this->SetTimerInterval("Update-ValuesKw", $pollCycle / 2);
-				}
-				else
-				{
-					// Deaktiviert einen Timer
-					$this->SetTimerInterval("Update-ValuesKw", 0);
 				}
 
 				$inverterModelRegister_array = array(
@@ -631,9 +814,9 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 					AC_SetLoggingStatus($archiveId, $varId, $loggingSelfconsumption);
 				}
 
-				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 5000);
-
+				// Erstellt Timer mit einem Intervall von 5 und 60 Sekunden.
+				$this->SetTimerInterval("cyclicDataUpdate", 5 * 1000);
+				$this->SetTimerInterval("cyclicDataUpdateSlow", 60 * 1000);
 
 				// Bit 0 - 6 für "EMS-Status" erstellen
 				$instanceId = IPS_GetObjectIDByIdent("40085", $categoryId);
@@ -654,10 +837,6 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				{
 					$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
 				}
-
-				// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-				$this->SetTimerInterval("Update-EMS-Status", 5000);
-
 
 
 				$inverterModelRegister_array = array(
@@ -749,15 +928,18 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
-				$varId = $this->myMaintainVariable("WallboxWh", "Wallbox-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
-				if (false !== $varId && false !== $archiveId)
+				if (defined('E3DC_WALLBOX'))
 				{
-					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
-				}
-				$varId = $this->myMaintainVariable("WallboxSolarWh", "Wallbox-Solar-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
-				if (false !== $varId && false !== $archiveId)
-				{
-					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+					$varId = $this->myMaintainVariable("WallboxWh", "Wallbox-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox[0] || $readWallbox[1] || $readWallbox[2] || $readWallbox[3] || $readWallbox[4] || $readWallbox[5] || $readWallbox[6] || $readWallbox[7]));
+					if (false !== $varId && false !== $archiveId)
+					{
+						AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+					}
+					$varId = $this->myMaintainVariable("WallboxSolarWh", "Wallbox-Solar-Wirkarbeit", VARIABLETYPE_INTEGER, MODUL_PREFIX.".Electricity.Int", 0, $calcWh && ($readWallbox[0] || $readWallbox[1] || $readWallbox[2] || $readWallbox[3] || $readWallbox[4] || $readWallbox[5] || $readWallbox[6] || $readWallbox[7]));
+					if (false !== $varId && false !== $archiveId)
+					{
+						AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
+					}
 				}
 
 				// Wirkarbeit in kWh berechnen
@@ -801,75 +983,73 @@ Bit 6    1 = Entladesperrzeit aktiv: Den Zeitraum für die Entladesperrzeit gebe
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
-				$varId = $this->myMaintainVariable("WallboxKwh", "Wallbox-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
+				$varId = $this->myMaintainVariable("WallboxKwh", "Wallbox-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox[0] || $readWallbox[1] || $readWallbox[2] || $readWallbox[3] || $readWallbox[4] || $readWallbox[5] || $readWallbox[6] || $readWallbox[7]));
 				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
-				$varId = $this->myMaintainVariable("WallboxSolarKwh", "Wallbox-Solar-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7));
+				$varId = $this->myMaintainVariable("WallboxSolarKwh", "Wallbox-Solar-Wirkarbeit_kWh", VARIABLETYPE_FLOAT, "~Electricity", 0, $calcKwh && ($readWallbox[0] || $readWallbox[1] || $readWallbox[2] || $readWallbox[3] || $readWallbox[4] || $readWallbox[5] || $readWallbox[6] || $readWallbox[7]));
 				if (false !== $varId && false !== $archiveId)
 				{
 					AC_SetLoggingStatus($archiveId, $varId, $loggingWirkarbeit);
 				}
 
-				// Erstellt einen Timer mit einem Intervall von 1 Minuten.
-				if ($calcWh || $calcKwh)
+				if (defined('DEVELOPMENT') && DEVELOPMENT)
 				{
-					$this->SetTimerInterval("Wh-Berechnung", 60 * 1000);
+					// Erstellt einen Timer mit einem Intervall von 6 Stunden
+					if ($loggingWirkarbeit)
+					{
+						$this->SetTimerInterval("HistoryCleanUp", 6 * 60 * 60 * 1000);
+					}
 				}
 
 
 				/* ********** Spezifische Abfragen zur Steuerung der Wallbox **************************************
 					Hinweis: Es können nicht alle Bits geschaltet werden. Bereiche, bei denen die aktive Steuerung sinnvoll ist, sind mit RW (= 'Read' und 'Write') gekennzeichnet.
 				 ************************************************************************************************** */
-
-				$inverterModelRegister_array = array(
-					array(40078, 2, 3, "Wallbox-Leistung", "Int32", "W", "Leistung der Wallbox in Watt"),
-					array(40080, 2, 3, "Wallbox-Solarleistung", "Int32", "W", "Solarleistung, die von der Wallbox genutzt wird in Watt"),
-				);
-
-				if ($readWallbox0 || $readWallbox1 || $readWallbox2 || $readWallbox3 || $readWallbox4 || $readWallbox5 || $readWallbox6 || $readWallbox7)
+				if (defined('E3DC_WALLBOX'))
 				{
-					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$inverterModelRegister_array = array(
+						array(40078, 2, 3, "Wallbox-Leistung", "Int32", "W", "Leistung der Wallbox in Watt"),
+						array(40080, 2, 3, "Wallbox-Solarleistung", "Int32", "W", "Solarleistung, die von der Wallbox genutzt wird in Watt"),
+					);
 
-					// Logging setzen
-					foreach ($inverterModelRegister_array as $inverterModelRegister)
+					if ($readWallbox[0] || $readWallbox[1] || $readWallbox[2] || $readWallbox[3] || $readWallbox[4] || $readWallbox[5] || $readWallbox[6] || $readWallbox[7])
 					{
-						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-						if (false !== $varId && false !== $archiveId)
+						$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+						// Logging setzen
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
 						{
-							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
+							$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+							$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+							if (false !== $varId && false !== $archiveId)
+							{
+								AC_SetLoggingStatus($archiveId, $varId, $loggingPowerW);
+							}
+						}
+
+						// Variablen fuer kW-Logging erstellen, sofern noetig
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
+						{
+							$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+							$varIdOrg = IPS_GetObjectIDByIdent("Value", $instanceId);
+
+							$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varIdOrg)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+							if (false !== $varId && false !== $archiveId)
+							{
+								AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
+							}
 						}
 					}
-
-					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 5000);
-
-					// Variablen fuer kW-Logging erstellen, sofern noetig
-					foreach ($inverterModelRegister_array as $inverterModelRegister)
+					else
 					{
-						$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-						$varIdOrg = IPS_GetObjectIDByIdent("Value", $instanceId);
-
-						$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varIdOrg)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
-						if (false !== $varId && false !== $archiveId)
-						{
-							AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
-						}
+						$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
 					}
-				}
-				else
-				{
-					// deaktiviert einen Timer
-					$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
-
-					$this->deleteModbusInstancesRecursive($inverterModelRegister_array, $categoryId);
-				}
 
 
 
-				$wallboxDescription = "Wallbox_X_CTRL  Beschreibung    Datentyp
+					$wallboxDescription = "Wallbox_X_CTRL  Beschreibung    Datentyp
 Bit 0   Wallbox vorhanden und verfügbar (1) R
 Bit 1   Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW
 Bit 2   Laden abgebrochen (1) Laden freigegeben (0) RW
@@ -885,154 +1065,79 @@ Bit 11  Relais an, 32A 3 Phasen, Typ 2  R
 Bit 12  Eine Phase aktiv (1) drei Phasen aktiv (0)  RW
 Bit 13  Nicht belegt";
 
-				$bitArray = array(
-					array('varName' => "Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0: Wallbox vorhanden und verfügbar (1) R"),
-					array('varName' => "Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1: Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
-					array('varName' => "Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2: Laden abgebrochen (1) Laden freigegeben (0) RW"),
-					array('varName' => "Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3: Auto lädt (1) Auto lädt nicht (0)  R"),
-					array('varName' => "Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4: Typ-2-Stecker verriegelt (1)    R"),
-					array('varName' => "Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: Typ-2-Stecker gesteckt (1)  R"),
-					array('varName' => "Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: Schukosteckdose an (1), Gilt nicht für die Wallbox easy connect!  RW"),
-					array('varName' => "Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7: Schukostecker gesteckt (1), Gilt nicht für die Wallbox easy connect!  R"),
-					array('varName' => "Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8: ukostecker verriegelt (1), Gilt nicht für die Wallbox easy connect!    R"),
-					array('varName' => "16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9: Relais an, 16A 1 Phase, Schukosteckdose, Gilt nicht für die Wallbox easy connect! R"),
-					array('varName' => "16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10: Relais an, 16A 3 Phasen, Typ 2  R"),
-					array('varName' => "32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11: Relais an, 32A 3 Phasen, Typ 2  R"),
-					array('varName' => "1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12: Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
-					//					array('varName' => "", 'varProfile' => "", 'varInfo' => "Bit 13: Nicht belegt"),
-				);
+					$bitArray = array(
+						array('varName' => "Wallbox", 'varProfile' => "~Alert.Reversed", 'varInfo' => "Bit 0: Wallbox vorhanden und verfügbar (1) R"),
+						array('varName' => "Solarbetrieb", 'varProfile' => "~Switch", 'varInfo' => "Bit 1: Solarbetrieb aktiv (1) Mischbetrieb aktiv (0)   RW"),
+						array('varName' => "Laden sperren", 'varProfile' => "~Lock", 'varInfo' => "Bit 2: Laden abgebrochen (1) Laden freigegeben (0) RW"),
+						array('varName' => "Ladevorgang", 'varProfile' => "~Switch", 'varInfo' => "Bit 3: Auto lädt (1) Auto lädt nicht (0)  R"),
+						array('varName' => "Typ-2-Stecker verriegelt", 'varProfile' => "~Switch", 'varInfo' => "Bit 4: Typ-2-Stecker verriegelt (1)    R"),
+						array('varName' => "Typ-2-Stecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 5: Typ-2-Stecker gesteckt (1)  R"),
+						array('varName' => "Schukosteckdose", 'varProfile' => "~Switch", 'varInfo' => "Bit 6: Schukosteckdose an (1), Gilt nicht für die Wallbox easy connect!  RW"),
+						array('varName' => "Schukostecker gesteckt", 'varProfile' => "~Switch", 'varInfo' => "Bit 7: Schukostecker gesteckt (1), Gilt nicht für die Wallbox easy connect!  R"),
+						array('varName' => "Schukostecker verriegelt", 'varProfile' => "~Lock", 'varInfo' => "Bit 8: ukostecker verriegelt (1), Gilt nicht für die Wallbox easy connect!    R"),
+						array('varName' => "16A 1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 9: Relais an, 16A 1 Phase, Schukosteckdose, Gilt nicht für die Wallbox easy connect! R"),
+						array('varName' => "16A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 10: Relais an, 16A 3 Phasen, Typ 2  R"),
+						array('varName' => "32A 3 Phasen", 'varProfile' => "~Switch", 'varInfo' => "Bit 11: Relais an, 32A 3 Phasen, Typ 2  R"),
+						array('varName' => "1 Phase", 'varProfile' => "~Switch", 'varInfo' => "Bit 12: Eine Phase aktiv (1) drei Phasen aktiv (0)  RW"),
+						//					array('varName' => "", 'varProfile' => "", 'varInfo' => "Bit 13: Nicht belegt"),
+					);
 
-				$inverterModelRegister_array = array();
-				$inverterModelRegisterDel_array = array();
+					$inverterModelRegister_array = array();
+					$inverterModelRegisterDel_array = array();
 
-				if ($readWallbox0)
-				{
-					$inverterModelRegister_array[] = array(40088, 1, 6, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40088, 1, 6, "WallBox_0_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				if ($readWallbox1)
-				{
-					$inverterModelRegister_array[] = array(40089, 1, 6, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40089, 1, 6, "WallBox_1_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				if ($readWallbox2)
-				{
-					$inverterModelRegister_array[] = array(40090, 1, 6, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40090, 1, 6, "WallBox_2_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				if ($readWallbox3)
-				{
-					$inverterModelRegister_array[] = array(40091, 1, 6, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40091, 1, 6, "WallBox_3_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				if ($readWallbox4)
-				{
-					$inverterModelRegister_array[] = array(40092, 1, 6, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40092, 1, 6, "WallBox_4_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				if ($readWallbox5)
-				{
-					$inverterModelRegister_array[] = array(40093, 1, 6, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40093, 1, 6, "WallBox_5_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				if ($readWallbox6)
-				{
-					$inverterModelRegister_array[] = array(40094, 1, 6, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40094, 1, 6, "WallBox_6_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				if ($readWallbox7)
-				{
-					$inverterModelRegister_array[] = array(40095, 1, 6, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40095, 1, 6, "WallBox_7_CTRL", "Uint16", "", $wallboxDescription);
-				}
-
-				// Variablen umbenennen, sofern ein Wallbox Name angegeben wurde
-				for ($i = 0; $i < count($inverterModelRegister_array); $i++)
-				{
-					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("WallBox_0_", "WallBox_1_", "WallBox_2_", "WallBox_3_", "WallBox_4_", "WallBox_5_", "WallBox_6_", "WallBox_7_"), array("WallBox_".$wallbox0name."_", "WallBox_".$wallbox1name."_", "WallBox_".$wallbox2name."_", "WallBox_".$wallbox3name."_", "WallBox_".$wallbox4name."_", "WallBox_".$wallbox5name."_", "WallBox_".$wallbox6name."_", "WallBox_".$wallbox7name."_"), $inverterModelRegister_array[$i][IMR_NAME]);
-				}
-
-				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-
-				// Entsprechend Wallbox Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
-				foreach ($inverterModelRegister_array as $inverterModelRegister)
-				{
-					$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-
-					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
-					if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+					for($i = 0; $i<E3DC_WALLBOX; $i++)
 					{
-						IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
-						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+						if ($readWallbox[$i])
+						{
+							$inverterModelRegister_array[] = array(40088 + $i, 1, 6, "WallBox_".$wallboxName[$i]."_CTRL", "Uint16", "", $wallboxDescription);
+						}
+						else
+						{
+							$inverterModelRegisterDel_array[] = array(40088 + $i, 1, 6, "WallBox_".$wallboxName[$i]."_CTRL", "Uint16", "", $wallboxDescription);
+						}
 					}
-				}
+		
+					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
 
-				foreach ($inverterModelRegister_array as $register)
-				{
-					// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
-					$instanceId = IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
-					$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
-					IPS_SetHidden($varId, true);
-
-					foreach ($bitArray as $bit)
+					// Entsprechend Wallbox Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
-						$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
+						$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+
+						// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+						if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+						{
+							IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
+							$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+						}
 					}
+
+					foreach ($inverterModelRegister_array as $register)
+					{
+						// Bit 0 - 12 für "WallBox_X_CTRL" erstellen
+						$instanceId = IPS_GetObjectIDByIdent($register[IMR_START_REGISTER], $categoryId);
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						IPS_SetHidden($varId, true);
+
+						foreach ($bitArray as $bit)
+						{
+							$varId = $this->MaintainInstanceVariable($this->removeInvalidChars($bit['varName']), $bit['varName'], VARIABLETYPE_BOOLEAN, $bit['varProfile'], 0, true, $instanceId, $bit['varInfo']);
+						}
+					}
+
+					$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
 				}
-
-				$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
-
 
 
 				/* ********** Spezifische Abfragen der Leistungsmesser **************************************
 					Hinweis: Die im Folgenden gelisteten Leistungsmesser (Register 40105 bis 40132) werden im Kapitel „Typen von Leistungsmessern“
 				 ************************************************************************************************** */
-				if ($readPowermeter0 || $readPowermeter1 || $readPowermeter2 || $readPowermeter3 || $readPowermeter4 || $readPowermeter5 || $readPowermeter6 || $readPowermeter7)
+				if (defined('E3DC_POWERMETER'))
 				{
-					// Erstellt einen Timer mit einem Intervall von 5 Sekunden.
-//					$this->SetTimerInterval("Update-Powermeter", 5000);
-				}
-				else
-				{
-					// deaktiviert einen Timer
-//					$this->SetTimerInterval("Update-Powermeter", 0);
-				}
+					$inverterModelRegister_array = array();
+					$inverterModelRegisterDel_array = array();
 
-				$inverterModelRegister_array = array();
-				$inverterModelRegisterDel_array = array();
-
-				$powermeterTypBeschreibung = "Leistungsmessertyp: Typ Bezeichnung Hinweise
+					$powermeterTypBeschreibung = "Leistungsmessertyp: Typ Bezeichnung Hinweise
 1 Wurzelleistungsmesser Dies ist der Regelpunkt des Systems. Der Regelpunkt entspricht üblicherweise dem Hausanschlusspunkt.
 2 Externe Produktion
 3 Zweirichtungszähler
@@ -1044,186 +1149,28 @@ Bit 13  Nicht belegt";
 9 Datenanzeige Wird nicht in die Regelung eingebunden, sondern dient nur der Datenaufzeichnung des Kundenportals.
 10 Regelungsbypass Die gemessene Leistung wird nicht in die Batterie geladen, aus der Batterie entladen.";
 
-				if ($readPowermeter0)
-				{
-					$inverterModelRegister_array[] = array(40105, 1, 3, "Powermeter_0", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40106, 1, 3, "Powermeter_0_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40107, 1, 3, "Powermeter_0_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40108, 1, 3, "Powermeter_0_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40105, 1, 3, "Powermeter_0", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40106, 1, 3, "Powermeter_0_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40107, 1, 3, "Powermeter_0_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40108, 1, 3, "Powermeter_0_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				if ($readPowermeter1)
-				{
-					$inverterModelRegister_array[] = array(40109, 1, 3, "Powermeter_1", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40110, 1, 3, "Powermeter_1_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40111, 1, 3, "Powermeter_1_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40112, 1, 3, "Powermeter_1_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40109, 1, 3, "Powermeter_1", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40110, 1, 3, "Powermeter_1_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40111, 1, 3, "Powermeter_1_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40112, 1, 3, "Powermeter_1_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				if ($readPowermeter2)
-				{
-					$inverterModelRegister_array[] = array(40113, 1, 3, "Powermeter_2", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40114, 1, 3, "Powermeter_2_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40115, 1, 3, "Powermeter_2_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40116, 1, 3, "Powermeter_2_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40113, 1, 3, "Powermeter_2", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40114, 1, 3, "Powermeter_2_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40115, 1, 3, "Powermeter_2_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40116, 1, 3, "Powermeter_2_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				if ($readPowermeter3)
-				{
-					$inverterModelRegister_array[] = array(40117, 1, 3, "Powermeter_3", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40118, 1, 3, "Powermeter_3_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40119, 1, 3, "Powermeter_3_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40120, 1, 3, "Powermeter_3_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40117, 1, 3, "Powermeter_3", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40118, 1, 3, "Powermeter_3_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40119, 1, 3, "Powermeter_3_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40120, 1, 3, "Powermeter_3_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				if ($readPowermeter4)
-				{
-					$inverterModelRegister_array[] = array(40121, 1, 3, "Powermeter_4", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40122, 1, 3, "Powermeter_4_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40123, 1, 3, "Powermeter_4_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40124, 1, 3, "Powermeter_4_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40121, 1, 3, "Powermeter_4", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40122, 1, 3, "Powermeter_4_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40123, 1, 3, "Powermeter_4_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40124, 1, 3, "Powermeter_4_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				if ($readPowermeter5)
-				{
-					$inverterModelRegister_array[] = array(40125, 1, 3, "Powermeter_5", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40126, 1, 3, "Powermeter_5_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40127, 1, 3, "Powermeter_5_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40128, 1, 3, "Powermeter_5_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40125, 1, 3, "Powermeter_5", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40126, 1, 3, "Powermeter_5_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40127, 1, 3, "Powermeter_5_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40128, 1, 3, "Powermeter_5_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				if ($readPowermeter6)
-				{
-					$inverterModelRegister_array[] = array(40129, 1, 3, "Powermeter_6", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40130, 1, 3, "Powermeter_6_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40131, 1, 3, "Powermeter_6_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40132, 1, 3, "Powermeter_6_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40129, 1, 3, "Powermeter_6", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40130, 1, 3, "Powermeter_6_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40131, 1, 3, "Powermeter_6_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40132, 1, 3, "Powermeter_6_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				if ($readPowermeter7)
-				{
-					$inverterModelRegister_array[] = array(40133, 1, 3, "Powermeter_7", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegister_array[] = array(40134, 1, 3, "Powermeter_7_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegister_array[] = array(40135, 1, 3, "Powermeter_7_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegister_array[] = array(40136, 1, 3, "Powermeter_7_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-				else
-				{
-					$inverterModelRegisterDel_array[] = array(40133, 1, 3, "Powermeter_7", "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-					$inverterModelRegisterDel_array[] = array(40134, 1, 3, "Powermeter_7_L1", "Int16", "W", "Phasenleistung in Watt L1");
-					$inverterModelRegisterDel_array[] = array(40135, 1, 3, "Powermeter_7_L2", "Int16", "W", "Phasenleistung in Watt L2");
-					$inverterModelRegisterDel_array[] = array(40136, 1, 3, "Powermeter_7_L3", "Int16", "W", "Phasenleistung in Watt L3");
-				}
-
-				// Variablen umbenennen, sofern ein Powermeter/Leistungsmesser Name angegeben wurde
-				for ($i = 0; $i < count($inverterModelRegister_array); $i++)
-				{
-					$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("Powermeter_0", "Powermeter_1", "Powermeter_2", "Powermeter_3", "Powermeter_4", "Powermeter_5", "Powermeter_6", "Powermeter_7"), array("Powermeter_".$powermeter0name, "Powermeter_".$powermeter1name, "Powermeter_".$powermeter2name, "Powermeter_".$powermeter3name, "Powermeter_".$powermeter4name, "Powermeter_".$powermeter5name, "Powermeter_".$powermeter6name, "Powermeter_".$powermeter7name), $inverterModelRegister_array[$i][IMR_NAME]);
-				}
-
-				$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
-				$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
-
-				// Entsprechend Powermeter/Leistungsmesser Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
-				foreach ($inverterModelRegister_array as $inverterModelRegister)
-				{
-					$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
-
-					// Modbus-Instanz erstellen, sofern noch nicht vorhanden
-					if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+					for($i = 0; $i<E3DC_POWERMETER; $i++)
 					{
-						IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
-						$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
-					}
-				}
-
-
-				/* ********** DC-String **************************************************************************
-					Hinweis: Die folgenden Register 40096 bis 40104 koennen ab dem Release S10_2017_02 genutzt werden!
-				 */
-				$categoryName = "DC_String";
-				$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
-				if ($readDcString)
-				{
-					$inverterModelRegister_array = array(
-						array(40096, 1, 3, "DC_STRING_1_Voltage", "UInt16", "V", "DC_STRING_1_Voltage"),
-						array(40097, 1, 3, "DC_STRING_2_Voltage", "UInt16", "V", "DC_STRING_2_Voltage"),
-						array(40098, 1, 3, "DC_STRING_3_Voltage", "UInt16", "V", "DC_STRING_3_Voltage"),
-						array(40099, 1, 3, "DC_STRING_1_Current", "UInt16", "A", "DC_STRING_1_Current", 0.01),
-						array(40100, 1, 3, "DC_STRING_2_Current", "UInt16", "A", "DC_STRING_2_Current", 0.01),
-						array(40101, 1, 3, "DC_STRING_3_Current", "UInt16", "A", "DC_STRING_3_Current", 0.01),
-						array(40102, 1, 3, "DC_STRING_1_Power", "UInt16", "W", "DC_STRING_1_Power"),
-						array(40103, 1, 3, "DC_STRING_2_Power", "UInt16", "W", "DC_STRING_2_Power"),
-						array(40104, 1, 3, "DC_STRING_3_Power", "UInt16", "W", "DC_STRING_3_Power"),
-					);
-
-					// Variablen umbenennen, sofern ein DC-String Name angegeben wurde
-					for ($i = 0; $i < count($inverterModelRegister_array); $i++)
-					{
-						$inverterModelRegister_array[$i][IMR_NAME] = str_replace(array("STRING_1_", "STRING_2_", "STRING_3_"), array("STRING_".$string1name."_", "STRING_".$string2name."_", "STRING_".$string3name."_"), $inverterModelRegister_array[$i][IMR_NAME]);
-					}
-
-					if (false === $categoryId)
-					{
-						$categoryId = IPS_CreateCategory();
-						IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
-						IPS_SetName($categoryId, $categoryName);
-						IPS_SetParent($categoryId, $parentId);
-						IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!");
+						if ($readPowermeter[$i])
+						{
+							$inverterModelRegister_array[] = array(40105 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i], "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
+							$inverterModelRegister_array[] = array(40106 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int16", "W", "Phasenleistung in Watt L1");
+							$inverterModelRegister_array[] = array(40107 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int16", "W", "Phasenleistung in Watt L2");
+							$inverterModelRegister_array[] = array(40108 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int16", "W", "Phasenleistung in Watt L3");
+						}
+						else
+						{
+							$inverterModelRegisterDel_array[] = array(40105 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i], "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
+							$inverterModelRegisterDel_array[] = array(40106 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int16", "W", "Phasenleistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array(40107 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int16", "W", "Phasenleistung in Watt L2");
+							$inverterModelRegisterDel_array[] = array(40108 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int16", "W", "Phasenleistung in Watt L3");
+						}
 					}
 
 					$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+					$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
 
-					// Entsprechend String Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+					// Entsprechend Powermeter/Leistungsmesser Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
 					foreach ($inverterModelRegister_array as $inverterModelRegister)
 					{
 						$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
@@ -1236,18 +1183,222 @@ Bit 13  Nicht belegt";
 						}
 					}
 				}
-				else
+
+				/* ********** DC-String **************************************************************************
+					Hinweis: Die folgenden Register 40096 bis 40104 koennen ab dem Release S10_2017_02 genutzt werden!
+				 */
+				if (defined('E3DC_MPPT'))
 				{
-					if (false !== $categoryId)
+					$categoryName = "DC_String";
+					$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
+
+					$inverterModelRegister_array = array();
+					$inverterModelRegisterDel_array = array();
+
+					for($i = 1; $i<=E3DC_MPPT; $i++)
 					{
-						foreach (IPS_GetChildrenIDs($categoryId) as $childId)
+						if ($readDcString[$i])
 						{
-							$this->deleteInstanceRecursive($childId);
+							$inverterModelRegister_array[] = array(40096 + ($i-1), 1, 3, "DC_STRING_".$stringName[$i]."_Voltage", "UInt16", "V", "DC_STRING_".$i."_Voltage");
+							$inverterModelRegister_array[] = array(40099 + ($i-1), 1, 3, "DC_STRING_".$stringName[$i]."_Current", "UInt16", "A", "DC_STRING_".$i."_Current", 0.01);
+							$inverterModelRegister_array[] = array(40102 + ($i-1), 1, 3, "DC_STRING_".$stringName[$i]."_Power", "UInt16", "W", "DC_STRING_".$i."_Power");
 						}
-						IPS_DeleteCategory($categoryId);
+						else
+						{
+							$inverterModelRegisterDel_array[] = array(40096 + ($i-1), 1, 3, "DC_STRING_".$stringName[$i]."_Voltage", "UInt16", "V", "DC_STRING_".$i."_Voltage");
+							$inverterModelRegisterDel_array[] = array(40099 + ($i-1), 1, 3, "DC_STRING_".$stringName[$i]."_Current", "UInt16", "A", "DC_STRING_".$i."_Current", 0.01);
+							$inverterModelRegisterDel_array[] = array(40102 + ($i-1), 1, 3, "DC_STRING_".$stringName[$i]."_Power", "UInt16", "W", "DC_STRING_".$i."_Power");
+						}
+					}
+
+					if ($readDcString[1] || $readDcString[2] || $readDcString[3])
+					{
+						if (false === $categoryId)
+						{
+							$categoryId = IPS_CreateCategory();
+							IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
+							IPS_SetName($categoryId, $categoryName);
+							IPS_SetParent($categoryId, $parentId);
+							IPS_SetInfo($categoryId, "Hinweis: Die folgenden Register 40096 bis 40104 können ab dem Release S10_2017_02 genutzt werden!");
+						}
+
+						$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+						// Entsprechend String Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
+						{
+							$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+
+							// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+							if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+							{
+								IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
+								$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+							}
+						}
+
+						// Variablen für kW-Logging erstellen, sofern nötig
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
+						{
+							$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+							$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+
+							$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+							/*	No default logging for DC_Strings
+							if (false !== $varId && false !== $archiveId)
+							{
+								AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
+							}
+							*/
+						}
+
+						$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
+					}
+					else
+					{
+						if (false !== $categoryId)
+						{
+							foreach (IPS_GetChildrenIDs($categoryId) as $childId)
+							{
+								$this->deleteInstanceRecursive($childId);
+							}
+							IPS_DeleteCategory($categoryId);
+						}
 					}
 				}
 
+				/* ********** Register der Wechselrichter **************************************************************************
+					Hinweis: Die folgenden Register koennen ab dem Release S10_2022_02 genutzt werden!
+				 */
+				if (defined('E3DC_INVERTER'))
+				{
+					$categoryName = "Wechselrichter";
+					$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $parentId);
+
+					$inverterModelRegister_array = array();
+					$inverterModelRegisterDel_array = array();
+
+					$startOffsetAddress = 41000;
+					$startOffsetRegister = $startOffsetAddress - MODBUS_REGISTER_TO_ADDRESS_OFFSET;
+
+					for($i = 0; $i<E3DC_INVERTER; $i++)
+					{
+						if ($readInverter[$i])
+						{
+							$inverterModelRegister_array[] = array($startOffsetRegister + 1 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int16", "W", "Scheinleistung in Watt L1");	// 0 with int32 not working --> 1 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 3 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");	// 2 with int32 not working --> 3 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 5 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");	// 4 with int32 not working --> 5 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 7 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int16", "W", "Wirkleistung in Watt L1");		// 6 with int32 not working --> 7 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 9 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int16", "W", "Wirkleistung in Watt L2");		// 8 with int32 not working --> 9 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 11 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int16", "W", "Wirkleistung in Watt L3");		// 10 with int32 not working --> 11 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 13 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int16", "W", "Blindleistung in Watt L1");		// 12 with int32 not working --> 13 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 15 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int16", "W", "Blindleistung in Watt L2");		// 14 with int32 not working --> 15 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 17 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int16", "W", "Blindleistung in Watt L3");		// 16 with int32 not working --> 17 with int16
+							$inverterModelRegister_array[] = array($startOffsetRegister + 18 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L1", "int16", "V", "AC-Spannung in Volt L1", 0.1);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 19 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L2", "int16", "V", "AC-Spannung in Volt L2", 0.1);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 20 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L3", "int16", "V", "AC-Spannung in Volt L3", 0.1);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 21 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L1", "int16", "A", "AC-Strom in Ampere L1", 0.01);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 22 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L2", "int16", "A", "AC-Strom in Ampere L2", 0.01);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 23 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L3", "int16", "A", "AC-Strom in Ampere L3", 0.01);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 24 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_Phasen-Frequenz_L1", "int16", "Hz", "Phasen-Frequenz in Hertz L1", 0.01);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 25 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L1", "int16", "W", "DC-Leistung in Watt L1");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 26 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L2", "int16", "W", "DC-Leistung in Watt L2");
+	//						$inverterModelRegister_array[] = array($startOffsetRegister + 27 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L3", "int16", "W", "DC-Leistung in Watt L3 (wird nicht verwendet)");
+							$inverterModelRegister_array[] = array($startOffsetRegister + 28 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L1", "int16", "V", "DC-Spannung in Volt L1", 0.1);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 29 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L2", "int16", "V", "DC-Spannung in Volt L2", 0.1);
+	//						$inverterModelRegister_array[] = array($startOffsetRegister + 30 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L3", "int16", "V", "DC-Spannung in Volt L3 (wird nicht verwendet)", 0.1);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 31 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L1", "int16", "A", "DC-Strom in Ampere L1", 0.01);
+							$inverterModelRegister_array[] = array($startOffsetRegister + 32 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L2", "int16", "A", "DC-Strom in Ampere L2", 0.01);
+	//						$inverterModelRegister_array[] = array($startOffsetRegister + 33 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L3", "int16", "A", "DC-Strom in Ampere L3 (wird nicht verwendet)", 0.01);
+						}
+						else
+						{
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 1 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L1", "int16", "W", "Scheinleistung in Watt L1");	// 0 with int32 not working --> 1 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 3 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");	// 2 with int32 not working --> 3 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 5 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Scheinleistung_L2", "int16", "W", "Scheinleistung in Watt L2");	// 4 with int32 not working --> 5 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 7 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L1", "int16", "W", "Wirkleistung in Watt L1");		// 6 with int32 not working --> 7 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 9 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L2", "int16", "W", "Wirkleistung in Watt L2");		// 8 with int32 not working --> 9 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 11 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Wirkleistung_L3", "int16", "W", "Wirkleistung in Watt L3");	// 10 with int32 not working --> 11 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 13 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L1", "int16", "W", "Blindleistung in Watt L1");	// 12 with int32 not working --> 13 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 15 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L2", "int16", "W", "Blindleistung in Watt L2");	// 14 with int32 not working --> 15 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 17 + ($i * 34), 2, 3, "WR_".$inverterName[$i]."_Blindleistung_L3", "int16", "W", "Blindleistung in Watt L3");	// 16 with int32 not working --> 17 with int16
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 18 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L1", "int16", "V", "AC-Spannung in Volt L1", 0.1);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 19 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L2", "int16", "V", "AC-Spannung in Volt L2", 0.1);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 20 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Spannung_L3", "int16", "V", "AC-Spannung in Volt L3", 0.1);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 21 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L1", "int16", "A", "AC-Strom in Ampere L1", 0.01);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 22 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L2", "int16", "A", "AC-Strom in Ampere L2", 0.01);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 23 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_AC-Strom_L3", "int16", "A", "AC-Strom in Ampere L3", 0.01);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 24 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_Phasen-Frequenz_L1", "int16", "Hz", "Phasen-Frequenz in Hertz L1", 0.01);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 25 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L1", "int16", "W", "DC-Leistung in Watt L1");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 26 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L2", "int16", "W", "DC-Leistung in Watt L2");
+	//						$inverterModelRegisterDel_array[] = array($startOffsetRegister + 27 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Leistung_L3", "int16", "W", "DC-Leistung in Watt L3 (wird nicht verwendet)");
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 28 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L1", "int16", "V", "DC-Spannung in Volt L1", 0.1);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 29 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L2", "int16", "V", "DC-Spannung in Volt L2", 0.1);
+	//						$inverterModelRegisterDel_array[] = array($startOffsetRegister + 30 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Spannung_L3", "int16", "V", "DC-Spannung in Volt L3 (wird nicht verwendet)", 0.1);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 31 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L1", "int16", "A", "DC-Strom in Ampere L1", 0.01);
+							$inverterModelRegisterDel_array[] = array($startOffsetRegister + 32 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L2", "int16", "A", "DC-Strom in Ampere L2", 0.01);
+	//						$inverterModelRegisterDel_array[] = array($startOffsetRegister + 33 + ($i * 34), 1, 3, "WR_".$inverterName[$i]."_DC-Strom_L3", "int16", "A", "DC-Strom in Ampere L3 (wird nicht verwendet)", 0.01);
+						}
+					}
+
+					if ($readInverter[0] || $readInverter[1] || $readInverter[2] || $readInverter[3] || $readInverter[4] || $readInverter[5] || $readInverter[6] || $readInverter[7])
+					{
+						if (false === $categoryId)
+						{
+							$categoryId = IPS_CreateCategory();
+							IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
+							IPS_SetName($categoryId, $categoryName);
+							IPS_SetParent($categoryId, $parentId);
+							IPS_SetInfo($categoryId, "Hinweis: Die folgenden Modbus Adressen 41000 bis 41272 (Register 41001 - 41273) können ab dem Release S10_2020_02 genutzt werden!");
+						}
+
+						$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
+
+						// Entsprechend String Namen umbenennen, sofern Name nach initialer Erstellung geändert wurde
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
+						{
+							$instanceId = @IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+
+							// Modbus-Instanz erstellen, sofern noch nicht vorhanden
+							if (false !== $instanceId && IPS_GetName($instanceId) != $inverterModelRegister[IMR_NAME])
+							{
+								IPS_SetName($instanceId, $inverterModelRegister[IMR_NAME]);
+								$this->SendDebug("create Modbus address", "REG_".$inverterModelRegister[IMR_START_REGISTER]." umbenannt in ".$inverterModelRegister[IMR_NAME], 0);
+							}
+						}
+
+						// Variablen für kW-Logging erstellen, sofern nötig
+						foreach ($inverterModelRegister_array as $inverterModelRegister)
+						{
+							if("w" == strtolower($inverterModelRegister[IMR_UNITS]))
+							{
+								$instanceId = IPS_GetObjectIDByIdent($inverterModelRegister[IMR_START_REGISTER], $categoryId);
+								$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+
+								$varId = $this->MaintainInstanceVariable("Value_kW", IPS_GetName($varId)."_kW", VARIABLETYPE_FLOAT, "~Power", 0, $loggingPowerKw, $instanceId, $inverterModelRegister[IMR_NAME]." in kW");
+								/*	No default logging for DC_Strings
+								if (false !== $varId && false !== $archiveId)
+								{
+									AC_SetLoggingStatus($archiveId, $varId, $loggingPowerKw);
+								}
+								*/
+							}
+						}
+
+						$this->deleteModbusInstancesRecursive($inverterModelRegisterDel_array, $categoryId);
+					}
+					else
+					{
+						if (false !== $categoryId)
+						{
+							foreach (IPS_GetChildrenIDs($categoryId) as $childId)
+							{
+								$this->deleteInstanceRecursive($childId);
+							}
+							IPS_DeleteCategory($categoryId);
+						}
+					}
+				}
 
 				if ($active)
 				{
@@ -1270,14 +1421,14 @@ Bit 13  Nicht belegt";
 						}
 
 						// aktiv
-						$this->SetStatus(102);
+						$this->SetStatus(IS_ACTIVE);
 
 						$this->SendDebug("Module-Status", MODUL_PREFIX."-module activated", 0);
 					}
 					else
 					{
 						// IP oder Port nicht erreichbar
-						$this->SetStatus(200);
+						$this->SetStatus(IS_IPPORTERROR);
 
 						$this->SendDebug("Module-Status", "ERROR: ".MODUL_PREFIX." with IP=".$hostIp." and Port=".$hostPort." cannot be reached!", 0);
 					}
@@ -1302,15 +1453,12 @@ Bit 13  Nicht belegt";
 
 					// Timer deaktivieren
 					/*
-										$this->SetTimerInterval("Update-Autarkie-Eigenverbrauch", 0);
-										$this->SetTimerInterval("Update-EMS-Status", 0);
-										$this->SetTimerInterval("Update-WallBox_X_CTRL", 0);
-										$this->SetTimerInterval("Update-ValuesKw", 0);
-										$this->SetTimerInterval("Wh-Berechnung", 0);
+										$this->SetTimerInterval("cyclicDataUpdate", 0);
+										$this->SetTimerInterval("cyclicDataUpdateSlow", 0);
 										$this->SetTimerInterval("HistoryCleanUp", 0);
 					 */
 					// inaktiv
-					$this->SetStatus(104);
+					$this->SetStatus(IS_INACTIVE);
 
 					$this->SendDebug("Module-Status", MODUL_PREFIX."-module deactivated", 0);
 				}
@@ -1525,14 +1673,13 @@ Bit 13  Nicht belegt";
 			}
 		}
 
-		private function getModbusDatatype($type)
+		private function getModbusDatatype(string $type)//PHP8 :mixed
 		{
 			// Datentyp ermitteln
 			// 0=Bit (1 bit)
 			// 1=Byte (8 bit unsigned)
 			if ("uint8" == strtolower($type)
 				|| "enum8" == strtolower($type)
-				|| "int8" == strtolower($type)
 			) {
 				$datenTyp = MODBUSDATATYPE_BIT;
 			}
@@ -1551,7 +1698,9 @@ Bit 13  Nicht belegt";
 				$datenTyp = MODBUSDATATYPE_DWORD;
 			}
 			// 4=Char / ShortInt (8 bit signed)
-			elseif ("sunssf" == strtolower($type))
+			elseif ("sunssf" == strtolower($type)
+				|| "int8" == strtolower($type)
+			)
 			{
 				$datenTyp = MODBUSDATATYPE_CHAR;
 			}
@@ -1598,7 +1747,7 @@ Bit 13  Nicht belegt";
 			return $datenTyp;
 		}
 
-		private function getProfile($unit, $datenTyp = -1)
+		private function getProfile(string $unit, int $datenTyp = -1)//PHP8 :mixed
 		{
 			// Profil ermitteln
 			if ("a" == strtolower($unit) && MODBUSDATATYPE_REAL == $datenTyp)
@@ -2033,7 +2182,7 @@ Bit 13  Nicht belegt";
 			}
 		}
 
-		private function GetVariableValue($instanceIdent, $variableIdent = "Value")
+		private function GetVariableValue(string $instanceIdent, string $variableIdent = "Value")//PHP8 : mixed
 		{
 			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
 			$varId = IPS_GetObjectIDByIdent($this->removeInvalidChars($variableIdent), $instanceId);
@@ -2041,7 +2190,7 @@ Bit 13  Nicht belegt";
 			return GetValue($varId);
 		}
 
-		private function GetVariableId($instanceIdent, $variableIdent = "Value")
+		private function GetVariableId(string $instanceIdent, string $variableIdent = "Value"): int
 		{
 			$instanceId = IPS_GetObjectIDByIdent($this->removeInvalidChars($instanceIdent), $this->InstanceID);
 			$varId = IPS_GetObjectIDByIdent($this->removeInvalidChars($variableIdent), $instanceId);
@@ -2049,7 +2198,7 @@ Bit 13  Nicht belegt";
 			return $varId;
 		}
 
-		private function GetLoggedValuesInterval($id, $minutes)
+		private function GetLoggedValuesInterval(int $id, int $minutes)//PHP8 :mixed
 		{
 			$archiveId = IPS_GetInstanceListByModuleID("{43192F0B-135B-4CE7-A0A7-1475603F3060}");
 			if (isset($archiveId[0]))
@@ -2063,7 +2212,7 @@ Bit 13  Nicht belegt";
 				$archiveId = false;
 
 				// no archive found
-				$this->SetStatus(201);
+				$this->SetStatus(IS_NOARCHIVE);
 
 				$returnValue = GetValue($id);
 			}
@@ -2075,14 +2224,484 @@ Bit 13  Nicht belegt";
 			public functions
 		 */
 
+		public function CyclicDataUpdate()
+		{
+			// Update Autarkie-Eigenverbrauch
+			$instanceId = IPS_GetObjectIDByIdent("40082", $this->InstanceID);
+			$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+			$varValue = GetValue($varId);
+			$Autarkie = ($varValue >> 8) & 0xFF;
+			$Eigenverbrauch = ($varValue & 0xFF);
+
+			$AutarkieId = IPS_GetObjectIDByIdent("Autarkie", $instanceId);
+			$EigenverbrauchId = IPS_GetObjectIDByIdent("Eigenverbrauch", $instanceId);
+
+			if (GetValue($AutarkieId) != $Autarkie)
+			{
+				SetValue($AutarkieId, $Autarkie);
+			}
+
+			if (GetValue($EigenverbrauchId) != $Eigenverbrauch)
+			{
+				SetValue($EigenverbrauchId, $Eigenverbrauch);
+			}
+
+			// Update EMS-Status
+			$instanceId = IPS_GetObjectIDByIdent("40085", $this->InstanceID);
+			$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+			$varValue = GetValue($varId);
+
+			$bitArray = array("Batterie laden", "Batterie entladen", "Notstrommodus", "Wetterbasiertes Laden", "Abregelungs-Status", "Ladesperrzeit", "Entladesperrzeit");
+
+			for ($i = 0; $i < count($bitArray); $i++)
+			{
+				$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitArray[$i]), $instanceId);
+				$bitValue = ($varValue >> $i) & 0x1;
+
+				if (GetValue($bitId) != $bitValue)
+				{
+					SetValue($bitId, $bitValue);
+				}
+			}
+
+			// Update WallBox_X_CTRL
+			$readWallbox[0] = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox[1] = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox[2] = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox[3] = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox[4] = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox[5] = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox[6] = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox[7] = $this->ReadPropertyBoolean('readWallbox7');
+			if ($readWallbox[0] || $readWallbox[1] || $readWallbox[2] || $readWallbox[3] || $readWallbox[4] || $readWallbox[5] || $readWallbox[6] || $readWallbox[7])
+			{
+				$modbusAddress_Array = array(40088, 40089, 40090, 40091, 40092, 40093, 40094, 40095);
+				foreach ($modbusAddress_Array as $modbusAddress)
+				{
+					$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+
+					if (false !== $instanceId)
+					{
+						$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+						$varValue = GetValue($varId);
+
+						$bitArray = array("Wallbox", "Solarbetrieb", "Laden sperren", "Ladevorgang", "Typ-2-Stecker verriegelt", "Typ-2-Stecker gesteckt", "Schukosteckdose", "Schukostecker gesteckt", "Schukostecker verriegelt", "16A 1 Phase", "16A 3 Phasen", "32A 3 Phasen", "1 Phase");
+
+						for ($i = 0; $i < count($bitArray); $i++)
+						{
+							$bitId = IPS_GetObjectIDByIdent($this->removeInvalidChars($bitArray[$i]), $instanceId);
+							$bitValue = ($varValue >> $i) & 0x1;
+
+							if (GetValue($bitId) != $bitValue)
+							{
+								SetValue($bitId, $bitValue);
+							}
+						}
+					}
+				}
+			}
+
+			// Update ValuesKw
+			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
+			$loggingPowerKw = $this->ReadPropertyBoolean("loggingPowerKw");
+			if ($loggingPowerKw || $readExtLeistung)
+			{
+				// PV-, Batterie-, Verbrauchs-, Netz-Leistung
+				$modbusAddress_Array = array(40068, 40070, 40072, 40074);
+
+				// Ext. Leistung (bspw. ext. Wechselrichter)
+				if ($readExtLeistung)
+				{
+					$modbusAddress_Array[] = 40076;
+				}
+
+				// Wallbox-Leistung und Wallbox Solar-Leistung
+				if ($readWallbox[0] || $readWallbox[1] || $readWallbox[2] || $readWallbox[3] || $readWallbox[4] || $readWallbox[5] || $readWallbox[6] || $readWallbox[7])
+				{
+					$modbusAddress_Array[] = 40078;
+					$modbusAddress_Array[] = 40080;
+				}
+
+				foreach ($modbusAddress_Array as $modbusAddress)
+				{
+					$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $this->InstanceID);
+
+					if (false !== $instanceId)
+					{
+						$kwId = @IPS_GetObjectIDByIdent("Value_kW", $instanceId);
+
+						if (false !== $kwId)
+						{
+							$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+							$varValue = GetValue($varId);
+
+							$kwValue = $varValue / 1000;
+
+							if (GetValue($kwId) != $kwValue)
+							{
+								SetValue($kwId, $kwValue);
+							}
+						}
+						else
+						{
+							// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
+							break;
+						}
+					}
+				}
+
+				// DC-Strings
+				$readDcString[1] = $this->ReadPropertyBoolean('readDcString1');
+				$readDcString[2] = $this->ReadPropertyBoolean('readDcString2');
+				$readDcString[3] = $this->ReadPropertyBoolean('readDcString3');
+				if ($readDcString[1] || $readDcString[2] || $readDcString[3])
+				{
+					$modbusAddress_Array = array();
+
+					if ($readDcString[1])
+					{
+						$modbusAddress_Array[] = 40102;
+					}
+
+					if ($readDcString[2])
+					{
+						$modbusAddress_Array[] = 40103;
+					}
+
+					if ($readDcString[3])
+					{
+						$modbusAddress_Array[] = 40104;
+					}
+
+					$categoryName = "DC_String";
+					$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $this->InstanceID);
+
+					foreach ($modbusAddress_Array as $modbusAddress)
+					{
+						$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $categoryId);
+
+						if (false !== $instanceId)
+						{
+							$kwId = @IPS_GetObjectIDByIdent("Value_kW", $instanceId);
+
+							if (false !== $kwId)
+							{
+								$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+								$varValue = GetValue($varId);
+
+								$kwValue = $varValue / 1000;
+
+								if (GetValue($kwId) != $kwValue)
+								{
+									SetValue($kwId, $kwValue);
+								}
+							}
+							else
+							{
+								// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
+								break;
+							}
+						}
+					}
+				}
+
+
+				// Wechselrichter
+				if (defined('E3DC_INVERTER'))
+				{
+					$readInverter = array();
+					$inverterName = array();
+					for($i = 0; $i<E3DC_INVERTER; $i++)
+					{
+						$readInverter[$i] = $this->ReadPropertyBoolean('readInverter'.$i);
+					}
+
+					$modbusAddress_Array = array();
+
+					$startOffsetAddress = 41000;
+					$startOffsetRegister = $startOffsetAddress - MODBUS_REGISTER_TO_ADDRESS_OFFSET;
+
+					for($i = 0; $i<E3DC_INVERTER; $i++)
+					{
+						if ($readInverter[$i])
+						{
+							$modbusAddress_Array[] = $startOffsetRegister + 1 + ($i * 34);	// 0 with int32 not working --> 1 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 3 + ($i * 34);	// 2 with int32 not working --> 3 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 5 + ($i * 34);	// 4 with int32 not working --> 5 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 7 + ($i * 34);	// 6 with int32 not working --> 7 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 9 + ($i * 34);	// 8 with int32 not working --> 9 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 11 + ($i * 34);	// 10 with int32 not working --> 11 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 13 + ($i * 34);	// 12 with int32 not working --> 13 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 15 + ($i * 34);	// 14 with int32 not working --> 15 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 17 + ($i * 34);	// 16 with int32 not working --> 17 with int16
+							$modbusAddress_Array[] = $startOffsetRegister + 25 + ($i * 34);
+							$modbusAddress_Array[] = $startOffsetRegister + 26 + ($i * 34);
+	//						$modbusAddress_Array[] = $startOffsetRegister + 27 + ($i * 34);
+						}
+					}
+
+					$categoryName = "Wechselrichter";
+					$categoryId = @IPS_GetObjectIDByIdent($this->removeInvalidChars($categoryName), $this->InstanceID);
+
+					foreach ($modbusAddress_Array as $modbusAddress)
+					{
+						$instanceId = @IPS_GetObjectIDByIdent($modbusAddress, $categoryId);
+
+						if (false !== $instanceId)
+						{
+							$kwId = @IPS_GetObjectIDByIdent("Value_kW", $instanceId);
+
+							if (false !== $kwId)
+							{
+								$varId = IPS_GetObjectIDByIdent("Value", $instanceId);
+								$varValue = GetValue($varId);
+
+								$kwValue = $varValue / 1000;
+
+								if (GetValue($kwId) != $kwValue)
+								{
+									SetValue($kwId, $kwValue);
+								}
+							}
+							else
+							{
+								// Abbrechen: Timer wurde wegen Gesamtleistungs-Berechnung aktiviert
+								break;
+							}
+						}
+					}
+				}
+
+
+				// Gesamtproduktionsleistung
+				$varId = @IPS_GetObjectIDByIdent("GesamtproduktionLeistung", $this->InstanceID);
+				if (false !== $varId)
+				{
+					if ($readExtLeistung)
+					{
+						$varValueCalc = abs(GetValue(IPS_GetObjectIDByIdent("Value", IPS_GetObjectIDByIdent("40068", $this->InstanceID)))) + abs(GetValue(IPS_GetObjectIDByIdent("Value", IPS_GetObjectIDByIdent("40076", $this->InstanceID))));
+					}
+					else
+					{
+						$varValueCalc = abs(GetValue(IPS_GetObjectIDByIdent("Value", IPS_GetObjectIDByIdent("40068", $this->InstanceID))));
+					}
+
+					if (GetValue($varId) != $varValueCalc)
+					{
+						SetValue($varId, $varValueCalc);
+
+						$kwId = @IPS_GetObjectIDByIdent("GesamtproduktionLeistung_kW", $this->InstanceID);
+						if (false !== $kwId)
+						{
+							$kwValue = $varValueCalc / 1000;
+							SetValue($kwId, $kwValue);
+						}
+					}
+				}
+			}
+		}
+
+		public function CyclicDataUpdateSlow()
+		{
+			// Wh-Berechnung
+			$calcWh = $this->ReadPropertyBoolean("calcWh");
+			$calcKwh = $this->ReadPropertyBoolean("calcKwh");
+			if ($calcWh || $calcKwh)
+			{
+				// calculate Wh values
+				$varId = @IPS_GetObjectIDByIdent("BatteryChargingWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryChargeEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("BatteryDischargingWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryDischargeEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("ExtWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetExtEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridConsumptionWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetGridConsumptionEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridFeedWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetGridFeedEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GesamtproduktionWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetProductionEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("PvWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetPvEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("HomeWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetHomeEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxSolarWh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxSolarEnergyWh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+
+				// calculate kWh values
+				$varId = @IPS_GetObjectIDByIdent("BatteryChargingKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryChargeEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("BatteryDischargingKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetBatteryDischargeEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("ExtKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetExtEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridConsumptionKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetGridConsumptionEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GridFeedKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetGridFeedEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("GesamtproduktionKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetProductionEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("PvKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetPvEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("HomeKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetHomeEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+				$varId = @IPS_GetObjectIDByIdent("WallboxSolarKwh", $this->InstanceID);
+				if (false !== $varId)
+				{
+					$targetValue = E3DC_GetWallboxSolarEnergyKwh($this->InstanceID, mktime(0, 0, 0, (int)date("n"), (int)date("j"), (int)date("Y")), time());
+					if (GetValue($varId) != $targetValue)
+					{
+						SetValue($varId, $targetValue);
+					}
+				}
+			}
+		}
+
 		public function GetAutarky(): int
 		{
-			return $this->GetVariableValue(40082, "Autarkie");
+			return $this->GetVariableValue("40082", "Autarkie");
 		}
 
 		public function GetSelfConsumption(): int
 		{
-			return $this->GetVariableValue(40082, "Eigenverbrauch");
+			return $this->GetVariableValue("40082", "Eigenverbrauch");
 		}
 
 		public function GetBatteryPowerW(): int
@@ -2092,7 +2711,7 @@ Bit 13  Nicht belegt";
 
 		public function GetBatteryPowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40070;
+			$varIdent = "40070";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -2118,7 +2737,7 @@ Bit 13  Nicht belegt";
 
 		public function GetBatteryChargeEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40070;
+			$varIdent = "40070";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
 
@@ -2132,7 +2751,7 @@ Bit 13  Nicht belegt";
 
 		public function GetBatteryDischargeEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40070;
+			$varIdent = "40070";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
 
@@ -2146,13 +2765,13 @@ Bit 13  Nicht belegt";
 
 		public function GetBatterySoc(): int
 		{
-			return $this->GetVariableValue(40083, "Value");
+			return $this->GetVariableValue("40083", "Value");
 		}
 
 		public function GetBatteryRangeKwh(): float
 		{
 			$batterySize = $this->ReadPropertyFloat('batterySize');
-			$batteryDischargeMax = BATTERY_DISCHARGE_MAX;
+			$batteryDischargeMax = $this->ReadPropertyInteger('batteryDischargeMax');
 			$readEmergencyPower = $this->ReadPropertyBoolean('readEmergencyPower');
 			$emergencyPowerBuffer = $this->ReadPropertyFloat('emergencyPowerBuffer');
 
@@ -2180,7 +2799,7 @@ Bit 13  Nicht belegt";
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
-			$varIdent = 40076;
+			$varIdent = "40076";
 
 			if (false === $readExtLeistung)
 			{
@@ -2212,7 +2831,7 @@ Bit 13  Nicht belegt";
 		{
 			$readExtLeistung = $this->ReadPropertyBoolean('readExtLeistung');
 
-			$varIdent = 40076;
+			$varIdent = "40076";
 
 			if (false === $readExtLeistung)
 			{
@@ -2281,7 +2900,7 @@ Bit 13  Nicht belegt";
 
 		public function GetGridPowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40074;
+			$varIdent = "40074";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -2307,7 +2926,7 @@ Bit 13  Nicht belegt";
 
 		public function GetGridConsumptionEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40074;
+			$varIdent = "40074";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 1);
 
@@ -2321,7 +2940,7 @@ Bit 13  Nicht belegt";
 
 		public function GetGridFeedEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40074;
+			$varIdent = "40074";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime, 2);
 
@@ -2340,7 +2959,7 @@ Bit 13  Nicht belegt";
 
 		public function GetPvPowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40068;
+			$varIdent = "40068";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -2366,7 +2985,7 @@ Bit 13  Nicht belegt";
 
 		public function GetPvEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40068;
+			$varIdent = "40068";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 
@@ -2385,7 +3004,7 @@ Bit 13  Nicht belegt";
 
 		public function GetHomePowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$varIdent = 40072;
+			$varIdent = "40072";
 
 			if (0 < $timeIntervalInMinutes)
 			{
@@ -2411,7 +3030,7 @@ Bit 13  Nicht belegt";
 
 		public function GetHomeEnergyWh(int $startTime, int $endTime): int
 		{
-			$varIdent = 40072;
+			$varIdent = "40072";
 
 			$returnValue = $this->getPowerSumOfLog($this->GetVariableId($varIdent, "Value"), $startTime, $endTime);
 
@@ -2430,18 +3049,18 @@ Bit 13  Nicht belegt";
 
 		public function GetWallboxPowerIntervalW(int $timeIntervalInMinutes): int
 		{
-			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
-			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
-			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
-			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
-			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
-			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
-			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
-			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			$readWallbox[0] = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox[1] = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox[2] = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox[3] = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox[4] = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox[5] = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox[6] = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox[7] = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40078;
+			$varIdent = "40078";
 
-			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox[0] && false === $readWallbox[1] && false === $readWallbox[2] && false === $readWallbox[3] && false === $readWallbox[4] && false === $readWallbox[5] && false === $readWallbox[6] && false === $readWallbox[7])
 			{
 				$returnValue = 0;
 			}
@@ -2469,18 +3088,18 @@ Bit 13  Nicht belegt";
 
 		public function GetWallboxEnergyWh(int $startTime, int $endTime): int
 		{
-			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
-			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
-			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
-			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
-			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
-			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
-			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
-			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			$readWallbox[0] = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox[1] = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox[2] = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox[3] = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox[4] = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox[5] = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox[6] = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox[7] = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40078;
+			$varIdent = "40078";
 
-			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox[0] && false === $readWallbox[1] && false === $readWallbox[2] && false === $readWallbox[3] && false === $readWallbox[4] && false === $readWallbox[5] && false === $readWallbox[6] && false === $readWallbox[7])
 			{
 				$returnValue = 0;
 			}
@@ -2504,18 +3123,18 @@ Bit 13  Nicht belegt";
 
 		public function GetWallboxPowerSolarIntervalW(int $timeIntervalInMinutes): int
 		{
-			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
-			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
-			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
-			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
-			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
-			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
-			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
-			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			$readWallbox[0] = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox[1] = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox[2] = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox[3] = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox[4] = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox[5] = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox[6] = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox[7] = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40080;
+			$varIdent = "40080";
 
-			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox[0] && false === $readWallbox[1] && false === $readWallbox[2] && false === $readWallbox[3] && false === $readWallbox[4] && false === $readWallbox[5] && false === $readWallbox[6] && false === $readWallbox[7])
 			{
 				$returnValue = 0;
 			}
@@ -2543,18 +3162,18 @@ Bit 13  Nicht belegt";
 
 		public function GetWallboxSolarEnergyWh(int $startTime, int $endTime): int
 		{
-			$readWallbox0 = $this->ReadPropertyBoolean('readWallbox0');
-			$readWallbox1 = $this->ReadPropertyBoolean('readWallbox1');
-			$readWallbox2 = $this->ReadPropertyBoolean('readWallbox2');
-			$readWallbox3 = $this->ReadPropertyBoolean('readWallbox3');
-			$readWallbox4 = $this->ReadPropertyBoolean('readWallbox4');
-			$readWallbox5 = $this->ReadPropertyBoolean('readWallbox5');
-			$readWallbox6 = $this->ReadPropertyBoolean('readWallbox6');
-			$readWallbox7 = $this->ReadPropertyBoolean('readWallbox7');
+			$readWallbox[0] = $this->ReadPropertyBoolean('readWallbox0');
+			$readWallbox[1] = $this->ReadPropertyBoolean('readWallbox1');
+			$readWallbox[2] = $this->ReadPropertyBoolean('readWallbox2');
+			$readWallbox[3] = $this->ReadPropertyBoolean('readWallbox3');
+			$readWallbox[4] = $this->ReadPropertyBoolean('readWallbox4');
+			$readWallbox[5] = $this->ReadPropertyBoolean('readWallbox5');
+			$readWallbox[6] = $this->ReadPropertyBoolean('readWallbox6');
+			$readWallbox[7] = $this->ReadPropertyBoolean('readWallbox7');
 
-			$varIdent = 40080;
+			$varIdent = "40080";
 
-			if (false === $readWallbox0 && false === $readWallbox1 && false === $readWallbox2 && false === $readWallbox3 && false === $readWallbox4 && false === $readWallbox5 && false === $readWallbox6 && false === $readWallbox7)
+			if (false === $readWallbox[0] && false === $readWallbox[1] && false === $readWallbox[2] && false === $readWallbox[3] && false === $readWallbox[4] && false === $readWallbox[5] && false === $readWallbox[6] && false === $readWallbox[7])
 			{
 				$returnValue = 0;
 			}
