@@ -221,15 +221,15 @@ Je Wechselrichter X (wobei X von 0 bis 7) werden nachfolgende Register eingelese
 
 Offset | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
-0 | 2 | 3 | WR_X_Scheinleistung_L1 | int32 | W | Scheinleistung in Watt L1
-2 | 2 | 3 | WR_X_Scheinleistung_L2 | int32 | W | Scheinleistung in Watt L2
-4 | 2 | 3 | WR_X_Scheinleistung_L2 | int32 | W | Scheinleistung in Watt L2
-6 | 2 | 3 | WR_X_Wirkleistung_L1 | int32 | W | Wirkleistung in Watt L1
-8 | 2 | 3 | WR_X_Wirkleistung_L2 | int32 | W | Wirkleistung in Watt L2
-10 | 2 | 3 | WR_X_Wirkleistung_L3 | int32 | W | Wirkleistung in Watt L3
-12 | 2 | 3 | WR_X_Blindleistung_L1 | int32 | W | Blindleistung in Watt L1
-14 | 2 | 3 | WR_X_Blindleistung_L2 | int32 | W | Blindleistung in Watt L2
-16 | 2 | 3 | WR_X_Blindleistung_L3 | int32 | W | Blindleistung in Watt L3
+~~0~~ 1 | 2 | 3 | WR_X_Scheinleistung_L1 | ~~int32~~ int16 | W | Scheinleistung in Watt L1
+~~2~~ 3 | 2 | 3 | WR_X_Scheinleistung_L2 | ~~int32~~ int16 | W | Scheinleistung in Watt L2
+~~4~~ 5 | 2 | 3 | WR_X_Scheinleistung_L2 | ~~int32~~ int16 | W | Scheinleistung in Watt L2
+~~6~~ 7 | 2 | 3 | WR_X_Wirkleistung_L1 | ~~int32~~ int16 | W | Wirkleistung in Watt L1
+~~8~~ 9 | 2 | 3 | WR_X_Wirkleistung_L2 | ~~int32~~ int16 | W | Wirkleistung in Watt L2
+~~10~~ 11 | 2 | 3 | WR_X_Wirkleistung_L3 | ~~int32~~ int16 | W | Wirkleistung in Watt L3
+~~12~~ 13 | 2 | 3 | WR_X_Blindleistung_L1 | ~~int32~~ int16 | W | Blindleistung in Watt L1
+~~14~~ 15 | 2 | 3 | WR_X_Blindleistung_L2 | ~~int32~~ int16 | W | Blindleistung in Watt L2
+~~16~~ 17 | 2 | 3 | WR_X_Blindleistung_L3 | ~~int32~~ int16 | W | Blindleistung in Watt L3
 18 | 1 | 3 | WR_X_AC-Spannung_L1 | int16 | V | AC-Spannung in Volt L1 | 0.1);
 19 | 1 | 3 | WR_X_AC-Spannung_L2 | int16 | V | AC-Spannung in Volt L2 | 0.1);
 20 | 1 | 3 | WR_X_AC-Spannung_L3 | int16 | V | AC-Spannung in Volt L3 | 0.1);
