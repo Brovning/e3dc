@@ -790,12 +790,13 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 
 ### 8. Versionshistorie
 
-#### v1.6, 19.02.2022
+#### v1.6 patch 1, 25.02.2022
 - Register für Wechselrichter hinzugefügt (ab SW-Version >=S10_2022_02) 
 - Maximal nutzbare Batteriekapazität konfigurierbar (Alterung kann berücksichtigt werden)
 - DC-String Information einzeln aktivierbar
 - kW Wert zu DC-String Information hinzugefügt
 - Layout des Konfigurationsformulars überarbeitet
+- Bugfix #18: Uncaught TypeError getPowerSumOfLog()
 
 #### v1.5, 20.01.2022
 - bugfix #12: Wrong Modbus datatype used for powermeter values in W
