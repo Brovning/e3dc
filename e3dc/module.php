@@ -10,6 +10,7 @@ define("DEVELOPMENT", false);
 if (!defined('MODUL_PREFIX'))
 {
 	define("MODUL_PREFIX", "E3DC");
+	define("MODUL_ID", "{C9508720-B23D-B37A-B5C2-97B607221CE1}");
 }
 
 // Offset von Register (erster Wert 1) zu Adresse (erster Wert 0) ist -1
@@ -218,7 +219,25 @@ if (!defined('E3DC_WALLBOX'))
 
 		public function GetConfigurationForm()
 		{
+			$libraryJson = @IPS_GetLibrary(MODUL_ID);
+			
+			$headline = MODUL_PREFIX." Modul";
+			if(isset($libraryJson['Version']))
+			{
+				$headline .= " v".$libraryJson['Version'];
+			}
+
+			if(isset($libraryJson['Date']) && 0 != $libraryJson['Date'])
+			{
+				$headline .= " (".$libraryJson['Date'].")";
+			}
+
 			$formElements = array();
+			$formElements[] = array(
+				'type' => "Label",
+				'label' => $headline,
+				'bold' => true,
+			);
 			$formElements[] = array(
 				'type' => "Label",
 				'label' => "Im E3DC Stromspeicher muss Modbus TCP aktiviert sein!",
