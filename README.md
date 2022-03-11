@@ -91,7 +91,7 @@ Leistungsmesser 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Leistungs
 Notstromversorgung | Schalter, um angeben zu können, ob eine Notstromversorgung im E3DC verbaut ist. Default: aus
 Notstrom-Reserve | Bei vorhandener Notstromversorgung kann am E3DC unter dem Menüpunkt Notstrom > Einstellungen eine Reserve angegeben werden, bis zu welcher die Batterie maximal entladen werden soll. Diese Angabe wird optional benötigt, um die Reichweite der Batterie korrekt berechnen zu können. Default: 0
 MPP-Tracker 1 - 3 | Schalter, um die Variablen für V, A und W der bis zu 3 MPP-Tracker (entspricht String 1.1+1.2, 2.1+2.2 und 3.1+3.2) einzulesen und je MPP-Tracker ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Sued) (verfügbar ab Release S10_2017_02). Default: aus
-Wechselrichter 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wechselrichter/Inverter Variablen und je ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Ost). Default: aus
+Wechselrichter 0 - 7 | 8 Schalter zum Aktivieren und Deaktivieren der Wechselrichter/Inverter Variablen und je ein Textfeld zum Vergeben eines individuellen Variablen-Namens (bspw. Ost). Unter ID0 kann der interne Wechselrichter ausgelesen werden. Alle anderen IDs 1-7 sind für externe Wechselrichter. Default: aus
 Variablen-Logging | Für welche Variablen soll das Logging aktiviert werden? Zur Auswahl stehen Leistungsvariablen in W, Leistungsvariablen in kW (bei Auswahl werden zusätzliche Variablen in kW erstellt), Batterie SOC (Ladezustand) in %, Autarkie in %, Eigenverbrauch in %
 Tageswerte der Wirkarbeit | Sollen die Tageswerte in Wh oder kWh berechnet werden? Bei Auswahl werden zusätzliche Variablen in Wh oder kWh erstellt.
 Wirkarbeit loggen | Sollen für die Tageswerte in Wh oder kWh das Logging aktiviert werden? Nur möglich, sofern zuvor die Tageswerte-Berechnung auch aktiviert wurde!
@@ -218,6 +218,7 @@ StartRegister | Size | FunctionCode | Name | Type | Units | Description
 Hinweis: Die folgenden Register können ab dem Release S10_2022_02 genutzt werden!
 
 Je Wechselrichter X (wobei X von 0 bis 7) werden nachfolgende Register eingelesen.
+Unter ID0 kann der interne Wechselrichter ausgelesen werden. Alle anderen IDs 1-7 sind für externe Wechselrichter.
 
 Offset | Size | FunctionCode | Name | Type | Units | Description
 ------------- | ---- | ------------ | ---- | ---- | ----- | -----------
