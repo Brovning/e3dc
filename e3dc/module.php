@@ -1368,7 +1368,7 @@ Bit 13  Nicht belegt";
 							IPS_SetIdent($categoryId, $this->removeInvalidChars($categoryName));
 							IPS_SetName($categoryId, $categoryName);
 							IPS_SetParent($categoryId, $parentId);
-							IPS_SetInfo($categoryId, "Hinweis: Die folgenden Modbus Adressen 41000 bis 41272 (Register 41001 - 41273) können ab dem Release S10_2020_02 genutzt werden!");
+							IPS_SetInfo($categoryId, "Hinweis: Die folgenden Modbus Adressen 41000 bis 41272 (Register 41001 - 41273) können ab dem Release S10_2022_02 genutzt werden!");
 						}
 
 						$this->createModbusInstances($inverterModelRegister_array, $categoryId, $gatewayId, $pollCycle);
