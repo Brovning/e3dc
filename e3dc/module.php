@@ -468,7 +468,7 @@ if (!defined('E3DC_WALLBOX'))
 			{
 				$formElements[] = array(
 					'type' => "Label",
-					'label' => "Sollen V, A und W der Wechselrichter ausgelesen werden? (verfügbar ab Release S10_2020_02)",
+					'label' => "Sollen V, A und W der Wechselrichter ausgelesen werden? (verfügbar ab Release S10_2022_02)",
 				);
 				for($i = 0; $i<E3DC_INVERTER; $i++)
 				{
