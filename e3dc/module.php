@@ -386,7 +386,7 @@ if (!defined('E3DC_WALLBOX'))
 					'caption' => 'Datentyp',
 					'options' => array(
 						array('caption' => '16 Bit (standard)', 'value' => 0),
-						array('caption' => '32 Bit (für Leistungsstarke Anlagen)', 'value' => 1),
+						array('caption' => '32 Bit (für leistungsstarke Anlagen)', 'value' => 1),
 					),
 				);
 				for($i = 0; $i<E3DC_POWERMETER; $i++)
