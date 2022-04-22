@@ -792,7 +792,7 @@ Aktiviert die Schuko-Steckdose der Wallbox $WallboxId (von 0 bis 7) der E3DC-Ins
 ### 8. Versionshistorie
 
 #### v1.7, 22.04.2022
-- Int32-Register für Leistungsmesser ergänzt (nur für leistungsstarke Anlagen benötigt)
+- Int32-Register für Leistungsmesser ergänzt (nur für leistungsstarke Anlagen >32kW benötigt)
 
 #### v1.6 patch 2, 26.02.2022
 - Register für Wechselrichter hinzugefügt (ab SW-Version >=S10_2022_02) 
