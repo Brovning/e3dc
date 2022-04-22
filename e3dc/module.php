@@ -70,6 +70,7 @@ if (!defined('E3DC_WALLBOX'))
 			}
 			if (defined('E3DC_POWERMETER'))
 			{
+				$this->RegisterPropertyInteger("powermeterDatatype", 0);
 				for($i = 0; $i<E3DC_POWERMETER; $i++)
 				{
 					$this->RegisterPropertyBoolean('readPowermeter'.$i, 'false');
