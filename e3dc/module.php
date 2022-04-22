@@ -379,6 +379,15 @@ if (!defined('E3DC_WALLBOX'))
 					'type' => "Label",
 					'label' => "Wie viele bzw. welche Leistungsmesser/Powermeter IDs sind am E3DC in Verwendung?",
 				);
+				$formElements[] = array(
+					'type' => 'Select',
+					'name' => 'powermeterDatatype',
+					'caption' => 'Datentyp',
+					'options' => array(
+						array('caption' => '16 Bit (standard)', 'value' => 0),
+						array('caption' => '32 Bit (für Leistungsstarke Anlagen)', 'value' => 1),
+					),
+				);
 				for($i = 0; $i<E3DC_POWERMETER; $i++)
 				{
 					$formElements[] = array(
@@ -630,6 +639,7 @@ if (!defined('E3DC_WALLBOX'))
 			}
 			if (defined('E3DC_POWERMETER'))
 			{
+				$powermeterDatatype = $this->ReadPropertyInteger('powermeterDatatype');
 				$readPowermeter = array();
 				$powermeterName = array();
 				for($i = 0; $i<E3DC_POWERMETER; $i++)
@@ -1173,16 +1183,35 @@ Bit 13  Nicht belegt";
 						if ($readPowermeter[$i])
 						{
 							$inverterModelRegister_array[] = array(40105 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i], "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-							$inverterModelRegister_array[] = array(40106 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int16", "W", "Phasenleistung in Watt L1");
-							$inverterModelRegister_array[] = array(40107 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int16", "W", "Phasenleistung in Watt L2");
-							$inverterModelRegister_array[] = array(40108 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int16", "W", "Phasenleistung in Watt L3");
+
+							if(1 != $powermeterDatatype)
+							{
+								$inverterModelRegister_array[] = array(40106 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int16", "W", "Phasenleistung in Watt L1 int16");
+								$inverterModelRegister_array[] = array(40107 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int16", "W", "Phasenleistung in Watt L2 int16");
+								$inverterModelRegister_array[] = array(40108 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int16", "W", "Phasenleistung in Watt L3 int16");
+								$inverterModelRegisterDel_array[] = array(40138 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int32", "W", "Phasenleistung in Watt L1 int32");
+								$inverterModelRegisterDel_array[] = array(40140 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int32", "W", "Phasenleistung in Watt L2 int32");
+								$inverterModelRegisterDel_array[] = array(40142 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int32", "W", "Phasenleistung in Watt L3 int32");
+							}
+							else
+							{
+								$inverterModelRegisterDel_array[] = array(40106 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int16", "W", "Phasenleistung in Watt L1 int16");
+								$inverterModelRegisterDel_array[] = array(40107 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int16", "W", "Phasenleistung in Watt L2 int16");
+								$inverterModelRegisterDel_array[] = array(40108 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int16", "W", "Phasenleistung in Watt L3 int16");
+								$inverterModelRegister_array[] = array(40138 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int32", "W", "Phasenleistung in Watt L1 int32");
+								$inverterModelRegister_array[] = array(40140 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int32", "W", "Phasenleistung in Watt L2 int32");
+								$inverterModelRegister_array[] = array(40142 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int32", "W", "Phasenleistung in Watt L3 int32");
+							}
 						}
 						else
 						{
 							$inverterModelRegisterDel_array[] = array(40105 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i], "Uint16", "enumerated_powermeter", $powermeterTypBeschreibung);
-							$inverterModelRegisterDel_array[] = array(40106 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int16", "W", "Phasenleistung in Watt L1");
-							$inverterModelRegisterDel_array[] = array(40107 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int16", "W", "Phasenleistung in Watt L2");
-							$inverterModelRegisterDel_array[] = array(40108 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int16", "W", "Phasenleistung in Watt L3");
+							$inverterModelRegisterDel_array[] = array(40106 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int16", "W", "Phasenleistung in Watt L1 int16");
+							$inverterModelRegisterDel_array[] = array(40107 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int16", "W", "Phasenleistung in Watt L2 int16");
+							$inverterModelRegisterDel_array[] = array(40108 + ($i * 4), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int16", "W", "Phasenleistung in Watt L3 int16");
+							$inverterModelRegisterDel_array[] = array(40138 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L1", "Int32", "W", "Phasenleistung in Watt L1 int32");
+							$inverterModelRegisterDel_array[] = array(40140 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L2", "Int32", "W", "Phasenleistung in Watt L2 int32");
+							$inverterModelRegisterDel_array[] = array(40142 + ($i * 3 * 2), 1, 3, "Powermeter_".$powermeterName[$i]."_L3", "Int32", "W", "Phasenleistung in Watt L3 int32");
 						}
 					}
 
