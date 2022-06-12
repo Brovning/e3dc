@@ -81,6 +81,7 @@ trait myFunctions
 		if (0 == count($buffer))
 		{
 			// --> abbrechen
+			unset($buffer);
 			return false;
 		}
 		// Logwerte vorhanden
@@ -114,11 +115,13 @@ trait myFunctions
 
 			if (0 == $bufferDuration)
 			{
+				unset($buffer);
 				return false;
 			}
 			else
 			{
 				// ermittle das arithmetische Mittel unter Berücksichtigung der Gewichtung
+				unset($buffer);
 				return getArithMittel($bufferValues) / $bufferDuration;
 			}
 		}
